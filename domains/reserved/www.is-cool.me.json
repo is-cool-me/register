@@ -1,0 +1,10 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "www",
+
+    "records": {
+        "CNAME": "is-cool.me"
+    },
+
+    "proxied": false
+}

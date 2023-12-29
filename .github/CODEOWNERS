@@ -1,0 +1,12 @@
+# All Files
+* @andrewstech
+
+# Reserved Domains
+domains/reserved/* @is-cool.me/owners
+
+# User Domains
+domains/* @is-cool.me/maintainers
+
+# MD Files
+*.md @is-cool.me/maintainers
+terms.md @is-cool.me/owners
