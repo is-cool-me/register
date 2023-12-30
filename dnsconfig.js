@@ -20,7 +20,7 @@ function getDomainsList(filesPath) {
     return result;
 }
 
-var domains = getDomainsList("../domains");
+var domains = getDomainsList("./domains");
 
 var commit = {};
 
