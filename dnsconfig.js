@@ -20,16 +20,15 @@ function getDomainsList(filesPath) {
     return result;
 }
 
-var domains = getDomainsList("./domains");
+var domains = getDomainsList("../domains");
 
 var commit = {};
 
 for (var idx in domains) {
     var domainData = domains[idx].data;
-    var proxyState = proxy.off;
+    var proxyState = domainData.proxied ? proxy.on : proxy.off;
 
     if (!commit[domainData.domain]) commit[domainData.domain] = [];
-    if (domainData.proxied === true) proxyState = proxy.on;
 
     if (domainData.records.A) {
         for (var a in domainData.records.A) {
@@ -44,9 +43,7 @@ for (var idx in domains) {
     }
 
     if (domainData.records.CNAME) {
-    for (var cname in domainData.records.CNAME) {
-        commit[domainData.domain].push(CNAME(domainData.subdomain, domainData.records.CNAME[cname] + ".", proxyState));
-        }
+        commit[domainData.domain].push(CNAME(domainData.subdomain, domainData.records.CNAME + ".", proxyState));
     }
 
     if (domainData.records.MX) {
