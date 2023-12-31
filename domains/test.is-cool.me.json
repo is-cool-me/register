@@ -6,7 +6,7 @@
         "email": "admin@lighthosting.eu.org"
     },
 
-    "record": {
+    "records": {
         "A": ["1.1.1.1"]
     },
 
