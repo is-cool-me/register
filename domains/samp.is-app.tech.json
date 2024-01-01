@@ -1,0 +1,14 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "samp",
+
+    "owner": {
+        "email": "tutupyutub366@gmail.com"
+    },
+
+    "records": {
+        "A": ["144.217.19.105"]
+    },
+
+    "proxied": false
+}
