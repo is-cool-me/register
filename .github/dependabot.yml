@@ -3,9 +3,7 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    schedule: {
-      interval: daily
-    }
-    reviewers: [
-      @is-cool-me/owners
-    ]
+    schedule:
+      interval: weekly
+    reviewers:
+      - "@is-cool-me/owners"
