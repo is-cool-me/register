@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "project4",
+
+    "owner": {
+        "email": "tutupyutub366@gmail.com"
+    },
+
+    "records": {
+        "A": ["144.217.19.105"]
+    },
+
+    "proxied": false
+}
