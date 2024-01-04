@@ -16,6 +16,12 @@ NS records are no longer supported. Existing domains are unaffected.
 ## Donate
 If you like this service and want us to continue running it, please consider donating!
 
+
+### Discord Server
+Make sure to join our Discord server:
+https://discord.gg/25XcgVTrjB
+
+
 ## Domains
 
 | Available Domains |
