@@ -1,7 +1,7 @@
 # Terms and Conditions
 
 # Introduction
-The Light Hosting program is a free subdomain program that allows users to register and use subdomains under the is-local.org, is-not-a.dev, is-cool.dev and localplayer.dev domains. By registering for and using a subdomain through the Light Hosting program, you agree to be bound by the following terms and conditions.
+The Light Hosting program is a free subdomain program that allows users to register and use subdomains under the is-cool.me and is-app.tech domains. By registering for and using a subdomain through the Light Hosting program, you agree to be bound by the following terms and conditions.
 
 # Eligibility
 The Light Hosting program is open to any individual or organization that agrees to these terms and conditions.

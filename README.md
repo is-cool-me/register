@@ -16,6 +16,12 @@ NS records are no longer supported. Existing domains are unaffected.
 ## Donate
 If you like this service and want us to continue running it, please consider donating!
 
+
+### Discord Server
+Make sure to join our Discord server:
+https://discord.gg/25XcgVTrjB
+
+
 ## Domains
 
 | Available Domains |
@@ -123,5 +129,7 @@ is-cool.me register
 
 *Domains used for illegal purposes will be removed and permanently banned. Please, provide a clear description of your resource in the pull request.*
 
+### Credits
+Credit of this repo goes to <a href="https://github.com/open-domains/register">Open Domains</a> and <a href="https://github.com/free-domains/register">Free Domains</a>.
 ### License
 This project is under a [MIT License](https://github.com/is-cool-me/register/blob/main/LICENSE).
