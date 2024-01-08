@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "liveloom",
+
+    "owner": {
+        "email": "crazycaptain02@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "liveloom"
+    },
+
+    "proxied": true
+}
