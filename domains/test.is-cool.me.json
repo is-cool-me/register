@@ -1,6 +1,6 @@
 {
     "domain": "is-cool.me",
-    "subdomain": "@",
+    "subdomain": "test",
 
     "records": {
         "NS": "ns1.byet.org"
