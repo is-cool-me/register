@@ -36,7 +36,7 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: JSON Syntax Check
-              uses: limitusus/json-syntax-check@v2
+              uses: is-cool-me/json-syntax-check@v1
               with:
                   pattern: "\\.json$"
               env:
