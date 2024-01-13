@@ -7,6 +7,19 @@ on:
       - synchronize
       - reopened
 
+  push:
+    branches: [main]
+    paths:
+      - "domains/**"
+      - ".github/workflows/validation.yml"
+      - "dnsconfig.js"
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-validation
+  cancel-in-progress: true
+
 jobs:
   merge:
     runs-on: ubuntu-latest
@@ -56,11 +69,25 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
-        run: npm install
+      - name: DNS
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
 
-      - name: Run DNS Validation
-        run: npm run dns-validation
+          - name: Check
+            uses: koenrh/dnscontrol-action@v3
+            with:
+              args: check
+              config_file: "dnsconfig.js"
 
-      - name: Run JSON Syntax Check
-        run: npm run json-syntax-check
+      - name: JSON
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: JSON Syntax Check
+            uses: limitusus/json-syntax-check@v2
+            with:
+              pattern: "\\.json$"
+            env:
+              BASE: "domains/"
