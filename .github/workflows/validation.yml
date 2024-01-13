@@ -1,43 +1,66 @@
-name: Validation
+name: Auto Approve, Merge, and Validation
 
 on:
-    pull_request:
-
-    push:
-        branches: [main]
-        paths:
-            - "domains/**"
-            - ".github/workflows/validation.yml"
-            - "dnsconfig.js"
-
-    workflow_dispatch:
-
-concurrency:
-    group: ${{ github.ref }}-validation
-    cancel-in-progress: true
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
-    dns:
-        name: DNS
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  merge:
+    runs-on: ubuntu-latest
 
-            - name: Check
-              uses: is-cool-me/dnscontrol-action@v4.7.3
-              with:
-                  args: check
-                  config_file: "dnsconfig.js"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    json:
-        name: JSON
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+      - name: Set up Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-            - name: JSON Syntax Check
-              uses: is-cool-me/json-syntax-check@v1
-              with:
-                  pattern: "\\.json$"
-              env:
-                  BASE: "domains/"
+      - name: Approve Pull Request
+        run: |
+          PR_NUMBER=$(jq --raw-output .pull_request.number "${GITHUB_EVENT_PATH}")
+          TOKEN="${{ secrets.BOT2 }}"
+          URL="https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/reviews"
+
+          # Create an approval review
+          curl -X POST -s -H "Authorization: token ${TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+            "${URL}" -d '{"event": "APPROVE"}'
+    
+      - name: Merge Pull Request
+        run: |
+          PR_NUMBER=$(jq --raw-output .pull_request.number "${GITHUB_EVENT_PATH}")
+          TOKEN="${{ secrets.BOT2 }}"
+          URL="https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/merge"
+
+          # Merge the pull request
+          curl -X PUT -s -H "Authorization: token ${TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+            "${URL}"
+
+  validation:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run DNS Validation
+        run: npm run dns-validation
+
+      - name: Run JSON Syntax Check
+        run: npm run json-syntax-check
