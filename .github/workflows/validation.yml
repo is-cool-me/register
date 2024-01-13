@@ -38,7 +38,6 @@ jobs:
           PR_NUMBER=$(jq --raw-output .pull_request.number "${GITHUB_EVENT_PATH}")
           TOKEN="${{ secrets.BOT2 }}"
           URL="https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/reviews"
-
           # Create an approval review
           curl -X POST -s -H "Authorization: token ${TOKEN}" -H "Accept: application/vnd.github.v3+json" \
             "${URL}" -d '{"event": "APPROVE"}'
@@ -48,7 +47,6 @@ jobs:
           PR_NUMBER=$(jq --raw-output .pull_request.number "${GITHUB_EVENT_PATH}")
           TOKEN="${{ secrets.BOT2 }}"
           URL="https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/merge"
-
           # Merge the pull request
           curl -X PUT -s -H "Authorization: token ${TOKEN}" -H "Accept: application/vnd.github.v3+json" \
             "${URL}"
@@ -62,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -72,8 +70,6 @@ jobs:
       - name: DNS
         runs-on: ubuntu-latest
         steps:
-          - uses: actions/checkout@v4
-
           - name: Check
             uses: is-cool-me/dnscontrol-action@v4.7.3
             with:
@@ -83,8 +79,6 @@ jobs:
       - name: JSON
         runs-on: ubuntu-latest
         steps:
-          - uses: actions/checkout@v4
-
           - name: JSON Syntax Check
             uses: is-cool-me/json-syntax-check@v1
             with:
