@@ -1,4 +1,4 @@
-name: Auto Approve, Merge, and Validation
+name: Validation
 
 on:
   pull_request:
