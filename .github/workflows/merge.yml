@@ -1,53 +1,30 @@
-name: Merge
+name: Auto Merge
 
 on:
   pull_request:
     types:
-      - labeled
-      - unlabeled
       - synchronize
       - opened
-      - edited
-      - ready_for_review
       - reopened
-      - unlocked
-  pull_request_review:
-    types:
-      - submitted
-  check_suite:
-    types:
-      - completed
-  status: {}
 
 jobs:
-  automerge:
+  merge:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if all other workflow checks passed
-        id: check_checks
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"
+
+      - name: Merge if checks pass
         run: |
-          checks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | \
-            jq -r '.[] | .commit | .status')
-          if [ "$checks" == "success" ]; then
-            echo "::set-output name=checks_passed::true"
+          if [[ $(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | jq '.[].commit.status' | grep -c "error") -eq 0 ]]; then
+            git merge --no-ff "${{ github.event.before }}" -m "Auto-merge pull request #${{ github.event.pull_request.number }}"
+            git push
           else
-            echo "::set-output name=checks_passed::false"
+            echo "Checks failed. Pull request will not be auto-merged."
           fi
-
-      - name: Label automerge if checks passed
-        if: steps.check_checks.outputs.checks_passed == 'true'
-        run: |
-          echo "Label automerge"
-          # Add the logic to label automerge
-          curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" \
-            -d '{"labels":["automerge"]}'
-
-      - name: Automerge
-        if: steps.check_checks.outputs.checks_passed == 'true'
-        uses: pascalgn/automerge-action@v0.16.2
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
