@@ -1,28 +1,30 @@
-name: Merge
+name: Auto Merge
+
 on:
   pull_request:
     types:
-      - labeled
-      - unlabeled
       - synchronize
       - opened
-      - edited
-      - ready_for_review
       - reopened
-      - unlocked
-  pull_request_review:
-    types:
-      - submitted
-  check_suite:
-    types:
-      - completed
-  status: {}
+
 jobs:
-  automerge:
+  merge:
     runs-on: ubuntu-latest
+
     steps:
-      - id: automerge
-        name: automerge
-        uses: "pascalgn/automerge-action@v0.16.2"
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"
+
+      - name: Merge if checks pass
+        run: |
+          if [[ $(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | jq '.[].commit.status' | grep -c "error") -eq 0 ]]; then
+            git merge --no-ff "${{ github.event.before }}" -m "Auto-merge pull request #${{ github.event.pull_request.number }}"
+            git push
+          else
+            echo "Checks failed. Pull request will not be auto-merged."
+          fi
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
