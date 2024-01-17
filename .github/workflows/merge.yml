@@ -20,11 +20,11 @@ jobs:
 
       - name: Merge if checks pass
         run: |
-          if [[ $(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | jq '.[].commit.status' | grep -c "error") -eq 0 ]]; then
+          if [[ $(curl -s -H "Authorization: Bearer ${{ secrets.BOT2 }}" "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | jq '.[].commit.status' | grep -c "error") -eq 0 ]]; then
             git merge --no-ff "${{ github.event.before }}" -m "Auto-merge pull request #${{ github.event.pull_request.number }}"
             git push
           else
             echo "Checks failed. Pull request will not be auto-merged."
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BOT2 }}
