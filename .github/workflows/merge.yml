@@ -1,4 +1,5 @@
 name: Merge
+
 on:
   pull_request:
     types:
@@ -17,12 +18,36 @@ on:
     types:
       - completed
   status: {}
+
 jobs:
   automerge:
     runs-on: ubuntu-latest
+
     steps:
-      - id: automerge
-        name: automerge
-        uses: "pascalgn/automerge-action@v0.16.2"
+      - name: Check if all other workflow checks passed
+        id: check_checks
+        run: |
+          checks=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | \
+            jq -r '.[] | .commit | .status')
+          if [ "$checks" == "success" ]; then
+            echo "::set-output name=checks_passed::true"
+          else
+            echo "::set-output name=checks_passed::false"
+          fi
+
+      - name: Label automerge if checks passed
+        if: steps.check_checks.outputs.checks_passed == 'true'
+        run: |
+          echo "Label automerge"
+          # Add the logic to label automerge
+          curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" \
+            -d '{"labels":["automerge"]}'
+
+      - name: Automerge
+        if: steps.check_checks.outputs.checks_passed == 'true'
+        uses: pascalgn/automerge-action@v0.16.2
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
