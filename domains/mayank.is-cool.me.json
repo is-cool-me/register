@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "mayank",
+
+    "owner": {
+        "email": "mayankreal657@gmail.com"
+    },
+
+    "records": {
+        "A": ["1.1.1.1"]
+    },
+
+    "proxied": false
+}
