@@ -7,22 +7,20 @@ on:
       - opened
       - reopened
 
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  status: {}
 jobs:
-  merge:
+  automerge:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up Git
-        run: git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"
-
-      - name: Auto-merge
-        uses: "pascalgn/automerge-action@v0.14.2"
+      - id: automerge
+        name: AutoMerge
+        uses: "pascalgn/automerge-action@v0.16.2"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          MERGE_METHOD: "merge"
-          MERGE_COMMIT_MESSAGE: "pull-request-title"
-          MERGE_DELETE_BRANCH: true
           MERGE_LABELS: ""
