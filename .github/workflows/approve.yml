@@ -13,7 +13,8 @@ jobs:
   validation_and_merge:
     name: Validation and Merge
     runs-on: ubuntu-latest
-    needs: []
+    needs: 
+      - auto-approve
     steps:
       - name: Trigger Validation Workflow
         uses: actions/github-script@v5
