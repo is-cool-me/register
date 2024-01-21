@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "learning",
+
+    "owner": {
+        "email": "29joshuachang@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "68.178. 232.100"
+    },
+
+    "proxied": true
+}
