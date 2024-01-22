@@ -14,10 +14,14 @@ on:
     types:
       - completed
   status: {}
+
 jobs:
   automerge:
     runs-on: ubuntu-latest
     steps:
+      - name: Delay for 20s
+        run: sleep 20s
+
       - id: automerge
         name: AutoMerge
         uses: "pascalgn/automerge-action@v0.16.2"
