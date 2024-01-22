@@ -17,7 +17,7 @@ jobs:
       - auto-approve
     steps:
       - name: Trigger Validation Workflow
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.BOT2 }}
           script: |
@@ -33,7 +33,7 @@ jobs:
             });
 
       - name: Trigger Merge Workflow
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.BOT2 }}
           script: |
