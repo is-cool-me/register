@@ -3,8 +3,7 @@
     "subdomain": "www",
 
     "records": {
-        "CNAME": "is-cool.me",
-        "NS": ["ns1.byet.org", "ns2.byet.org"]
+        "CNAME": "is-cool.me"
     },
 
     "proxied": false
