@@ -56,6 +56,23 @@ jobs:
         env:
           BASE: "domains/"
 
+  ownership:
+    runs-on: ubuntu-latest
+    steps:
+      - name: If any file was modified, make sure it is done by the owner
+  run: |
+    MODIFIED_FILES=$(git diff --name-only upstream/main)
+    OWNER_EMAIL=$(git log -1 --pretty=format:%ae)
+
+    for FILE in $MODIFIED_FILES; do
+      if [[ $(git log -1 --pretty=format:%ae -- $FILE) != $OWNER_EMAIL ]]; then
+        echo "File $FILE modified by unauthorized user."
+        exit 1
+      fi
+    done
+
+    echo "All modified files were modified by the owner."
+
   automerge:
     name: Auto Merge
     runs-on: ubuntu-latest
