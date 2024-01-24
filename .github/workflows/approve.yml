@@ -16,7 +16,18 @@ jobs:
     needs:
       - auto-approve
     steps:
-    - name: Trigger Merge Workflow
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Use Octokit in Scripts
+        run: npm install @octokit/core
+
+      - name: Trigger Merge Workflow
         run: |
           import { request } from '@octokit/request';
           const { data: workflow } = await request('GET /repos/{owner}/{repo}/actions/workflows/{workflow_file}', {
