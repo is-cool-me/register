@@ -57,9 +57,9 @@ jobs:
           BASE: "domains/"
 
   ownership:
-    runs-on: ubuntu-latest
-    steps:
-      - name: If any file was modified, make sure it is done by the owner
+  steps:
+    - name: If any file was modified, make sure it is done by the owner
+      runs-on: ubuntu-latest
   run: |
     MODIFIED_FILES=$(git diff --name-only upstream/main)
     OWNER_EMAIL=$(git log -1 --pretty=format:%ae)
