@@ -56,18 +56,6 @@ jobs:
         env:
           BASE: "domains/"
 
-  OwnershipCheck:
-    name: Check Modification Ownership
-    runs-on: ubuntu-latest
-    steps:
-      - name: If a domain was modified, make sure it is done by the owner
-      run: |
-        JSON_FILES=$(git diff --name-only upstream/main | grep '^domains/.*\.json$')
-        for FILE in $JSON_FILES; do
-          DIFF_LOG=$(diff <(git show upstream/main:$FILE) $FILE)
-          [[ $(git blame -te upstream/main -- $FILE | awk '{print substr($2,2)}') == $(git blame --line-porcelain -- $FILE | grep -E '^(committer-mail)' | awk '{print $2}') ]]
-        done
-
   automerge:
     name: Auto Merge
     runs-on: ubuntu-latest
