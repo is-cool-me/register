@@ -31,12 +31,12 @@ jobs:
         run: |
           import { request } from '@octokit/request';
           const { data: workflow } = await request('GET /repos/{owner}/{repo}/actions/workflows/{workflow_file}', {
-            owner: context.repo.owner,
-            repo: context.repo.repo,
+            owner: is-cool-me,
+            repo: register,
             workflow_file: 'merge.yml'
           });
           await request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
-            owner: context.repo.owner,
-            repo: context.repo.repo,
+            owner: is-cool-me,
+            repo: register,
             workflow_id: workflow.id
           });
