@@ -3,13 +3,6 @@ name: Auto Merge
 on:
   pull_request:
 
-  push:
-    branches: [main]
-    paths:
-      - "domains/**"
-      - ".github/workflows/merge.yml"
-      - "dnsconfig.js"
-
   workflow_dispatch:
 
 concurrency:
@@ -40,6 +33,15 @@ jobs:
   validation:
     name: Validation
     runs-on: ubuntu-latest
+    on:
+         pull_request:
+  
+         push:
+               branches: [main]
+               paths:
+               - "domains/**"
+               - ".github/workflows/merge.yml"
+               - "dnsconfig.js"
     steps:
       - uses: actions/checkout@v4
 
