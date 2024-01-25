@@ -34,14 +34,13 @@ jobs:
     name: Validation
     runs-on: ubuntu-latest
     on:
-         pull_request:
-  
-         push:
-               branches: [main]
-               paths:
-               - "domains/**"
-               - ".github/workflows/merge.yml"
-               - "dnsconfig.js"
+      push: # Specify that this job runs only on push events
+        branches:
+          - main
+        paths:
+          - "domains/**"
+          - ".github/workflows/merge.yml"
+          - "dnsconfig.js"
     steps:
       - uses: actions/checkout@v4
 
