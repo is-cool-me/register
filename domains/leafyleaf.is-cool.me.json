@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "leafyleaf",
+
+    "owner": {
+        "email": "gh@akpi.is-a.dev"
+    },
+
+    "records": {
+        "CNAME": "akpi816218"
+    },
+
+    "proxied": true
+}
