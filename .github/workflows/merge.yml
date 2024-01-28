@@ -44,6 +44,7 @@ jobs:
   validation:
     name: Validation
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v4
 
