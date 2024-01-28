@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "librarypmshrikvalwar",
+
+    "owner": {
+        "email": "librarypmshrikvalwar@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "is-cool.me"
+    },
+
+    "proxied": true
+}
