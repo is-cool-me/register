@@ -10,5 +10,5 @@
         "CNAME": "is-cool.me"
     },
 
-    "proxied": true
+    "proxied": false
 }
