@@ -66,8 +66,9 @@ jobs:
       - name: Delay for 20s
         run: sleep 20s
 
-      - id: automerge
-        name: AutoMerge
+      - name: AutoMerge
+        if: github.event_name == 'pull_request'
+        id: automerge
         uses: "pascalgn/automerge-action@v0.16.2"
         env:
           GITHUB_TOKEN: "${{ secrets.BOT2 }}"
