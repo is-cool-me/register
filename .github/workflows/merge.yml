@@ -11,7 +11,6 @@ on:
             - "dnsconfig.js"
   pull_request_target:
     types: [opened,closed,synchronize]
-  pull_request:
 
   workflow_dispatch:
 
@@ -67,7 +66,7 @@ jobs:
         run: sleep 20s
 
       - name: AutoMerge
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         id: automerge
         uses: "pascalgn/automerge-action@v0.16.2"
         env:
