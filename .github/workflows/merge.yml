@@ -1,6 +1,8 @@
 name: Auto Merge
 
 on:
+  pull_request:
+    types: [opened]
   issue_comment:
     types: [created]
   push:
@@ -66,7 +68,7 @@ jobs:
         run: sleep 20s
 
       - name: AutoMerge
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         id: automerge
         uses: "pascalgn/automerge-action@v0.16.2"
         env:
