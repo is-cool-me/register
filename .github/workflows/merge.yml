@@ -3,6 +3,12 @@ name: Auto Merge
 on:
   issue_comment:
     types: [created]
+  push:
+        branches: [main]
+        paths:
+            - "domains/**"
+            - ".github/workflows/merge.yml"
+            - "dnsconfig.js"
   pull_request_target:
     types: [opened,closed,synchronize]
   pull_request:
