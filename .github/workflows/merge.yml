@@ -73,5 +73,5 @@ jobs:
         id: automerge
         uses: "pascalgn/automerge-action@v0.16.2"
         env:
-          GITHUB_TOKEN: "${{ secrets.BOT }}"
+          GITHUB_TOKEN: "${{ secrets.BOT2 }}"
           MERGE_LABELS: ""
