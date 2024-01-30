@@ -6,7 +6,6 @@ on:
         paths:
             - "domains/*"
             - ".github/workflows/raw-api.yml"
-            - "domains/AorzoHosting/*"
 
     workflow_dispatch:
 
