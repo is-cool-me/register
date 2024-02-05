@@ -1,12 +1,14 @@
-addSubDomain({
-  description: 'Ryan's telegram bot project',
-  domain: 'is-app.tech',
-  subdomain: 'telegram',
-  owner: {
-    email: 'ryantseng123@go.edu.tw',
-  },
-  record: {
-    A: ['170.39.76.35'],
-  },
-  proxy: false, // Disable Cloudflare proxy
-});
+{
+    "domain": "is-app.tech",
+    "subdomain": "telegram",
+
+    "owner": {
+        "email": "ryantseng123@mail.edu.tw"
+    },
+
+    "records": {
+        "A": ["170.39.76.35"]
+    },
+
+    "proxied": false
+}
