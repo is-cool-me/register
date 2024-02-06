@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "api",
+
+    "owner": {
+        "email": "admin@lighthosting.eu.org"
+    },
+
+    "records": {
+        "CNAME": "da54724b-949d-4bed-aa31-55a38afb3aea.e1-us-east-azure.choreoapps.dev"
+    },
+
+    "proxied": false
+}
