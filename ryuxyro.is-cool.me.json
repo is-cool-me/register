@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "ryuxyro",
+
+    "owner": {
+        "email": "guest@kazuo.rf.gd"
+    },
+
+    "records": {
+        "CNAME": "ryuxyro.github.io",
+    },
+
+    "proxied": false
+}
