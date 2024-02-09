@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "ryuxyro",
+
+    "owner": {
+        "email": "guest@kazuo.rf.gd"
+    },
+
+    "records": {
+        "CNAME": "https://ryuxyro.github.io/9bd-one-galery/",
+    },
+
+    "proxied": false
+}
