@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "_D3A42E7095D0F344B33882BE1888A941.mayank",
+
+    "owner": {
+        "email": "mayank@mayank.is-cool.me"
+    },
+
+    "records": {
+        "CNAME": "81F15C64436F3CF0B65BF93BAA8103B0.6AD15CCA774406C2A3112BFCDBD56E3D.t0903846001707546214.sectigo.com",
+    },
+
+    "proxied": false
+}
