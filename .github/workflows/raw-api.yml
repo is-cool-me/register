@@ -5,7 +5,7 @@ on:
         branches: [main]
         paths:
             - "domains/*"
-            - "domains/AorzoHosting"
+            - "domains/AorzoHosting/*"
             - ".github/workflows/raw-api.yml"
 
     workflow_dispatch:
