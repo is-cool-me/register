@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "shopytestapi",
+
+    "owner": {
+        "email": "seklertyoma@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "shopy-api-lojm.onrender.com"
+    },
+
+    "proxied": true
+}
