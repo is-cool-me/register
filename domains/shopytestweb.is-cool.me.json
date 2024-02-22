@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "shopytestweb",
+
+    "owner": {
+        "email": "seklertyoma@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "shopy-web-ze71.onrender.com"
+    },
+
+    "proxied": true
+}
