@@ -7,7 +7,7 @@
     },
 
     "records": {
-        "CNAME": "da54724b-949d-4bed-aa31-55a38afb3aea.e1-us-east-azure.choreoapps.dev"
+        "A": "185.234.69.13"
     },
 
     "proxied": false
