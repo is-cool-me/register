@@ -1,0 +1,14 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "ycanyaz",
+
+    "owner": {
+        "email": "ycanyaz8@gmail.com"
+    },
+
+    "records": {
+        "CNAME": ""
+    },
+
+    "proxied": false
+}
