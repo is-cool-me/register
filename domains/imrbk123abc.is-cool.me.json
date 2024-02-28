@@ -5,6 +5,7 @@
         "email": "imrbk123abc@gmail.com"
     },
     "records": {
+        "CNAME": "ghs.googlehosted.com.",
         "TXT": [
             {
                 "name": "@",
