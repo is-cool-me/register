@@ -1,0 +1,14 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "rneller",
+
+    "owner": {
+        "email": "kostyabyzov0@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "274355b4-2947-4bc8-8144-4f50c89b60be.shield.neoprotect.ovh"
+    },
+
+    "proxied": false
+}
