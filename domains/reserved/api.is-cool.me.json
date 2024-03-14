@@ -3,7 +3,7 @@
     "subdomain": "api",
 
     "records": {
-        "CNAME": cname.vercel-dns.com
+        "CNAME": "cname.vercel-dns.com"
     },
 
     "proxied": false
