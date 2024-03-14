@@ -27,12 +27,16 @@
             "priority": 20,
             "value": "mx2.improvmx.com"
         }
-            ],
+        ]
 
         "TXT": [
             {
                 "name": "@",
                 "value": "v=spf1 include:spf.improvmx.com ~all"
+            },
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=api.is-cool.me,68b7260509b775f4dc03"
             }
         ]
     },
