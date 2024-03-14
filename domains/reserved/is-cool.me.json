@@ -1,7 +1,6 @@
 {
     "domain": "is-cool.me",
     "subdomain": "@",
-
     "records": {
         "A": [
             "185.199.108.153",
@@ -9,33 +8,32 @@
             "185.199.110.153",
             "185.199.111.153"
         ],
-
         "AAAA": [
             "2606:50c0:8000::153",
             "2606:50c0:8001::153",
             "2606:50c0:8002::153",
             "2606:50c0:8003::153"
         ],
-
         "MX": [
-                {
-            "priority": 10,
-            "value": "mx1.improvmx.com"
-        },
-
-        {
-            "priority": 20,
-            "value": "mx2.improvmx.com"
-        }
-            ],
-
+            {
+                "priority": 10,
+                "value": "mx1.improvmx.com"
+            },
+            {
+                "priority": 20,
+                "value": "mx2.improvmx.com"
+            }
+        ],
         "TXT": [
             {
                 "name": "@",
                 "value": "v=spf1 include:spf.improvmx.com ~all"
+            },
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=api.is-cool.me,68b7260509b775f4dc03"
             }
         ]
     },
-
     "proxied": false
 }
