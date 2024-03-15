@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "iwantpiz",
+
+    "owner": {
+        "email": "dialeinpiz@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "iwantpiz.com"
+    },
+
+    "proxied": false
+}
