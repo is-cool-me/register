@@ -1,0 +1,16 @@
+name: Auto approve & Merge
+
+on: pull_request_target
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/auto-approve-action@v4
+        with:
+          github-token: ${{ secrets.BOT2 }}
+      - name: Enable auto-merge for PRs
+        run: gh pr merge --auto "$PR_URL" --merge
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.BOT }}
