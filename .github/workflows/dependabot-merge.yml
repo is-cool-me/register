@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
+      - name: Generate App token
+        id: generated_token
+        uses: tibdex/github-app-token@v2.1.0
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Dependabot metadata
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v1.6.0
@@ -25,4 +32,4 @@ jobs:
         run: gh pr merge --auto "$PR_URL" --merge
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.BOT2 }}
+          GITHUB_TOKEN: ${{ steps.generated_token.outputs.token }}
