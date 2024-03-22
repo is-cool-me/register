@@ -26,7 +26,6 @@ jobs:
               with:
                 app_id: ${{ secrets.APP_ID }}
                 private_key: ${{ secrets.PRIVATE_KEY }}
-            - uses: actions/checkout@v4
 
             - uses: actions/checkout@v4
               with:
