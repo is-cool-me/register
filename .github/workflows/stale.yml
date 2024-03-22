@@ -5,6 +5,9 @@ on:
     name: 'Force cleanup'
   schedule:
   - cron: "30 14 * * *"
+permissions:
+  pull-requests: write
+  issues: write
 
 jobs:
   stale:
