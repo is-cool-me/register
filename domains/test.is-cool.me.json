@@ -1,0 +1,14 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "test",
+
+    "owner": {
+        "email": "admin@lighthosting.eu.org"
+    },
+
+    "records": {
+        "TXT": ["mayank"]
+    },
+
+    "proxied": false
+}
