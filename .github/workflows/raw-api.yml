@@ -28,6 +28,7 @@ jobs:
                 private_key: ${{ secrets.PRIVATE_KEY }}
 
             - uses: actions/checkout@v4
+            - uses: actions/checkout@v4
               with:
                   repository: is-cool-me/raw
                   path: raw
