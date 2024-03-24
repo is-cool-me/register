@@ -33,7 +33,7 @@ for (var idx in domains) {
     var owner = domainData.owner;
     var ownerInfo = owner ? (owner.username ? owner.username : '') + ' ' + (owner.email ? '<' + owner.email + '>' : '') : '';
 
-    console.log("Configuring domain: " + domainData.domain + ", Owner: " + ownerInfo);
+    console.log("Configuring domain: " + domainData.subdomain + "." + domainData.domain + ", Owner: " + ownerInfo);
 
     if (domainData.records.A) {
         for (var a in domainData.records.A) {
