@@ -93,6 +93,7 @@ ic register
     "subdomain": "example",
 
     "owner": {
+        "username": "yourgithubusername",
         "email": "hello@example.com"
     },
 
