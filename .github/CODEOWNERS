@@ -14,3 +14,5 @@ terms.md @is-cool-me/owners
 # System Files
 *.yml @is-cool-me/owners
 *.js @is-cool-me/owners
+*.png @is-cool-me/owners
+
