@@ -10,3 +10,7 @@ domains/* @is-cool-me/maintainers
 # MD Files
 *.md @is-cool-me/maintainers
 terms.md @is-cool-me/owners
+
+# System Files
+*.yml @is-cool-me/owners
+*.js @is-cool-me/owners
