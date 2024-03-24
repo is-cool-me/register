@@ -30,6 +30,11 @@ for (var idx in domains) {
 
     if (!commit[domainData.domain]) commit[domainData.domain] = [];
 
+    var owner = domainData.owner;
+    var ownerInfo = owner ? (owner.username ? owner.username : '') + ' ' + (owner.email ? '<' + owner.email + '>' : '') : '';
+
+    console.log("Configuring domain: " + domainData.subdomain + "." + domainData.domain + ", Owner: " + ownerInfo);
+
     if (domainData.records.A) {
         for (var a in domainData.records.A) {
             commit[domainData.domain].push(A(domainData.subdomain, IP(domainData.records.A[a]), proxyState));
