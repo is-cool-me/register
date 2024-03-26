@@ -1,0 +1,15 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "cloudysoftware",
+
+    "owner": {
+	"username": "Enfrade",
+        "email": "ehsanhussaini975@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "cname.vercel-dns.com."
+    },
+
+    "proxied": false
+}
