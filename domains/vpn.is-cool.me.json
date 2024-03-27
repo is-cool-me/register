@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "vpn",
+
+    "owner": {
+	"username": "troublesignal",
+        "email": "tesbin933@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "live"
+    },
+
+    "proxied": false
+}
