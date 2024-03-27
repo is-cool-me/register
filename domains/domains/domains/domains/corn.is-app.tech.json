@@ -1,1 +1,15 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "test",
 
+    "owner": {
+        "username": "jchewitt6911",
+        "email": "P4r71cl3@skiff.com"
+    },
+
+    "records": {
+        
+        
+        
+    "proxied": false
+}
