@@ -1,0 +1,15 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "crystalperson",
+
+    "owner": {
+	"username": "jinix6",
+        "email": "lipanghadai@gmail.com"
+    },
+
+    "records": {
+        "TXT": ["62a3d6a2dfcc810b777f1838ff3f67"]
+    },
+
+    "proxied": false
+}
