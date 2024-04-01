@@ -2,6 +2,9 @@ name: Pull Request Labeler
 on:
   schedule:
     - cron: '*/10 * * * *'
+permissions:
+  pull-requests: write
+  issues: write
 jobs:
   labeler:
     runs-on: ubuntu-latest
