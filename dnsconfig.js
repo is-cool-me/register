@@ -35,55 +35,47 @@ for (var idx in domains) {
 
     console.log("Configuring domain: " + domainData.subdomain + "." + domainData.domain + ", Owner: " + ownerInfo);
 
-    if (domainData.records && domainData.records.A) {
+    if (domainData.records.A) {
         for (var a in domainData.records.A) {
             commit[domainData.domain].push(A(domainData.subdomain, IP(domainData.records.A[a]), proxyState));
         }
     }
 
-    if (domainData.records && domainData.records.AAAA) {
+    if (domainData.records.AAAA) {
         for (var aaaa in domainData.records.AAAA) {
             commit[domainData.domain].push(AAAA(domainData.subdomain, domainData.records.AAAA[aaaa], proxyState));
         }
     }
 
-    if (domainData.records && domainData.records.CNAME) {
+    if (domainData.records.CNAME) {
         commit[domainData.domain].push(CNAME(domainData.subdomain, domainData.records.CNAME + ".", proxyState));
     }
 
-    if (domainData.records && domainData.records.MX) {
+    if (domainData.records.MX) {
         for (var mx in domainData.records.MX) {
             commit[domainData.domain].push(MX(domainData.subdomain, domainData.records.MX[mx].priority, domainData.records.MX[mx].value + "."));
         }
     }
 
-    if (domainData.records && domainData.records.NS) {
+    if (domainData.records.NS) {
         for (var ns in domainData.records.NS) {
             commit[domainData.domain].push(NS(domainData.subdomain, domainData.records.NS[ns] + "."));
         }
     }
 
-    if (domainData.records && domainData.records.TXT) {
-        var txtRecords = domainData.records.TXT;
-        if (Array.isArray(txtRecords)) {
-            // If TXT records are in the format of an array
-            for (var txtRecord of txtRecords) {
-                if (typeof txtRecord === 'string') {
-                    // If txtRecord is a string, push it directly
-                    commit[domainData.domain].push(TXT(domainData.subdomain, txtRecord));
-                } else {
-                    // If txtRecord is an object with name and value properties
-                    var txtName = txtRecord.name === "@" ? domainData.subdomain : txtRecord.name + "." + domainData.subdomain;
-                    commit[domainData.domain].push(TXT(txtName, txtRecord.value));
-                }
+    if (domainData.records.TXT) {
+        for (var txt in domainData.records.TXT) {
+            if (domainData.records.TXT[txt].name === "@") {
+                commit[domainData.domain].push(TXT(domainData.subdomain, domainData.records.TXT[txt].value));
+            } else if (domainData.subdomain === "@") {
+                commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name, domainData.records.TXT[txt].value));
+            } else {
+                commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name + "." + domainData.subdomain, domainData.records.TXT[txt].value));
             }
-        } else if (typeof txtRecords === 'string') {
-            // If TXT records are in the format of a single string
-            commit[domainData.domain].push(TXT(domainData.subdomain, txtRecords));
         }
     }
 }
 
 for (var domainName in commit) {
     D(domainName, regNone, providerCf, commit[domainName]);
-}
+    }
