@@ -72,9 +72,7 @@ for (var idx in domains) {
             } else {
                 commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name + "." + domainData.subdomain, domainData.records.TXT[txt].value));
             } else {
-                commit[domainData.domain].push(
-                    TXT(domainData.subdomain, domainData.record.TXT[txt])
-                )
+                commit[domainData.domain].push(TXT(domainData.subdomain, domainData.record.TXT[txt]));
             }
         }
     }
