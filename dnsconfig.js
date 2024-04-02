@@ -65,10 +65,12 @@ for (var idx in domains) {
 
     if (domainData.records.TXT) {
         for (var txt in domainData.records.TXT) {
-            if (domainData.records.TXT[txt].name === "@") {
+            if (typeof domainData.records.TXT[txt] === 'string') {
+                commit[domainData.domain].push(TXT(domainData.subdomain, domainData.records.TXT[txt]));
+            } else if (domainData.records.TXT[txt].name === "@") {
                 commit[domainData.domain].push(TXT(domainData.subdomain, domainData.records.TXT[txt].value));
             } else if (domainData.subdomain === "@") {
-                commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name, domainData.records.TXT[txt].value));
+            commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name, domainData.records.TXT[txt].value));
             } else {
                 commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name + "." + domainData.subdomain, domainData.records.TXT[txt].value));
             }
