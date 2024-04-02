@@ -63,17 +63,23 @@ for (var idx in domains) {
         }
     }
 
-    if (domainData.records.TXT) {
-        for (var txt in domainData.records.TXT) {
-            if (typeof domainData.records.TXT[txt] === 'string') {
-                commit[domainData.domain].push(TXT(domainData.subdomain, domainData.records.TXT[txt]));
-            } else if (domainData.records.TXT[txt].name === "@") {
-                commit[domainData.domain].push(TXT(domainData.subdomain, domainData.records.TXT[txt].value));
-            } else if (domainData.subdomain === "@") {
-            commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name, domainData.records.TXT[txt].value));
-            } else {
-                commit[domainData.domain].push(TXT(domainData.records.TXT[txt].name + "." + domainData.subdomain, domainData.records.TXT[txt].value));
+    if (domainData.records && domainData.records.TXT) {
+        var txtRecords = domainData.records.TXT;
+        if (Array.isArray(txtRecords)) {
+            // If TXT records are in the format of an array
+            for (var txtRecord of txtRecords) {
+                if (typeof txtRecord === 'string') {
+                    // If txtRecord is a string, push it directly
+                    commit[domainData.domain].push(TXT(domainData.subdomain, txtRecord));
+                } else {
+                    // If txtRecord is an object with name and value properties
+                    var txtName = txtRecord.name === "@" ? domainData.subdomain : txtRecord.name + "." + domainData.subdomain;
+                    commit[domainData.domain].push(TXT(txtName, txtRecord.value));
+                }
             }
+        } else if (typeof txtRecords === 'string') {
+            // If TXT records are in the format of a single string
+            commit[domainData.domain].push(TXT(domainData.subdomain, txtRecords));
         }
     }
 }
