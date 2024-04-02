@@ -1,0 +1,10 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "dash",
+
+    "records": {
+        "CNAME": "0t7j5imy.up.railway.app"
+    },
+
+    "proxied": false
+}
