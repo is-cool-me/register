@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "enfrade",
+
+    "owner": {
+	"username": "Enfrade",
+        "email": "ehsanhussaini975@gmail.com"
+    },
+
+    "records": {
+        "TXT": ["629e1e1bcfb7e189dd583ad64f77ad"]
+    },
+
+    "proxied": false
+}
