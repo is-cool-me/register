@@ -78,4 +78,4 @@ for (var idx in domains) {
 
 for (var domainName in commit) {
     D(domainName, regNone, providerCf, commit[domainName]);
-}
+    }
