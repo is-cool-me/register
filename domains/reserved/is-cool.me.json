@@ -28,10 +28,6 @@
             {
                 "name": "@",
                 "value": "v=spf1 include:spf.improvmx.com ~all"
-            },
-            {
-                "name": "_dmarc",
-                "value": ""v=DMARC1;  p=none; rua=mailto:b3b8821d20044d36af2374ccc7ca53ab@dmarc-reports.cloudflare.net""
             }
             
         ]
