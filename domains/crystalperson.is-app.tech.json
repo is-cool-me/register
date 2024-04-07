@@ -3,14 +3,12 @@
     "subdomain": "crystalperson",
 
     "owner": {
-	"username": "jinix6",
+        "username": "jinix6",
         "email": "lipanghadai@gmail.com"
     },
 
     "records": {
-
-
-        "TXT": [ { "name": "DNS TXT record", "value": "_github-pages-challenge-jinix6.crystalperson=b092faf7ee88a20b1edea21559c52a" } ]
+        "TXT": [ { "name": "DNS TXT record", "value": "_github-pages-challenge-jinix6crystalperson=b092faf7ee88a20b1edea21559c52a" } ]
     },
 
     "proxied": false
