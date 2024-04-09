@@ -8,7 +8,7 @@
     },
 
     "records": {
-        "cname": ["tylercalumacker.github.io"]
+        "CNAME": "tylercalumacker.github.io"
     },
 
     "proxied": false
