@@ -1,10 +1,12 @@
 {
     "domain": "is-cool.me",
     "subdomain": "opott",
+
     "owner": {
         "username": "opott",
         "email": "ompot09@outlook.com"
     },
+
     "records": {
         "MX": [
             {
@@ -17,5 +19,6 @@
             }
         ]
     },
+    
     "proxied": false
 }
