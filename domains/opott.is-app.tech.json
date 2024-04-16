@@ -8,13 +8,7 @@
     },
 
     "records": {
-        "CNAME": "opott.github.io",
-        "TXT": [
-            {
-                "name": "@",
-                "value": "_github-pages-challenge-opott.opott=336aa6e84e7cc0c5d1775242f2994b"
-            }
-        ]
+        "CNAME": "opott.github.io"
     },
 
     "proxied": false
