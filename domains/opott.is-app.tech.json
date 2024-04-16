@@ -1,0 +1,21 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "opott",
+
+    "owner": {
+        "username": "opott",
+        "email": "ompot09@outlook.com"
+    },
+
+    "records": {
+        "CNAME": "opott.github.io",
+        "TXT": [
+            {
+                "name": "@",
+                "value": "_github-pages-challenge-opott.opott=336aa6e84e7cc0c5d1775242f2994b"
+            }
+        ]
+    },
+
+    "proxied": false
+}
