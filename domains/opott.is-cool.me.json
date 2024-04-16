@@ -1,0 +1,32 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "opott",
+
+    "owner": {
+        "username": "opott",
+        "email": "ompot09@outlook.com"
+    },
+
+    "records": {
+        "CNAME": "opott.github.io",
+        "MX": [
+                {
+            "priority": 10,
+            "value": "mx1.improvmx.com"
+        },
+
+        {
+            "priority": 20,
+            "value": "mx2.improvmx.com"
+        }
+            ],
+        "TXT": [
+            {
+                "name": "@",
+                "value": "_github-pages-challenge-opott.opott=336aa6e84e7cc0c5d1775242f2994b"
+            }
+        ]
+    },
+
+    "proxied": false
+}
