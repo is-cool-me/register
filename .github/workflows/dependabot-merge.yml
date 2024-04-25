@@ -20,7 +20,7 @@ jobs:
 
       - name: Dependabot metadata
         id: dependabot-metadata
-        uses: dependabot/fetch-metadata@v2.0.0
+        uses: dependabot/fetch-metadata@v2.1.0
         with:
           github-token: "${{ secrets.BOT2 }}"
       - name: Approve a PR
