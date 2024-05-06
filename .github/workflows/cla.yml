@@ -20,7 +20,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
       - name: "CLA Assistant"
       # Beta Release
-        uses: contributor-assistant/github-action@v2.3.2
+        uses: contributor-assistant/github-action@v2.4.0
         env:
           GITHUB_TOKEN: ${{ steps.generated_token.outputs.token }}
           # the below token should have repo scope and must be manually added by you in the repository's secret
