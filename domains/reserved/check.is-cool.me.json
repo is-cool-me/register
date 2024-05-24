@@ -1,9 +1,9 @@
 {
     "domain": "is-cool.me",
-    "subdomain": "api",
+    "subdomain": "check",
 
     "records": {
-        "CNAME": "cname.vercel-dns.com"
+        "CNAME": "is-cool-me.github.io"
     },
 
     "proxied": false

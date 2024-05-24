@@ -1,9 +1,9 @@
 {
     "domain": "is-cool.me",
-    "subdomain": "api",
+    "subdomain": "dash",
 
     "records": {
-        "CNAME": "cname.vercel-dns.com"
+        "CNAME": "dash1-paru.onrender.com"
     },
 
     "proxied": false

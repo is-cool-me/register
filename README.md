@@ -73,13 +73,13 @@ npm install @is-cool.me/cli -g
 2. Login to the CLI:
 
 ```
-is-cool.me login
+ic login
 ```
 
 3. Register a domain and follow the steps:
 
 ```
-is-cool.me register
+ic register
 ```
 
 ### Manual
@@ -93,6 +93,7 @@ is-cool.me register
     "subdomain": "example",
 
     "owner": {
+        "username": "yourgithubusername",
         "email": "hello@example.com"
     },
 

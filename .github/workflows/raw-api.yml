@@ -20,13 +20,19 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v4
+            - name: Generate App token
+              id: generated_token
+              uses: tibdex/github-app-token@v2.1.0
+              with:
+                app_id: ${{ secrets.APP_ID }}
+                private_key: ${{ secrets.PRIVATE_KEY }}
 
+            - uses: actions/checkout@v4
             - uses: actions/checkout@v4
               with:
                   repository: is-cool-me/raw
                   path: raw
-                  token: ${{ secrets.BOT }}
+                  token: ${{ steps.generated_token.outputs.token }}
 
             - uses: actions/setup-node@v4
               with:
@@ -41,9 +47,9 @@ jobs:
                   source-directory: "raw"
                   destination-github-username: is-cool-me
                   destination-repository-name: raw
-                  user-email: bot1@lighthosting.eu.org
-                  user-name: icme-bot
+                  user-email: 161685565+is-cool-me[bot]@users.noreply.github.com
+                  user-name: is-cool-me[bot]
                   commit-message: "Update Data via is-cool-me/register"
               env:
-                  API_TOKEN_GITHUB: ${{ secrets.BOT }}
+                  API_TOKEN_GITHUB: ${{ steps.generated_token.outputs.token }}
                   

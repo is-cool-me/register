@@ -1,15 +1,13 @@
-name: Dependabot Pull Request Approve and Merge
+name: Auto approve & Merge
 
 on: pull_request_target
-
 permissions:
   pull-requests: write
   contents: write
 
 jobs:
-  dependabot:
+  approve-merge:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - name: Generate App token
         id: generated_token
@@ -17,18 +15,11 @@ jobs:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
-
-      - name: Dependabot metadata
-        id: dependabot-metadata
-        uses: dependabot/fetch-metadata@v2.1.0
+      - name: Approve the PR
+        uses: hmarr/auto-approve-action@v4
         with:
-          github-token: "${{ secrets.BOT2 }}"
-      - name: Approve a PR
-        run: gh pr review --approve "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.BOT2 }}
-      - name: Enable auto-merge for Dependabot PRs
+          github-token: ${{ secrets.BOT }}
+      - name: Enable auto-merge for PR
         run: gh pr merge --auto "$PR_URL" --merge
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
