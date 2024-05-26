@@ -1,0 +1,56 @@
+name: AI Code Reviewer
+
+on:
+  pull_request_target:
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+       - name: Generate App token
+         id: generated_token
+         uses: tibdex/github-app-token@v2.1.0
+           with:
+            app_id: ${{ secrets.APP_ID }}
+             private_key: ${{ secrets.PRIVATE_KEY }}
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: 'Download artifact'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "pr_number"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: matchArtifact.id,
+              archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/pr_number.zip`, Buffer.from(download.data));
+      - name: 'Unzip artifact'
+        run: unzip pr_number.zip
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+            python-version: "3.x"
+            cache: 'pip'
+      - name: Install Requirements
+        run: |
+          pip install -r requirements.txt
+          pip install PyGithub
+      - name: AI Code Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.steps.generated_token.outputs.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -m etc.tool.copilot
