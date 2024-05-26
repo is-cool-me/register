@@ -1,0 +1,6 @@
+g4f
+requests
+aiohttp
+brotli
+pycryptodome
+PyGithub
