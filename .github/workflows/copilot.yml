@@ -1,8 +1,10 @@
 name: AI Code Reviewer
 
 on:
-  pull_request_target:
-
+  workflow_run:
+    workflows: ["Validation"]
+    types:
+      - completed
 jobs:
   review:
     runs-on: ubuntu-latest
