@@ -195,7 +195,7 @@ def create_review_prompt(pull: PullRequest, diff: str):
         str: The generated prompt for review.
     """
     return f"""Your task is to review a pull request. Instructions:
-- Write in name of g4f copilot. Don't use placeholder.
+- Write in name of is-cool-me copilot. Don't use placeholder.
 - Write the review in GitHub Markdown format.
 - Thank the author for contributing to the project.
 
