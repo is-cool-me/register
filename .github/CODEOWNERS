@@ -14,4 +14,6 @@ domains/* @is-cool-me/maintainers
 *.yml @is-cool-me/owners
 *.js @is-cool-me/owners
 *.png @is-cool-me/owners
+*.py @is-cool-me/owners
 
+etc/* @is-cool-me/owners
