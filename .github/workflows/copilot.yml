@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+
     steps:
       - name: Generate App token
         id: generated_token
@@ -30,6 +31,7 @@ jobs:
             console.log(JSON.stringify(context, null, 2));
 
       - name: 'Download artifact'
+        id: download_artifact
         uses: actions/github-script@v7
         with:
           script: |
@@ -70,6 +72,12 @@ jobs:
           sudo apt-get install unzip
           unzip pr_number.zip
 
+      - name: Read PR number
+        id: read_pr_number
+        run: |
+          PR_NUMBER=$(cat pr_number.txt)
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -85,9 +93,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generated_token.outputs.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ env.PR_NUMBER }}
         run: python -m etc.tool.copilot
 
       - name: Approve the PR
         uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.BOT }}
+          pull-request-number: ${{ env.PR_NUMBER }}
