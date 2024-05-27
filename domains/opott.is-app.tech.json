@@ -1,0 +1,15 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "opott",
+
+    "owner": {
+        "username": "opott",
+        "email": "ompot09@outlook.com"
+    },
+
+    "records": {
+        "CNAME": "opott.github.io"
+    },
+
+    "proxied": false
+}

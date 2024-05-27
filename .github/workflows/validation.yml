@@ -24,7 +24,7 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Check
-              uses: is-cool-me/dnscontrol-action@v4.8.2
+              uses: is-cool-me/dnscontrol-action@v4.11.0
               with:
                   args: check
                   config_file: "dnsconfig.js"
@@ -36,8 +36,22 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: JSON Syntax Check
-              uses: is-cool-me/json-syntax-check@v1
+              uses: limitusus/json-syntax-check@v2
               with:
                   pattern: "\\.json$"
               env:
                   BASE: "domains/"
+
+    pr:
+      runs-on: ubuntu-latest
+      steps:
+            - name: Save PR number
+              env:
+                PR_NUMBER: ${{ github.event.number }}
+              run: |
+                mkdir -p ./pr
+                echo $PR_NUMBER > ./pr/pr_number
+            - uses: actions/upload-artifact@v4
+              with:
+                name: pr_number
+                path: pr/

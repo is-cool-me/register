@@ -3,7 +3,7 @@
     "subdomain": "dash",
 
     "records": {
-        "CNAME": "0t7j5imy.up.railway.app"
+        "CNAME": "dash1-paru.onrender.com"
     },
 
     "proxied": false
