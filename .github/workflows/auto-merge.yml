@@ -1,4 +1,4 @@
-name: Auto approve & Merge
+name: Auto Merge
 
 on: pull_request_target
 permissions:
@@ -6,7 +6,7 @@ permissions:
   contents: write
 
 jobs:
-  approve-merge:
+  auto-merge:
     runs-on: ubuntu-latest
     steps:
       - name: Generate App token
@@ -15,10 +15,6 @@ jobs:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
-      - name: Approve the PR
-        uses: hmarr/auto-approve-action@v4
-        with:
-          github-token: ${{ secrets.BOT }}
       - name: Enable auto-merge for PR
         run: gh pr merge --auto "$PR_URL" --merge
         env:
