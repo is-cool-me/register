@@ -75,7 +75,7 @@ jobs:
       - name: Read PR number
         id: read_pr_number
         run: |
-          PR_NUMBER=$(cat pr_number.txt)
+          PR_NUMBER=$(cat pr_number)
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
 
       - name: Setup Python
