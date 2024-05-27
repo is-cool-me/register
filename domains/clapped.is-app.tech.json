@@ -1,0 +1,15 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "clap",
+
+    "owner": {
+        "username": "unstoppablerizz",        
+        "email": "support@ohiominecraft.line.pm"
+    },
+
+    "records": {
+        "A": ["69.197.135.202"]
+    },
+
+    "proxied": false
+}
