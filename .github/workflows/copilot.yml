@@ -86,3 +86,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generated_token.outputs.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python -m etc.tool.copilot
+
+      - name: Approve the PR
+        uses: hmarr/auto-approve-action@v4
+        with:
+          github-token: ${{ secrets.BOT }}
