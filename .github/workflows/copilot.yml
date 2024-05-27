@@ -21,7 +21,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Log GitHub Context
         uses: actions/github-script@v7
