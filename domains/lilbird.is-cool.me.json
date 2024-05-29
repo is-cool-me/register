@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "lilbird",
+
+    "owner": {
+        "username": "unstoppablerizz",        
+        "email": "support@ohiominecraft.line.pm"
+    },
+
+    "records": {
+        "A": ["69.197.135.202"]
+    },
+
+    "proxied": false
+}
