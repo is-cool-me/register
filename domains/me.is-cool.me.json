@@ -1,0 +1,20 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "me",
+
+    "owner": {
+        "username": "onxs",
+        "email": "ceek@vip.qq.com"
+    },
+
+    "records": {
+            "TXT": [
+            {
+                "name": "@",
+                "value": "_github-pages-challenge-onxs.me=3b6deca95349faee8d55df2e95d292"
+            }
+        ]
+    },
+
+    "proxied": false
+}
