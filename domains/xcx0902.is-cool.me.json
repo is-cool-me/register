@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "xcx0902",
+
+    "owner": {
+        "username": "xcx0902",
+        "email": "3562907147@qq.com"
+    },
+
+    "records": {
+        "CNAME": "cn-hk-bgp-4.of-7af93c01.shop"
+    },
+
+    "proxied": false
+}
