@@ -1,15 +1,15 @@
 {
     "domain": "is-cool.me",
     "subdomain": "ns1.shadowgaming",
-
+    
     "owner": {
         "username": "shadowgaming100",
         "email": "workspace.shadowgaming@gmail.com"
     },
-
+    
     "records": {
-    "A": "91.200.176.1"
+        "A": ["91.200.176.1"]
     },
-
+    
     "proxied": false
 }
