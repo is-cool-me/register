@@ -8,7 +8,7 @@
     },
 
     "records": {
-    "NS": ["kiki.bunny.net", "coco.bunny.net"]
+    "NS": ["ns1.shadowgaming.is-cool.me", "ns2.shadowgaming.is-cool.me"]
     },
 
     "proxied": false
