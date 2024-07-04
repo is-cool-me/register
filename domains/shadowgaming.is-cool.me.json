@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "shadowgaming",
+
+    "owner": {
+        "username": "ririko5834",
+        "email": "workspace.shadowgaming@gmail.com"
+    },
+
+    "records": {
+    "NS": ["kiki.bunny.net", "coco.bunny.net"]
+    },
+
+    "proxied": false
+}
