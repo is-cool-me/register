@@ -3,3 +3,4 @@ requests
 aiohttp
 brotli
 pycryptodome
+curl_cffi
