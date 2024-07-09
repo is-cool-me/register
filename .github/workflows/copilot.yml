@@ -86,7 +86,7 @@ jobs:
 
       - name: Install Requirements
         run: |
-          pip install g4f
+          pip install -r requirements.txt
           pip install PyGithub
 
       - name: AI Code Review
