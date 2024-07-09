@@ -1,9 +1,15 @@
 {
+    "domain": "is-cool-me",
+    "subdomain": "bangexams",
+
     "owner": {
         "username": "ShamyakGoel",
         "email": "sj907822@gmail.com"
     },
-    "record": {
+
+    "records": {
         "CNAME": "google.com"
-    }
+    },
+
+    "proxied": false
 }
