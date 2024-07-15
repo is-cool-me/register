@@ -1,0 +1,15 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "slainbot",
+
+    "owner": {
+        "username": "khongphaihoangquanghuy",
+        "email": "khongphaihoangquanghuy@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "khongphaihoangquanghuy.github.io"
+    },
+
+    "proxied": false
+}
