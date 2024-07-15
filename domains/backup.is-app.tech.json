@@ -1,0 +1,14 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "backup",
+
+    "owner": {
+        "username": "shadowgaming100"
+    },
+
+    "records": {
+    "NS": ["ns1.backup.is-app.tech", "ns2.backup.is-app.tech"]
+    },
+
+    "proxied": false
+}
