@@ -8,7 +8,7 @@
     },
 
     "records": {
-    "NS": ["ns1.shadowgaming.is-cool.me", "ns2.shadowgaming.is-cool.me"]
+    "NS": ["fortaleza.ns.porkbun.com", "salvador.ns.porkbun.com", "curitiba.ns.porkbun.com", "maceio.ns.porkbun.com"]
     },
 
     "proxied": false
