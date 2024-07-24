@@ -1,14 +1,12 @@
 {
     "domain": "is-cool.me",
     "subdomain": "a6",
-
     "owner": {
         "username": "aaron2305",
         "email": "aaronsmith2305@gmail.com"
     },
-
     "records": {
-        "CNAME": "testingaktv.atwebpages.com",
+        "CNAME": "testingaktv.atwebpages.com"
     },
     "proxied": false
 }
