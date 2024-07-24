@@ -1,4 +1,4 @@
-
+{
     "domain": "is-cool.me",
     "subdomain": "a6",
 
@@ -12,3 +12,4 @@
     "proxied": false
     },
 
+}
