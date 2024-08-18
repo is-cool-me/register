@@ -74,7 +74,6 @@ for (var idx in domains) {
             }
         }
     }
-}
 
   if (domainData.records.CAA) {
     for (var caa in domainData.records.CAA) {
