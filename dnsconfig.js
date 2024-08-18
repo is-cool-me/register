@@ -76,6 +76,34 @@ for (var idx in domains) {
     }
 }
 
+  if (domainData.records.CAA) {
+    for (var caa in domainData.records.CAA) {
+      var caaRecord = domainData.records.CAA[caa];
+      commit[domainData.domain].push(
+        CAA(domainData.subdomain, caaRecord.flags, caaRecord.tag, caaRecord.value)
+      );
+    }
+  }
+
+  if (domainData.records.SRV) {
+    for (var srv in domainData.records.SRV) {
+      var srvRecord = domainData.records.SRV[srv];
+      commit[domainData.domain].push(
+        SRV(domainData.subdomain, srvRecord.priority, srvRecord.weight, srvRecord.port, srvRecord.target + ".")
+      );
+    }
+  }
+
+  // Handle PTR records
+  if (domainData.records.PTR) {
+    for (var ptr in domainData.records.PTR) {
+      commit[domainData.domain].push(
+        PTR(domainData.subdomain, domainData.records.PTR[ptr] + ".")
+      );
+    }
+  }
+}
+
 for (var domainName in commit) {
     D(domainName, regNone, providerCf, commit[domainName]);
     }
