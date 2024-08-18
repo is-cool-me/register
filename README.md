@@ -117,6 +117,17 @@ ic register
                 "name": "@",
                 "value": "example_verification=1234567890"
             }
+        ],
+        "CAA": [
+            { "flags": 0, "tag": "issue", "value": "letsencrypt.org" },
+            { "flags": 0, "tag": "issuewild", "value": "sectigo.com" }
+        ],
+        "SRV": [
+            { "priority": 10, "weight": 60, "port": 5060, "target": "sipserver.example.com" },
+            { "priority": 20, "weight": 10, "port": 5061, "target": "sipbackup.example.com" }
+        ],
+        "PTR": [
+            "ptr.example.com"
         ]
     },
 
