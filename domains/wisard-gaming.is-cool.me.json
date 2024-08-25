@@ -1,10 +1,9 @@
 {
     "domain": "is-cool.me",
-    "subdomain": "shadowgaming",
+    "subdomain": "wisard-gaming",
 
     "owner": {
-        "username": "shadowgaming100",
-        "email": "workspace.shadowgaming@gmail.com"
+        "username": "shadowgaming100"
     },
 
     "records": {
