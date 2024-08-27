@@ -1,0 +1,19 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "_vercel",
+
+    "owner": {
+        "username": "shadowgaming100"
+    },
+
+    "records": {
+              "TXT": [
+            {
+                "name": "@",
+                "value": "vc-domain-verify=phosphor-web.icons.cdn.wisard-gaming.is-cool.me,10a5d48a401b2a925c4a"
+            }
+        ]
+    },
+
+    "proxied": false
+}

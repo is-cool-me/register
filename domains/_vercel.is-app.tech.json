@@ -1,0 +1,20 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "_vercel",
+
+    "owner": {
+        "username": "shadowgaming100"
+    },
+
+    "records": {
+              "TXT": [
+            {
+                "name": "@",
+                "value": "vc-domain-verify=simple-icons.icons.cdn.codelabworks.is-app.tech,4f40fa94f61fcd18aee6"
+            }
+            
+        ]
+    },
+
+    "proxied": false
+}
