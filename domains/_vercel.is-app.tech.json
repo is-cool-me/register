@@ -7,12 +7,11 @@
     },
 
     "records": {
-              "TXT": [
+        "TXT": [
             {
                 "name": "@",
                 "value": "vc-domain-verify=simple-icons.icons.cdn.codelabworks.is-app.tech,4f40fa94f61fcd18aee6"
             }
-            
         ]
     },
 

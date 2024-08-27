@@ -7,7 +7,7 @@
     },
 
     "records": {
-              "TXT": [
+        "TXT": [
             {
                 "name": "@",
                 "value": "vc-domain-verify=phosphor-web.icons.cdn.wisard-gaming.is-cool.me,10a5d48a401b2a925c4a"
