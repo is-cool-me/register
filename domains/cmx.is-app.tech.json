@@ -6,10 +6,8 @@
         "repo": "https://github.com/cmx-im/opendomains-register",
         "email": "admin@cmx.im"
     },
-    "record": {
-        "CNAME": [
-            "s1.00000086.xyz"
-        ]
+    "records": {
+        "CNAME": "s1.cmx.edu.kg"
     },
     "proxied": true
 }
