@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "strike",
+
+    "owner": {
+        "username": "Clarkzv",
+        "email": "arizen2023@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "deathofme.vercel.app"
+    },
+
+    "proxied": false
+}
