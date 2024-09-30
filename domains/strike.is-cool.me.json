@@ -8,12 +8,7 @@
     },
 
     "records": {
-        "TXT": [
-            {
-                "name": "_vercel",
-                "value": "vc-domain-verify=strike.is-cool.me,b6a499783acc85da1e18"
-            }
-        ]
+        "CNAME": "cname.vercel-dns.com."
     },
 
     "proxied": false
