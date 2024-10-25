@@ -1,0 +1,45 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "uwunot.is-cool.me",
+
+    "owner": {
+        "username": "uwunotislove",
+        "email": "moody761@hotmail.com"
+    },
+
+    "records": {
+        "A": ["185.27.134.99"],
+        "AAAA": [""],
+        "CNAME": "uwunot.is-cool.me",
+        "MX": [
+                {
+            "priority": 10,
+            "value": ""
+        },
+
+        {
+            "priority": 20,
+            "value": ""
+        }
+            ],
+        "TXT": [
+            {
+                "name": "_gh-uwunotislove-o.uwunot",
+                "value": "_gh-uwunotislove-o.uwunot=19987440f1"
+            }
+        ],
+        "CAA": [
+            { "flags": 0, "tag": "issue", "value": "letsencrypt.org" },
+            { "flags": 0, "tag": "issuewild", "value": "sectigo.com" }
+        ],
+        "SRV": [
+            { "priority": 10, "weight": 60, "port": 5060, "target": "sipserver.example.com" },
+            { "priority": 20, "weight": 10, "port": 5061, "target": "sipbackup.example.com" }
+        ],
+        "PTR": [
+            "ptr.example.com"
+        ]
+    },
+
+    "proxied": false
+}
