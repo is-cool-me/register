@@ -8,9 +8,9 @@
     },
 
     "records": {
-        "A": ["185.27.134.99"],
+        "A": [""],
         "AAAA": [""],
-        "CNAME": "uwunot.is-cool.me",
+        "CNAME": "uwunotislove.github.io",
         "MX": [
                 {
             "priority": 10,
