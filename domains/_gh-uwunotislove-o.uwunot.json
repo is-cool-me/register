@@ -10,7 +10,7 @@
     "records": {
         "A": ["185.27.134.99"],
         "AAAA": [""],
-        "CNAME": "",
+        "CNAME": "uwunot.is-cool.me",
         "MX": [
                 {
             "priority": 10,
