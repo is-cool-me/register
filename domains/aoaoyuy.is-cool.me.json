@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "aoaoyuy",
+
+    "owner": {
+        "username": "liuyuda301020",
+        "email": "liuyuda3010@outlook.com"
+    },
+
+    "records": {
+        "A": ["159.75.125.245"]
+    },
+
+    "proxied": false
+}
