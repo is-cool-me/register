@@ -11,6 +11,12 @@
         "CNAME": "itsfatlum.github.io",
         "TXT": [
             {
+                "name": "_atproto",
+                "value": "did=did:plc:z7enujy2jkxrnnhcy6ef3u4u"
+            }
+        ],
+        "TXT": [
+            {
                 "name": "_discord",
                 "value": "dh=96a1c341283c17f474f441db36c4d89f17ca05dd"
             }
