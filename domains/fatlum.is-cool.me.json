@@ -11,7 +11,7 @@
         "CNAME": "itsfatlum.github.io",
         "TXT": [
             {
-                "name": "_atproto",
+                "name": "_atproto.fatlum.is-cool.me",
                 "value": "did=did:plc:z7enujy2jkxrnnhcy6ef3u4u"
             }
         ],
