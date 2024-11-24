@@ -10,7 +10,7 @@
     "records": {
         "TXT": [
             {
-                "name": "_vercel.lumi",
+                "name": "_vercel",
                 "value": "vc-domain-verify=lumi.is-app.tech,672db6f2edd6c88b1da2"
             }
         ]
