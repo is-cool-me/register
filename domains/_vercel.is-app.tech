@@ -1,0 +1,20 @@
+{
+    "domain": "is-app.tech",
+    "subdomain": "lumi",
+
+    "owner": {
+        "username": "itsFatlum",
+        "email": ""
+    },
+
+    "records": {
+        "TXT": [
+            {
+                "name": "_vercel.lumi",
+                "value": "vc-domain-verify=lumi.is-app.tech,672db6f2edd6c88b1da2"
+            }
+        ]
+    },
+
+    "proxied": false
+}
