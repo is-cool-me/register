@@ -1,16 +1,17 @@
 {
     "domain": "is-app.tech",
+    "subdomain": "arbotixdevelopment",
 
     "owner": {
-        "username": "itsFatlum",
-        "email": ""
+        "username": "Hjgaming",
+        "email": "jariwalaharshal80@gmail.com"
     },
 
     "records": {
         "TXT": [
             {
                 "name": "_vercel",
-                "value": "vc-domain-verify=lumi.is-app.tech,672db6f2edd6c88b1da2"
+                "value": "vc-domain-verify=arbotixdevelopment.is-app.tech,307fc5dcbb4c05bfd58a"
             }
         ]
     },
