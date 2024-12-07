@@ -1,0 +1,15 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "itsfsmp",
+
+    "owner": {
+        "username": "itsFatlum",
+        "email": ""
+    },
+
+    "records": {
+        "CNAME": "itsfatlumsmp.github.io"
+    },
+
+    "proxied": false
+}
