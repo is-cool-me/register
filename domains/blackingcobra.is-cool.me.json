@@ -1,0 +1,13 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "blackingcobra",
+    "owner": {
+        "username": "Scav-engeR",
+        "email": "ghiddra@gtlwaveslimited.com"
+    },
+    "records": {
+        "CNAME": "black-hurricane.energy"
+    },
+    "proxied": false
+}
+
