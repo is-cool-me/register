@@ -1,0 +1,17 @@
+{
+    "domain": "is-cool.me",
+    "subdomain": "xlanzz",
+    "owner": {
+        "username": "Sanzzdev",
+        "email": "bskkeenzo@gmail.com"
+    },
+    "records": {
+        "TXT": [
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=xlanzz.is-cool.me,dbba257345137c7e6c8d"
+            }
+        ]
+    },
+    "proxied": false
+}
