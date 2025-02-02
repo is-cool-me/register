@@ -1,5 +1,5 @@
 <p align="center"><img src="https://raw.githubusercontent.com/is-cool-me/register/main/media/icon.png" height="128"></p>
-<h1 align="center">is-cool.me</h1>
+<h1 align="center">is-cool-me</h1>
 
 <p align="center">
   <a href="https://github.com/is-cool-me/register/tree/main/domains"><img src="https://img.shields.io/github/directory-file-count/is-cool-me/register/domains?label=domains&style=for-the-badge&type=file"></a>
@@ -11,7 +11,7 @@
 <p align="center">Want to find services similar to this? Take a look on <a href="https://github.com/open-domains/register">Open Domains</a>.</p>
 
 ## Notice
-NS records are no longer supported. Existing domains are unaffected.
+We Have Moved Domains: is-cool.me → is-epic.me, is-app.tech → is-awsm.tech. Please update your services’ DNS, API references, and links accordingly.
 
 ## Donate
 If you like this service and want us to continue running it, please consider donating!
@@ -27,22 +27,18 @@ https://discord.gg/N8YzrkJxYy
 | Available Domains |
 |:-:|
 | [`*.is-epic.me`](https://is-epic.me) |
-| [`*.is-amsm.tech`](https://is-amsm.tech) |
+| [`*.is-awsm.tech`](https://is-awsm.tech) |
 
-> Wildcard domains (like `*.example.is-epic.me`) are supported too, but the reason for their registration should be very clear and described in detail.
+> Wildcard domains (like `*.example.is-epic.me`) and NS records are supported too, but the reason for their registration should be very clear and described in detail. But we currently do not support Cloudflare (for NS), Netlify (for website) or Vercel (for websites).
 
 [badge-cf]:https://shields.io/badge/%20-cloudflare-blue?logo=cloudflare&style=plastic?cacheSeconds=3600
 [badge-dnssec]:https://shields.io/badge/%20-DNSSEC-blue?logo=moleculer&logoColor=white&style=plastic?cacheSeconds=3600
 [badge-ssl]:https://shields.io/badge/SSL-Required-blue?style=plastic?cacheSeconds=3600
 
-### Unsupported Services
-We currently do not support Cloudflare (for NS), Netlify (for website) or Vercel (for websites).
-
-This will hopefully be fixed soon.
 
 ### Settings
 
-| Setting | is-amsm.tech | is-epic.me |
+| Setting | is-awsm.tech | is-epic.me |
 |---------|-------------|------------|
 | DNSSEC  | ✅           | ✅         |
 | Email   | ✅           | ✅         |
@@ -89,7 +85,7 @@ ic register
 
 ```json
 {
-    "domain": "is-amsm.tech",
+    "domain": "is-awsm.tech",
     "subdomain": "example",
 
     "owner": {
