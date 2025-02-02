@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "shopytestapi",
+
+    "owner": {
+        "username": "Sekler09",
+        "email": "seklertyoma@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "shopy-api-lojm.onrender.com"
+    },
+
+    "proxied": true
+}

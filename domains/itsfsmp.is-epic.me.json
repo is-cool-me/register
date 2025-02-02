@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "itsfsmp",
+
+    "owner": {
+        "username": "itsFatlum",
+        "email": ""
+    },
+
+    "records": {
+        "CNAME": "itsfatlumsmp.github.io"
+    },
+
+    "proxied": false
+}

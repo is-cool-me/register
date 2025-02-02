@@ -1,0 +1,10 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "www",
+
+    "records": {
+        "CNAME": "is-epic.me"
+    },
+
+    "proxied": false
+}

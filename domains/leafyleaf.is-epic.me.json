@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "leafyleaf",
+
+    "owner": {
+        "username": "akpi816218",
+        "email": "gh@akpi.is-a.dev"
+    },
+
+    "records": {
+        "CNAME": "akpi816218.github.io"
+    },
+
+    "proxied": false
+}
