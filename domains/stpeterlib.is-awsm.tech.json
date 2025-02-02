@@ -1,0 +1,16 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "stpeterlib",
+
+    "owner": {
+        "username": "Abdelmasieh01",
+        "repo": "https://github.com/Abdelmasieh01/library",
+        "email": "abdelmasieh84@gmail.com"
+    },
+
+    "records": {
+        "A": ["52.45.145.20"]
+    },
+
+    "proxied": false
+}
