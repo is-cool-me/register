@@ -29,7 +29,7 @@ https://discord.gg/N8YzrkJxYy
 | [`*.is-epic.me`](https://is-epic.me) |
 | [`*.is-awsm.tech`](https://is-awsm.tech) |
 
-> Wildcard domains (like `*.example.is-epic.me`) and NS records are supported too, but the reason for their registration should be very clear and described in detail.
+> Wildcard domains (like `*.example.is-epic.me`) and NS records are supported too, but the reason for their registration should be very clear and described in detail. But we currently do not support Cloudflare (for NS), Netlify (for website) or Vercel (for websites).
 
 [badge-cf]:https://shields.io/badge/%20-cloudflare-blue?logo=cloudflare&style=plastic?cacheSeconds=3600
 [badge-dnssec]:https://shields.io/badge/%20-DNSSEC-blue?logo=moleculer&logoColor=white&style=plastic?cacheSeconds=3600
