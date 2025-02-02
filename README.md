@@ -27,7 +27,7 @@ https://discord.gg/N8YzrkJxYy
 | Available Domains |
 |:-:|
 | [`*.is-epic.me`](https://is-epic.me) |
-| [`*.is-amsm.tech`](https://is-amsm.tech) |
+| [`*.is-awsm.tech`](https://is-awsm.tech) |
 
 > Wildcard domains (like `*.example.is-epic.me`) are supported too, but the reason for their registration should be very clear and described in detail.
 
@@ -42,7 +42,7 @@ This will hopefully be fixed soon.
 
 ### Settings
 
-| Setting | is-amsm.tech | is-epic.me |
+| Setting | is-awsm.tech | is-epic.me |
 |---------|-------------|------------|
 | DNSSEC  | ✅           | ✅         |
 | Email   | ✅           | ✅         |
@@ -89,7 +89,7 @@ ic register
 
 ```json
 {
-    "domain": "is-amsm.tech",
+    "domain": "is-awsm.tech",
     "subdomain": "example",
 
     "owner": {
