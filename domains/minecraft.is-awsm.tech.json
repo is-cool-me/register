@@ -1,0 +1,15 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "minecraft",
+
+    "owner": {
+        "username": "wadwdwd",
+        "email": "support@ohiosigmamale.line.pm"
+    },
+
+    "records": {
+        "CNAME": "heyayyu.github.io"
+    },
+
+    "proxied": false
+}

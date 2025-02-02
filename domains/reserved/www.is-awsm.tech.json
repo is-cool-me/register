@@ -1,0 +1,10 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "www",
+
+    "records": {
+        "CNAME": "is-awsm.tech"
+    },
+
+    "proxied": false
+}

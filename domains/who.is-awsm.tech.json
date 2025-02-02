@@ -1,0 +1,15 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "who",
+
+    "owner": {
+        "username": "AtlasL1",
+        "email": "vtlvs.0@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "atlasl1.github.io"
+    },
+
+    "proxied": false
+}

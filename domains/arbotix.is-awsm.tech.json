@@ -1,0 +1,17 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "arbotix",
+    "owner": {
+        "username": "Hjgaming",
+        "email": "jariwalaharshal80@gmail.com"
+    },
+    "records": {
+        "TXT": [
+            {
+                "name": "_discord.arbotix.is-awsm.tech",
+                "value": "dh=dbb472e1ca1a28dd8a6fb9bb39b2f712ce9e9b05"
+            }
+        ]
+    },
+    "proxied": false
+}

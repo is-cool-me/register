@@ -26,10 +26,10 @@ https://discord.gg/N8YzrkJxYy
 
 | Available Domains |
 |:-:|
-| [`*.is-app.tech`](https://is-app.tech) |
-| [`*.is-cool.me`](https://is-cool.me) |
+| [`*.is-epic.me`](https://is-epic.me) |
+| [`*.is-amsm.tech`](https://is-amsm.tech) |
 
-> Wildcard domains (like `*.example.is-cool.me`) are supported too, but the reason for their registration should be very clear and described in detail.
+> Wildcard domains (like `*.example.is-epic.me`) are supported too, but the reason for their registration should be very clear and described in detail.
 
 [badge-cf]:https://shields.io/badge/%20-cloudflare-blue?logo=cloudflare&style=plastic?cacheSeconds=3600
 [badge-dnssec]:https://shields.io/badge/%20-DNSSEC-blue?logo=moleculer&logoColor=white&style=plastic?cacheSeconds=3600
@@ -42,7 +42,7 @@ This will hopefully be fixed soon.
 
 ### Settings
 
-| Setting | is-app.tech | is-cool.me |
+| Setting | is-amsm.tech | is-epic.me |
 |---------|-------------|------------|
 | DNSSEC  | ✅           | ✅         |
 | Email   | ✅           | ✅         |
@@ -67,7 +67,7 @@ This will hopefully be fixed soon.
 1. Install the CLI using this command:
 
 ```
-npm install @is-cool.me/cli -g
+npm install @is-epic.me/cli -g
 ```
 
 2. Login to the CLI:
@@ -89,7 +89,7 @@ ic register
 
 ```json
 {
-    "domain": "is-app.tech",
+    "domain": "is-amsm.tech",
     "subdomain": "example",
 
     "owner": {
