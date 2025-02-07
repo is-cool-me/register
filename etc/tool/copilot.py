@@ -61,7 +61,11 @@ def ai_review_pr(pr_body, changed_files, file_contents):
     """
 
     response = g4f.ChatCompletion.create(model=g4f.models.gpt_4, messages=[{"role": "user", "content": review_prompt}])
+    if isinstance(response, dict):
     decision = response.get("content", "").strip().lower()
+else:
+    print(f"Unexpected response format: {response}")
+    decision = response.strip().lower()
 
     return decision
 
