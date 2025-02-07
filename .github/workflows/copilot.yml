@@ -12,10 +12,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Debug APP_ID
-        run: echo ${{ secrets.APP_ID }}
-        
-      - name: Generate App token
+      - name: Generate App Token
         id: generated_token
         uses: tibdex/github-app-token@v2.1.0
         with:
