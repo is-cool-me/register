@@ -4,247 +4,88 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 import g4f
-import json
 import os
-import re
 import requests
-from typing import Union
 from github import Github
-from github.PullRequest import PullRequest
 
 g4f.debug.logging = True
 g4f.debug.version_check = False
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 GITHUB_REPOSITORY = os.getenv('GITHUB_REPOSITORY')
-G4F_PROVIDER = os.getenv('G4F_PROVIDER')
-G4F_MODEL = os.getenv('G4F_MODEL') or g4f.models.gpt_4
+PR_NUMBER = os.getenv('PR_NUMBER')
 
-def get_pr_details(github: Github) -> PullRequest:
-    """
-    Retrieves the details of the pull request from GitHub.
+# Allowed domains after migration
+ALLOWED_DOMAINS = {"is-epic.me", "is-awsm.tech"}
 
-    Args:
-        github (Github): The Github object to interact with the GitHub API.
+# README rules for validation
+README_RULES = """
+1. Subdomains must be for personal sites, open-source projects, or legitimate services.
+2. JSON structure must contain 'domain', 'subdomain', 'owner', and 'records' fields.
+3. If 'proxied' is true, ensure proper justification and compliance with security policies.
+4. Wildcard domains (e.g., *.example.is-epic.me) require a detailed reason.
+5. Cloudflare (NS), Netlify, and Vercel are not supported.
+6. Illegal or inappropriate domain use is strictly prohibited.
+7. PR descriptions must be clear, and all required fields must be properly filled.
+8. Only the new domains (is-epic.me and is-awsm.tech) are allowed. Old domains will be rejected.
+"""
 
-    Returns:
-        PullRequest: An object representing the pull request.
-    """
-    with open('./pr_number', 'r') as file:
-        pr_number = file.read().strip()
-    if not pr_number:
-        return
+def fetch_changed_files(pr):
+    """Fetches the list of files changed in the PR."""
+    return [file.filename for file in pr.get_files()]
 
-    repo = github.get_repo(GITHUB_REPOSITORY)
-    pull = repo.get_pull(int(pr_number))
-
-    return pull
-
-def get_diff(diff_url: str) -> str:
-    """
-    Fetches the diff of the pull request from a given URL.
-
-    Args:
-        diff_url (str): URL to the pull request diff.
-
-    Returns:
-        str: The diff of the pull request.
-    """
-    response = requests.get(diff_url)
-    response.raise_for_status()
-    return response.text
-
-def read_json(text: str) -> dict:
-    """
-    Parses JSON code block from a string.
-
-    Args:
-        text (str): A string containing a JSON code block.
-
-    Returns:
-        dict: A dictionary parsed from the JSON code block.
-    """
-    match = re.search(r"```(json|)\n(?P<code>[\S\s]+?)\n```", text)
-    if match:
-        text = match.group("code")
+def fetch_file_content(repo, filename):
+    """Fetches the content of a given file in the PR."""
     try:
-        return json.loads(text.strip())
-    except json.JSONDecodeError:
-        print("No valid json:", text)
-        return {}
+        file_content = repo.get_contents(filename, ref=pr.head.ref)
+        return file_content.decoded_content.decode()
+    except Exception as e:
+        return f"Error fetching file content: {e}"
 
-def read_text(text: str) -> str:
+def ai_review_pr(pr_body, changed_files, file_contents):
+    """Uses AI to review the PR according to README rules."""
+    review_prompt = f"""
+    Review the following pull request based on these rules:
+
+    {README_RULES}
+
+    PR Description: {pr_body}
+    Changed Files: {', '.join(changed_files)}
+    
+    File Contents:
+    {file_contents}
+
+    Check if the PR follows the rules. Approve if everything is correct, or request changes if there are issues. 
+    Also, ensure that only the new domains (is-epic.me and is-awsm.tech) are used.
+    If old domains (is-cool.me, is-app.tech) are present, reject the PR and request a domain update.
     """
-    Extracts text from a markdown code block.
 
-    Args:
-        text (str): A string containing a markdown code block.
+    response = g4f.ChatCompletion.create(model=g4f.models.gpt_4, messages=[{"role": "user", "content": review_prompt}])
+    decision = response.get("content", "").strip().lower()
 
-    Returns:
-        str: The extracted text.
-    """
-    match = re.search(r"```(markdown|)\n(?P<text>[\S\s]+?)\n```", text)
-    if match:
-        return match.group("text")
-    return text
+    return decision
 
-def get_ai_response(prompt: str, as_json: bool = True) -> Union[dict, str]:
-    """
-    Gets a response from g4f API based on the prompt.
-
-    Args:
-        prompt (str): The prompt to send to g4f.
-        as_json (bool): Whether to parse the response as JSON.
-
-    Returns:
-        Union[dict, str]: The parsed response from g4f, either as a dictionary or a string.
-    """
-    response = g4f.ChatCompletion.create(
-        G4F_MODEL,
-        [{'role': 'user', 'content': prompt}],
-        G4F_PROVIDER,
-        ignore_stream_and_auth=True
-    )
-    return read_json(response) if as_json else read_text(response)
-
-def analyze_code(pull: PullRequest, diff: str)-> list[dict]:
-    """
-    Analyzes the code changes in the pull request.
-
-    Args:
-        pull (PullRequest): The pull request object.
-        diff (str): The diff of the pull request.
-
-    Returns:
-        list[dict]: A list of comments generated by the analysis.
-    """
-    comments = []
-    changed_lines = []
-    current_file_path = None
-    offset_line = 0
-
-    for line in diff.split('\n'):
-        if line.startswith('+++ b/'):
-            current_file_path = line[6:]
-            changed_lines = []
-        elif line.startswith('@@'):
-            match = re.search(r'\+([0-9]+?),', line)
-            if match:
-                offset_line = int(match.group(1))
-        elif current_file_path:
-            if (line.startswith('\\') or line.startswith('diff')) and changed_lines:
-                prompt = create_analyze_prompt(changed_lines, pull, current_file_path)
-                response = get_ai_response(prompt)
-                for review in response.get('reviews', []):
-                    review['path'] = current_file_path
-                    comments.append(review)
-                current_file_path = None
-            elif line.startswith('-'):
-                changed_lines.append(line)
-            else:
-                changed_lines.append(f"{offset_line}:{line}")
-                offset_line += 1
-        
-    return comments
-
-def create_analyze_prompt(changed_lines: list[str], pull: PullRequest, file_path: str):
-    """
-    Creates a prompt for the g4f model.
-
-    Args:
-        changed_lines (list[str]): The lines of code that have changed.
-        pull (PullRequest): The pull request object.
-        file_path (str): The path to the file being reviewed.
-
-    Returns:
-        str: The generated prompt.
-    """
-    code = "\n".join(changed_lines)
-    example = '{"reviews": [{"line": <line_number>, "body": "<review comment>"}]}'
-    return f"""Your task is to review pull requests. Instructions:
-- Provide the response in following JSON format: {example}
-- Do not give positive comments or compliments.
-- Provide comments and suggestions ONLY if there is something to improve, otherwise "reviews" should be an empty array.
-- Write the comment in GitHub Markdown format.
-- Use the given description only for the overall context and only comment the code.
-- IMPORTANT: NEVER suggest adding comments to the code.
-
-Review the following code diff in the file "{file_path}" and take the pull request title and description into account when writing the response.
-  
-Pull request title: {pull.title}
-Pull request description:
----
-{pull.body}
----
-
-Each line is prefixed by its number. Code to review:
-```
-{code}
-```
-"""
-
-def create_review_prompt(pull: PullRequest, diff: str):
-    """
-    Creates a prompt to create a review comment.
-
-    Args:
-        pull (PullRequest): The pull request object.
-        diff (str): The diff of the pull request.
-
-    Returns:
-        str: The generated prompt for review.
-    """
-    return f"""Your task is to review a pull request. Instructions:
-- Write in name of is-cool-me copilot. Don't use placeholder.
-- Write the review in GitHub Markdown format.
-- Thank the author for contributing to the project.
-
-Pull request author: {pull.user.name}
-Pull request title: {pull.title}
-Pull request description:
----
-{pull.body}
----
-
-Diff:
-```diff
-{diff}
-```
-"""
+def post_comment(pr, message):
+    """Posts a comment on the PR."""
+    pr.create_issue_comment(message)
 
 def main():
-    try:
-        github = Github(GITHUB_TOKEN)
-        pull = get_pr_details(github)
-        if not pull:
-            print(f"No PR number found")
-            exit()
-        if pull.get_reviews().totalCount > 0 or pull.get_issue_comments().totalCount > 0:
-            print(f"Has already a review")
-            exit()
-        diff = get_diff(pull.diff_url)
-    except Exception as e:
-        print(f"Error get details: {e.__class__.__name__}: {e}")
-        exit(1)
-    try:
-        review = get_ai_response(create_review_prompt(pull, diff), False)
-    except Exception as e:
-        print(f"Error create review: {e}")
-        exit(1)
-    try:
-        comments = analyze_code(pull, diff)
-    except Exception as e:
-        print(f"Error analyze: {e}")
-        exit(1)
-    print("Comments:", comments)
-    try:
-        if comments:
-            pull.create_review(body=review, comments=comments)
-        else:
-            pull.create_issue_comment(body=review)
-    except Exception as e:
-        print(f"Error posting review: {e}")
-        exit(1)
+    github = Github(GITHUB_TOKEN)
+    repo = github.get_repo(GITHUB_REPOSITORY)
+    pr = repo.get_pull(int(PR_NUMBER))
+
+    changed_files = fetch_changed_files(pr)
+    file_contents = "\n\n".join([f"### {file}\n{fetch_file_content(repo, file)}" for file in changed_files])
+
+    decision = ai_review_pr(pr.body, changed_files, file_contents)
+
+    if "approve" in decision:
+        pr.create_review(event="APPROVE", body="AI Code Reviewer has approved this PR.")
+        print("PR Approved by AI")
+    else:
+        pr.create_review(event="REQUEST_CHANGES", body="AI Code Reviewer suggests changes based on README rules.")
+        post_comment(pr, f"AI Code Reviewer suggests changes:\n\n{decision}")
+        print("PR Needs Changes & Commented")
 
 if __name__ == "__main__":
     main()
