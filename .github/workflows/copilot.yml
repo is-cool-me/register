@@ -12,6 +12,13 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Generate App token
+        id: generated_token
+        uses: tibdex/github-app-token@v2.1.0
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Checkout Repository
         uses: actions/checkout@v3
 
@@ -27,7 +34,7 @@ jobs:
 
       - name: Run AI Code Reviewer
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generated_token.outputs.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python etc/tool/copilot.py
