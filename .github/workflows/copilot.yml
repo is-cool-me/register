@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Debug APP_ID
-        run: echo $APP_ID
+        run: echo ${{ secrets.APP_ID }}
         
       - name: Generate App token
         id: generated_token
