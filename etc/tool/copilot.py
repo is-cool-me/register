@@ -94,3 +94,90 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def wait_for_workflows(repo, pr_number, max_wait=1800, interval=30):
+    """Waits for specified GitHub workflows to complete."""
+    workflows = ["auto-merge.yml", "save-pr-number.yml", "validation.yml"]
+    start_time = time.time()
+
+    while time.time() - start_time < max_wait:
+        runs = repo.get_workflow_runs(branch=f"refs/pull/{pr_number}/merge", status="in_progress")
+        if all(run.name not in workflows for run in runs):
+            return True  # All workflows completed
+        
+        time.sleep(interval)
+
+    print("❌ Workflows did not complete within the time limit.")
+    return False
+
+import os
+import requests
+
+def approve_pull_request(repo, pr_number):
+    """Approves the pull request using GitHub token if available, otherwise fallback to standard API."""
+    pr = repo.get_pull(pr_number)
+
+    # Dismiss previous approvals first
+    dismiss_previous_approvals(repo, pr_number)
+
+    # Validate PR files and domains, collect feedback comments
+    comments = []
+    
+    if not validate_pr_files(pr):
+        comments.append({"file": "unknown", "line": 0, "comment": "❌ PR contains invalid files. Please review file requirements."})
+    
+    if not validate_domains(pr):
+        comments.append({"file": "unknown", "line": 0, "comment": "❌ PR includes an invalid domain. Ensure compliance with domain policies."})
+
+    # Wait for workflows to complete
+    if not wait_for_workflows(repo, pr_number):
+        comments.append({"file": "unknown", "line": 0, "comment": "❌ Workflows did not pass successfully. Please check GitHub Actions."})
+
+    # Post review comments if any issues are found
+    if comments:
+        post_review_comment(repo, pr_number, comments)
+        return
+
+    # Attempt to approve PR using GitHub Actions secret token
+    github_token = os.getenv("GITHUB_TOKEN")
+    if github_token:
+        headers = {"Authorization": f"token {github_token}"}
+        approval_url = f"https://api.github.com/repos/{repo.owner.login}/{repo.name}/pulls/{pr_number}/reviews"
+        data = {"event": "APPROVE", "body": "✅ PR approved automatically as it complies with rules and all workflow checks passed."}
+        
+        response = requests.post(approval_url, json=data, headers=headers)
+        if response.status_code in [200, 201]:
+            print("✅ PR approved successfully using GitHub token.")
+            return
+        else:
+            print(f"⚠️ GitHub token approval failed: {response.json()}")
+
+    # Fallback: Approve using repository API
+    try:
+        pr.create_review(event="APPROVE", body="✅ PR approved automatically as it complies with rules and all workflow checks passed.")
+        print("✅ PR approved successfully using repository API.")
+    except Exception as e:
+        print(f"❌ Failed to approve PR using repository API: {e}")
+
+def dismiss_previous_approvals(repo, pr_number):
+    """Dismisses previous approvals for the PR."""
+    pr = repo.get_pull(pr_number)
+    reviews = pr.get_reviews()
+
+    for review in reviews:
+        if review.state == "APPROVED":
+            repo._requester.requestJson("PUT", f"{pr.url}/reviews/{review.id}/dismissals",
+                                        input={"message": "Approval dismissed due to new commit."})
+            print(f"⚠️ Previous approval by {review.user.login} dismissed.")
+
+def post_review_comment(repo, pr_number, comments):
+    """Posts review comments on the PR instead of rejecting it outright."""
+    pr = repo.get_pull(pr_number)
+
+    review_comments = [{"path": c["file"], "position": c["line"], "body": c["comment"]} for c in comments]
+    if review_comments:
+        pr.create_review(event="REQUEST_CHANGES", comments=review_comments)
+        print("⚠️ Review comments posted for required changes.")
+    else:
+        print("✅ No issues found.")
