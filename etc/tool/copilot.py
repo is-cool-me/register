@@ -124,7 +124,7 @@ def ai_review_pr(pr_body, changed_files, file_contents):
 def post_comment(pr, message):
     """Posts a comment on the PR."""
     existing_comments = [comment.body for comment in pr.get_issue_comments()]
-    if message not in existing_comments:
+    if message not in existing_comments and message.strip():
         pr.create_issue_comment(message)
 
 def request_changes(pr, issues, filename):
