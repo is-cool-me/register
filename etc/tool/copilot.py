@@ -9,7 +9,7 @@ import g4f
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 # GitHub API credentials
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # Used for commenting and requesting changes
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 BOT_GITHUB_TOKEN = os.getenv("BOT")  # Used for approvals
 GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")
 PR_NUMBER = os.getenv("PR_NUMBER")
@@ -62,7 +62,7 @@ def analyze_file_contents(file_contents):
             if domain in line:
                 issues.append({
                     "line": i,
-                    "issue": f"Forbidden domain `{domain}` found.",
+                    "issue": f"❌ Forbidden domain `{domain}` found.",
                     "fix": f"Replace `{domain}` with an allowed domain like `is-epic.me` or `is-awsm.tech`."
                 })
 
@@ -106,33 +106,26 @@ def ai_review_pr(pr_body, changed_files, file_contents):
 
         decision = response.get("content", "").strip() if isinstance(response, dict) else response.strip()
 
-        # If AI fails or response is empty, request changes automatically
         if not decision:
-            print("❌ AI response is empty or invalid. Defaulting to 'request changes'.")
             return "request changes", ["AI review failed. Please manually check."]
 
-        # If AI finds issues, extract structured comments
         if "consider" in decision.lower() or "avoid" in decision.lower():
             return "request changes", decision.split("\n")
 
         return "approve", []
 
     except Exception as e:
-        print(f"❌ AI review failed: {e}")
-        return "request changes", ["AI review failed. Please manually check."]
+        return "request changes", [f"AI review failed: {e}"]
 
-def post_comment(pr, message):
-    """Posts a comment on the PR."""
-    existing_comments = [comment.body for comment in pr.get_issue_comments()]
-    if message not in existing_comments and message.strip():
-        pr.create_issue_comment(message)
+def post_line_comment(pr, filename, line, issue, fix):
+    """Posts a comment on a specific line in a PR."""
+    body = f"**Issue:** {issue}\n**Suggested Fix:** {fix}"
+    pr.create_review_comment(body, pr.head.sha, filename, line)
 
 def request_changes(pr, issues, filename):
-    """Requests changes on the PR and comments on how to fix them."""
-    formatted_issues = "\n\n".join([f"- **Line {issue['line']}:** {issue['issue']}\n  - **Suggested Fix:** {issue['fix']}" for issue in issues])
-
-    pr.create_review(event="REQUEST_CHANGES", body=f"⚠️ AI Review found issues in `{filename}`. See comments for fixes.")
-    post_comment(pr, f"⚠️ **AI Review suggests changes for `{filename}`:**\n\n{formatted_issues}")
+    """Requests changes on the PR and comments per line."""
+    for issue in issues:
+        post_line_comment(pr, filename, issue["line"], issue["issue"], issue["fix"])
 
 def approve_pr(pr):
     """Approves the PR using the bot's token."""
@@ -141,7 +134,6 @@ def approve_pr(pr):
     bot_pr = bot_repo.get_pull(int(PR_NUMBER))
 
     bot_pr.create_review(event="APPROVE", body="✅ AI Code Reviewer (Bot) has approved this PR.")
-    print("✅ PR Approved by AI (Using Bot Token)")
 
 def main():
     github = Github(GITHUB_TOKEN)
@@ -154,24 +146,22 @@ def main():
     for file in changed_files:
         file_contents = fetch_file_content(repo, file, pr)
         
-        # Check for syntax errors in JSON files
         if file.endswith(".json"):
             syntax_error = check_json_syntax(file_contents)
             if syntax_error:
                 all_issues.append({"line": "N/A", "issue": f"Invalid JSON syntax: {syntax_error}", "fix": "Fix the JSON structure."})
 
-        # Domain validation and other checks
         issues = analyze_file_contents(file_contents)
         if issues:
             all_issues.extend(issues)
 
-    # AI Review for extra validation
     ai_decision, ai_comments = ai_review_pr(pr.body, changed_files, file_contents)
 
-    # Request changes if issues exist
     if all_issues or ai_decision == "request changes":
-        request_changes(pr, all_issues, "Multiple Files")
-        post_comment(pr, "\n".join(ai_comments))
+        for file in changed_files:
+            request_changes(pr, all_issues, file)
+        pr.create_review(event="REQUEST_CHANGES", body="⚠️ AI Review found issues. See comments for fixes.")
+
     else:
         approve_pr(pr)
 
