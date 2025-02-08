@@ -21,13 +21,12 @@ ALLOWED_DOMAINS = {"is-epic.me", "is-awsm.tech"}
 # README rules for validation
 README_RULES = """
 1. Subdomains must be for personal sites, open-source projects, or legitimate services.
-2. JSON structure must contain 'domain', 'subdomain', 'owner', and 'records' fields.
-3. If 'proxied' is true, ensure proper justification and compliance with security policies.
-4. Wildcard domains (e.g., *.example.is-epic.me) require a detailed reason.
-5. Cloudflare (NS), Netlify, and Vercel are not supported.
-6. Illegal or inappropriate domain use is strictly prohibited.
-7. PR descriptions must be clear, and all required fields must be properly filled.
-8. Only the new domains (is-epic.me and is-awsm.tech) are allowed. Old domains will be rejected.
+2. JSON structure must be valid and must contain 'domain', 'subdomain', 'owner', and 'records' fields.
+3. Wildcard domains (e.g., *.example.is-epic.me) require a detailed reason.
+4. Cloudflare (NS), Netlify, and Vercel are not supported.
+5. Illegal or inappropriate domain use is strictly prohibited.
+6. PR descriptions must be clear, and all required fields must be properly filled.
+7. Only the new domains (is-epic.me and is-awsm.tech) are allowed. Old domains will be rejected.
 """
 
 def fetch_changed_files(pr):
