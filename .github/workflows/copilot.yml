@@ -35,6 +35,7 @@ jobs:
       - name: Run AI Code Reviewer
         env:
           GITHUB_TOKEN: ${{ steps.generated_token.outputs.token }}
+          BOT: ${{ secrets.BOT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python etc/tool/copilot.py
