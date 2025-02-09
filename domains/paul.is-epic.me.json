@@ -1,0 +1,16 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "paul",
+
+    "owner": {
+        "username": "0xcyberpj",
+        "email": "0xcyberpj@protonmail.com"
+
+    },
+
+    "records": {
+        "CNAME": "cyberpj.is-a.dev"
+    },
+
+    "proxied": false
+}
