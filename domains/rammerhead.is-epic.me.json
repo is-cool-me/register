@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "rammerhead",
+
+    "owner": {
+        "username": "PhioRizz",
+        "email": ""
+    },
+
+    "records": {
+        "CNAME": "browser.rammerhead.org"
+    },
+
+    "proxied": false
+}
