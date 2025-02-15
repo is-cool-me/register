@@ -4,11 +4,11 @@
 
     "owner": {
         "username": "PhioRizz",
-        "email": "PhioRizz@gmail.com"
+        "email": "PhioRizz948@outlook.com"
     },
 
     "records": {
-        "CNAME": "browser.rammerhead.org"
+    "NS": ["ns1.hostry.com", "ns2.hostry.com", "ns1.hostry.com", "ns4.hostry.com"]
     },
 
     "proxied": false
