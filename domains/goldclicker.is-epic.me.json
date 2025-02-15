@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "GoldClicker",
+
+    "owner": {
+        "username": "PhioRizz",
+        "email": ""
+    },
+
+    "records": {
+        "CNAME": "gold-clicker-eight.vercel.app"
+    },
+
+    "proxied": false
+}
