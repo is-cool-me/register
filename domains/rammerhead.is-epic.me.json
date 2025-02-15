@@ -8,7 +8,7 @@
     },
 
     "records": {
-    "NS": ["ns1.hostry.com", "ns2.hostry.com", "ns1.hostry.com", "ns4.hostry.com"]
+    "NS": ["ns1.hostry.com", "ns2.hostry.com", "ns3.hostry.com", "ns4.hostry.com"]
     },
 
     "proxied": false
