@@ -1,0 +1,13 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "randomyoutube",
+    "owner": {
+        "username": "zthanhluan",
+        "email": "dientu078@gmail.com"
+    },
+    "records": {
+        "CNAME": "randomyoutubeapp.netlify.app",
+        "TXT": "zthanhluan"
+    },
+    "proxied": false
+}
