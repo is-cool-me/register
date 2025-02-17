@@ -7,7 +7,12 @@
     },
     "records": {
         "CNAME": "randomyoutubeapp.netlify.app",
-        "TXT": "zthanhluan"
+        "TXT": [
+            {
+                "name": "@",
+                "value": "randomyoutube.is-epic.me=5381659725"
+            }
+        ],
     },
     "proxied": false
 }
