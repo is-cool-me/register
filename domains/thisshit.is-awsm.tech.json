@@ -1,0 +1,17 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "this-shit",
+    "owner": {
+        "username": "vintheweirdass",
+        "email": "hi@vtwa.is-a.dev"
+    },
+    "records": {
+        "CNAME":"r.forwarddomain.net",
+        "TXT": [
+            {
+                "name":"fwd.thisshit.is-awsm.tech",
+                "value":"forward-domain=https://this-shit.is-awsm.tech/*"
+            }
+        ]
+    }
+}
