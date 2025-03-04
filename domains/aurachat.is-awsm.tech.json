@@ -1,0 +1,15 @@
+{
+  "domain": "is-awsm.tech",
+  "subdomain": "aurachat",
+
+  "owner": {
+    "username": "tarunerror",
+    "email": "its.tarun01@gmail.com"
+  },
+
+  "records": {
+    "CNAME": "aurachat.netlify.app"
+  },
+
+  "proxied": false
+}
