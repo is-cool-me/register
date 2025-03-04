@@ -1,0 +1,16 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "yixboost",
+
+    "owner": {
+        "username": "yixboost",
+        "email": "support@yixboost.dev"
+
+    },
+
+    "records": {
+        "CNAME": "naslambers.synology.me"
+    },
+
+    "proxied": true
+}
