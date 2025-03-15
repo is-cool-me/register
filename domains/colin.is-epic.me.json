@@ -1,0 +1,13 @@
+{
+  "domain": "is-epic.me",
+  "subdomain": "colin",
+  "owner": {
+    "email": "webmaster@col1n.fr",
+    "username": "ColinLeDev"
+  },
+  "description": "My personal portfolio hosted on my server",
+  "records": {
+    "CNAME": ["proxy.col1n.fr"]
+  },
+  "proxied": false
+}
