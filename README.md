@@ -63,7 +63,7 @@ https://discord.gg/N8YzrkJxYy
 1. Install the CLI using this command:
 
 ```
-npm install @is-epic.me/cli -g
+npm install @is-cool.me/cli -g
 ```
 
 2. Login to the CLI:
