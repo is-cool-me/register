@@ -1,0 +1,32 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "pimaster",
+    "owner": {
+        "username": "rgraves0",
+        "email": "thazaw@mconn.eu.org"
+    },
+    "records": {
+        "A": ["185.27.134.135"],
+        "MX": [
+            {
+                "priority": 54,
+                "value": "route1.mx.cloudflare.net"
+            },
+            {
+                "priority": 22,
+                "value": "route2.mx.cloudflare.net"
+            },
+            {
+                "priority": 37,
+                "value": "route3.mx.cloudflare.net"
+            }
+        ],
+        "TXT": [
+            {
+                "name": "cf2024-1_domainkey",
+                "value": "v=DKIM1; h=sha256; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAweykoi+od8DI0UGpR3X0M0ECuDY/BCrHW8n3c/ChWyCdkW3qjdE1PqQ7t5v4gShEV5qR0P4dcnDqVGMBA5QTYW4m"
+            }
+        ]
+    },
+    "proxied": true
+}
