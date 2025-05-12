@@ -1,0 +1,13 @@
+{
+  "domain": "is-epic.me",
+  "subdomain": "_discord.colin",
+  "owner": {
+    "email": "webmaster@col1n.fr",
+    "username": "ColinLeDev"
+  },
+  "description": "Discord verification",
+  "records": {
+    "TXT": "dh=ca1d8a5b4ec19b13f2b3263398ade6a8112e7f04"
+  },
+  "proxied": false
+}

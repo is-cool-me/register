@@ -1,0 +1,13 @@
+{
+  "domain": "is-awsm.tech",
+  "subdomain": "_discord.colin",
+  "owner": {
+    "email": "webmaster@col1n.fr",
+    "username": "ColinLeDev"
+  },
+  "description": "Discord verification",
+  "records": {
+    "TXT": "dh=57f1ff6c0364b6c683d3f45b517781231992fe93"
+  },
+  "proxied": false
+}
