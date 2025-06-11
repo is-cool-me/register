@@ -1,0 +1,12 @@
+{
+  "domain": "is-epic.me",
+  "subdomain": "rahil",
+  "owner": {
+    "username": "rahil1202",
+    "email": "rahilisvahora@gmail.com"
+  },
+  "records": {
+    "CNAME": "rahil1202.vercel.app"
+  },
+  "proxied": false
+}
