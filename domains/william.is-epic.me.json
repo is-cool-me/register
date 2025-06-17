@@ -1,0 +1,18 @@
+{
+    "domain": "is-epic.me.json",
+    "subdomain": "william",
+    "owner": {
+        "username": "william2sober",
+        "email": "william2sober@gmail.com"
+    },
+    "records": {
+        "CNAME": "1dc25fc6b017565b.vercel-dns-017.com",
+        "TXT": [
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=william.is-epic.me,6a002f3d68240a33471f"
+            }
+        ]
+    },
+    "proxied": false
+}
