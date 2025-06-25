@@ -1,0 +1,14 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "arunya",
+
+    "owner": {
+        "username": "0xsarwagya",
+        "email": "sarwagyasingh07@gmail.com"
+    },
+
+    "records": {
+    "NS": ["ns1.vercel-dns.com", "ns2.vercel-dns.com"]
+    },
+    "proxied": false
+}
