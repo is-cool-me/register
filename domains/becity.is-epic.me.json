@@ -1,0 +1,16 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "becity",
+
+    "owner": {
+        "username": "janni142",
+        "email": "dns@janni142.is-cool.dev"
+    },
+
+    "records": {
+        "A": ["185.199.108.153"],
+        "NS": ["galileo.exaroton.com", "columbus.exaroton.com"]
+    },
+
+    "proxied": false
+}
