@@ -1,6 +1,6 @@
 import sys
 import os
-import import
+import json
 import requests
 from pathlib import Path
 from github import Github
@@ -530,4 +530,99 @@ def approve_pr(pr):
 
 🎉 **Welcome to is-cool.me!** Your subdomain registration has been approved.
 
-### 
+### What happens next?
+- Your PR will be automatically merged
+- DNS changes will propagate within 5-15 minutes (up to 24 hours max)
+- Your subdomain will be live and ready to use!
+
+### Important Information:
+- **Domain Security**: Your subdomain is protected by Cloudflare's security features
+- **SSL/TLS**: Free SSL certificates are automatically provided
+- **Support**: Join our [Discord server](https://discord.gg/N8YzrkJxYy) for help and updates
+
+### Resources:
+- [Service Status](https://status.is-cool.me)
+- [Documentation](https://github.com/is-cool-me/register)
+- [Community Discord](https://discord.gg/N8YzrkJxYy)
+
+Thank you for choosing is-cool.me! 🚀"""
+
+        bot_pr.create_review(event="APPROVE", body=approval_body)
+        print("✅ PR approved successfully!")
+        
+    except Exception as e:
+        print(f"❌ Failed to approve PR: {e}")
+        # Fallback: try with main token
+        try:
+            pr.create_review(event="APPROVE", body="✅ Domain registration approved! Your subdomain will be live shortly.")
+            print("✅ PR approved with fallback method!")
+        except Exception as fallback_error:
+            print(f"❌ Fallback approval also failed: {fallback_error}")
+
+def main():
+    """Main function to review the PR."""
+    try:
+        # Initialize GitHub client
+        github = Github(GITHUB_TOKEN)
+        repo = github.get_repo(GITHUB_REPOSITORY)
+        pr = fetch_pr(repo)
+        
+        print(f"🔍 Reviewing PR #{PR_NUMBER}: {pr.title}")
+        
+        # Get changed files
+        changed_files = fetch_changed_files(pr)
+        print(f"📁 Changed files: {changed_files}")
+        
+        # Filter for domain files only
+        domain_files = [f for f in changed_files if f.startswith("domains/") and f.endswith(".json")]
+        
+        if not domain_files:
+            print("ℹ️ No domain files to review")
+            return
+        
+        # Analyze each file
+        all_issues = []
+        all_file_contents = {}
+        
+        for filename in domain_files:
+            print(f"📄 Analyzing {filename}...")
+            content = fetch_file_content(repo, filename, pr)
+            
+            if content:
+                all_file_contents[filename] = content
+                issues = analyze_file_contents(content, filename, pr.body)
+                
+                # Add filename to each issue for tracking
+                for issue in issues:
+                    issue["filename"] = filename
+                
+                all_issues.extend(issues)
+                print(f"   Found {len(issues)} issues")
+            else:
+                print(f"   ⚠️ Could not fetch content for {filename}")
+        
+        # AI Review
+        print("🤖 Running AI review...")
+        ai_decision, ai_feedback = ai_review_pr(pr.body, domain_files, all_file_contents)
+        
+        # Make final decision
+        if all_issues or ai_decision == "request changes":
+            print("❌ Requesting changes...")
+            request_changes(pr, all_issues, ai_feedback)
+        else:
+            print("✅ Approving PR...")
+            approve_pr(pr)
+            
+    except Exception as e:
+        print(f"💥 Critical error in main: {e}")
+        # Try to post error comment
+        try:
+            github = Github(GITHUB_TOKEN)
+            repo = github.get_repo(GITHUB_REPOSITORY)
+            pr = repo.get_pull(int(PR_NUMBER))
+            pr.create_issue_comment(f"🚨 **Review Error**: {str(e)}\n\nManual review required.")
+        except:
+            pass
+
+if __name__ == "__main__":
+    main()
