@@ -1,0 +1,16 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "nameserver-subdomain",
+    "owner": {
+        "username": "dnsadmin",
+        "email": "dns@mycompany.tech"
+    },
+    "records": {
+        "NS": [
+            "ns1.mydnshost.com",
+            "ns2.mydnshost.com",
+            "ns3.mydnshost.com"
+        ]
+    },
+    "proxied": false
+}

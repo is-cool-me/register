@@ -1,0 +1,21 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "ipv6-only",
+    "owner": {
+        "username": "ipv6pioneer",
+        "email": "ipv6@futuretech.net"
+    },
+    "records": {
+        "AAAA": [
+            "2001:db8:85a3::8a2e:370:7334",
+            "2001:db8:85a3::8a2e:370:7335"
+        ],
+        "TXT": [
+            {
+                "name": "@",
+                "value": "ipv6-only=true;modern-web=enabled;legacy-support=false"
+            }
+        ]
+    },
+    "proxied": false
+}

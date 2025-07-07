@@ -1,0 +1,26 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "dev-env",
+    "owner": {
+        "username": "fullstackdev",
+        "email": "dev@myproject.io"
+    },
+    "records": {
+        "A": ["203.0.113.40"],
+        "TXT": [
+            {
+                "name": "frontend",
+                "value": "framework=react;version=18.2.0;build=production"
+            },
+            {
+                "name": "backend",
+                "value": "runtime=node;version=20.x;database=postgresql"
+            },
+            {
+                "name": "_github-pages-challenge-fullstackdev",
+                "value": "verification-code-12345"
+            }
+        ]
+    },
+    "proxied": false
+}
