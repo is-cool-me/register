@@ -120,7 +120,14 @@ def ai_review_pr(pr_body, changed_files, file_contents):
 def post_line_comment(pr, filename, line, issue, fix):
     """Posts a comment on a specific line in a PR."""
     body = f"**Issue:** {issue}\n**Suggested Fix:** {fix}"
-    pr.create_review_comment(body, pr.head.sha, filename, line)
+    try:
+        # Get the commit object instead of using the SHA string directly
+        commit = pr.head.repo.get_commit(pr.head.sha)
+        pr.create_review_comment(body, commit, filename, line)
+    except Exception as e:
+        print(f"Failed to post line comment: {e}")
+        # Fallback: post as a general PR comment instead
+        pr.create_issue_comment(f"**File:** {filename} (Line {line})\n{body}")
 
 def request_changes(pr, issues, filename):
     """Requests changes on the PR and comments per line."""
@@ -129,41 +136,62 @@ def request_changes(pr, issues, filename):
 
 def approve_pr(pr):
     """Approves the PR using the bot's token."""
-    bot_github = Github(BOT_GITHUB_TOKEN)
-    bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
-    bot_pr = bot_repo.get_pull(int(PR_NUMBER))
+    try:
+        bot_github = Github(BOT_GITHUB_TOKEN)
+        bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
+        bot_pr = bot_repo.get_pull(int(PR_NUMBER))
 
-    bot_pr.create_review(event="APPROVE", body="✅ AI Code Reviewer (Bot) has approved this PR.")
+        bot_pr.create_review(event="APPROVE", body="✅ AI Code Reviewer (Bot) has approved this PR.")
+    except Exception as e:
+        print(f"Failed to approve PR: {e}")
 
 def main():
-    github = Github(GITHUB_TOKEN)
-    repo = github.get_repo(GITHUB_REPOSITORY)
-    pr = fetch_pr(repo)
+    try:
+        github = Github(GITHUB_TOKEN)
+        repo = github.get_repo(GITHUB_REPOSITORY)
+        pr = fetch_pr(repo)
 
-    changed_files = fetch_changed_files(pr)
-    all_issues = []
+        changed_files = fetch_changed_files(pr)
+        all_issues = []
 
-    for file in changed_files:
-        file_contents = fetch_file_content(repo, file, pr)
-        
-        if file.endswith(".json"):
-            syntax_error = check_json_syntax(file_contents)
-            if syntax_error:
-                all_issues.append({"line": "N/A", "issue": f"Invalid JSON syntax: {syntax_error}", "fix": "Fix the JSON structure."})
-
-        issues = analyze_file_contents(file_contents)
-        if issues:
-            all_issues.extend(issues)
-
-    ai_decision, ai_comments = ai_review_pr(pr.body, changed_files, file_contents)
-
-    if all_issues or ai_decision == "request changes":
         for file in changed_files:
-            request_changes(pr, all_issues, file)
-        pr.create_review(event="REQUEST_CHANGES", body="⚠️ AI Review found issues. See comments for fixes.")
+            file_contents = fetch_file_content(repo, file, pr)
+            
+            if file.endswith(".json"):
+                syntax_error = check_json_syntax(file_contents)
+                if syntax_error:
+                    all_issues.append({"line": 1, "issue": f"Invalid JSON syntax: {syntax_error}", "fix": "Fix the JSON structure."})
 
-    else:
-        approve_pr(pr)
+            issues = analyze_file_contents(file_contents)
+            if issues:
+                all_issues.extend(issues)
+
+        # Get file contents for AI review (use the last file for simplicity)
+        file_contents_for_ai = ""
+        if changed_files:
+            file_contents_for_ai = fetch_file_content(repo, changed_files[-1], pr)
+
+        ai_decision, ai_comments = ai_review_pr(pr.body or "", changed_files, file_contents_for_ai)
+
+        if all_issues or ai_decision == "request changes":
+            # Post issues as comments
+            for file in changed_files:
+                file_issues = [issue for issue in all_issues if True]  # All issues for now
+                if file_issues:
+                    request_changes(pr, file_issues, file)
+            
+            # Create a review requesting changes
+            review_body = "⚠️ AI Review found issues. See comments for fixes."
+            if ai_comments and isinstance(ai_comments, list):
+                review_body += "\n\nAdditional AI feedback:\n" + "\n".join(ai_comments)
+            
+            pr.create_review(event="REQUEST_CHANGES", body=review_body)
+        else:
+            approve_pr(pr)
+
+    except Exception as e:
+        print(f"Script failed with error: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
