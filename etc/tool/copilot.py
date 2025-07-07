@@ -18,12 +18,19 @@ PR_NUMBER = os.getenv("PR_NUMBER")
 # Domain configuration
 ALLOWED_DOMAINS = {"is-epic.me", "is-awsm.tech"}
 FORBIDDEN_DOMAINS = {"is-cool.me", "is-app.tech"}
-RESERVED_SUBDOMAINS = {"www", "api", "mail", "ftp", "admin", "root", "test", "staging", "dev"}
+RESERVED_SUBDOMAINS = {"www", "api", "mail", "ftp", "admin", "root", "test", "staging", "dev", "ns", "ns1", "ns2"}
 FORBIDDEN_DNS_PROVIDERS = {
     "ns1.vercel-dns.com", "ns2.vercel-dns.com",
     "dns1.p01.nsone.net", "dns2.p01.nsone.net",
     "dns1.registrar-servers.com", "dns2.registrar-servers.com"
 }
+
+# Cloudflare NS patterns (forbidden)
+CLOUDFLARE_NS_PATTERNS = [
+    r".*\.ns\.cloudflare\.com",
+    r"ns[0-9]+\.cloudflare\.com",
+    r".*\.cloudflare\.com"
+]
 
 # Comprehensive PR Review Guidelines
 DOMAIN_RULES = """
@@ -50,17 +57,24 @@ DOMAIN_RULES = """
 }
 ```
 
+**🔧 DNS RESTRICTIONS:**
+- ❌ Cloudflare NS records (*.ns.cloudflare.com, ns*.cloudflare.com)
+- ❌ Netlify hosting (*.netlify.app)
+- ❌ Vercel hosting (*.vercel.app)
+- ✅ NS records allowed BUT require detailed justification
+- ✅ GitHub Pages, custom servers, other providers OK
+
+**📝 NS RECORD REQUIREMENTS:**
+- Must include clear description of why NS records are needed
+- Must explain what services will be hosted
+- Must provide technical justification
+- Cannot be used for simple website hosting
+
 **🚫 FORBIDDEN CONTENT:**
 - Illegal activities, hate speech, malware
 - Copyright infringement, spam, phishing
 - Adult content without proper age verification
 - Cryptocurrency mining, illegal gambling
-
-**🔧 DNS RESTRICTIONS:**
-- ❌ Cloudflare NS records (ns1.cloudflare.com, etc.)
-- ❌ Netlify hosting (*.netlify.app)
-- ❌ Vercel hosting (*.vercel.app)
-- ✅ GitHub Pages, custom servers, other providers OK
 
 **📝 NAMING RULES:**
 - Subdomain must be 3-63 characters
@@ -68,11 +82,11 @@ DOMAIN_RULES = """
 - Cannot start/end with hyphen
 - No reserved names (www, api, mail, etc.)
 
-**🔍 VALIDATION CHECKS:**
-- Valid email format required
-- GitHub username should exist
-- DNS records must be properly formatted
-- No wildcard abuse without justification
+**⚠️ CRITICAL: AUTO-MERGE WARNING**
+- Approved PRs merge automatically
+- Be extremely careful with approvals
+- When in doubt, request changes
+- Manual review preferred for complex cases
 """
 
 def fetch_pr(repo):
@@ -91,7 +105,57 @@ def fetch_file_content(repo, filename, pr):
     except Exception:
         return ""
 
-def validate_json_structure(data, filename):
+def check_cloudflare_ns(ns_record):
+    """Check if NS record is from Cloudflare (forbidden)."""
+    for pattern in CLOUDFLARE_NS_PATTERNS:
+        if re.match(pattern, ns_record, re.IGNORECASE):
+            return True
+    return False
+
+def validate_ns_records_justification(data, pr_body):
+    """Validates NS records have proper justification."""
+    issues = []
+    
+    if "records" in data and "NS" in data["records"]:
+        ns_records = data["records"]["NS"]
+        
+        # Check for Cloudflare NS (forbidden)
+        for ns in ns_records:
+            if check_cloudflare_ns(ns):
+                issues.append({
+                    "line": 1,
+                    "issue": f"❌ Cloudflare NS record forbidden: '{ns}'",
+                    "fix": "Use non-Cloudflare nameservers. Cloudflare NS records are not allowed."
+                })
+        
+        # Check for justification in PR description
+        if not pr_body or len(pr_body.strip()) < 50:
+            issues.append({
+                "line": 1,
+                "issue": "❌ NS records require detailed justification in PR description",
+                "fix": "Add detailed explanation of why NS records are needed, what services will be hosted, and technical justification (minimum 50 characters)"
+            })
+        else:
+            # Look for key justification terms
+            justification_keywords = [
+                "subdomain", "service", "hosting", "server", "application", 
+                "website", "api", "database", "email", "dns", "nameserver",
+                "technical", "infrastructure", "project", "development"
+            ]
+            
+            pr_lower = pr_body.lower()
+            found_keywords = [kw for kw in justification_keywords if kw in pr_lower]
+            
+            if len(found_keywords) < 2:
+                issues.append({
+                    "line": 1,
+                    "issue": "❌ NS records justification lacks technical details",
+                    "fix": "Provide more detailed technical explanation of why NS records are needed. Explain the specific services and infrastructure requirements."
+                })
+    
+    return issues
+
+def validate_json_structure(data, filename, pr_body):
     """Validates the JSON structure for domain registration."""
     issues = []
     
@@ -185,8 +249,11 @@ def validate_json_structure(data, filename):
                         issues.append({
                             "line": 1,
                             "issue": f"❌ Forbidden DNS provider: '{ns}'",
-                            "fix": "Use allowed DNS providers (not Cloudflare NS, Vercel, etc.)"
+                            "fix": "Use allowed DNS providers (not Vercel DNS, etc.)"
                         })
+                
+                # Validate NS records justification
+                issues.extend(validate_ns_records_justification(data, pr_body))
             
             # Check for forbidden hosting providers
             if "CNAME" in records:
@@ -207,6 +274,18 @@ def validate_json_structure(data, filename):
                             "issue": f"❌ Invalid IPv4 address: '{ip}'",
                             "fix": "Provide valid IPv4 addresses in A records"
                         })
+                    else:
+                        # Check for private/reserved IPs
+                        octets = [int(x) for x in ip.split('.')]
+                        if (octets[0] == 10 or 
+                            (octets[0] == 172 and 16 <= octets[1] <= 31) or
+                            (octets[0] == 192 and octets[1] == 168) or
+                            octets[0] == 127):
+                            issues.append({
+                                "line": 1,
+                                "issue": f"❌ Private/reserved IP address: '{ip}'",
+                                "fix": "Use public IP addresses only"
+                            })
     
     # Proxied validation
     if "proxied" in data and not isinstance(data["proxied"], bool):
@@ -246,7 +325,7 @@ def check_file_naming(filename):
     
     return issues
 
-def analyze_file_contents(file_contents, filename):
+def analyze_file_contents(file_contents, filename, pr_body):
     """Comprehensive analysis of domain registration file."""
     issues = []
     
@@ -263,8 +342,8 @@ def analyze_file_contents(file_contents, filename):
     # Validate file naming
     issues.extend(check_file_naming(filename))
     
-    # Validate JSON structure
-    issues.extend(validate_json_structure(data, filename))
+    # Validate JSON structure (pass PR body for NS validation)
+    issues.extend(validate_json_structure(data, filename, pr_body))
     
     # Check for forbidden domains in content
     lines = file_contents.split("\n")
@@ -280,10 +359,12 @@ def analyze_file_contents(file_contents, filename):
     return issues
 
 def ai_review_pr(pr_body, changed_files, all_file_contents):
-    """Enhanced AI review with domain-specific knowledge."""
+    """Enhanced AI review with domain-specific knowledge and auto-merge awareness."""
     
     # Prepare comprehensive context for AI
     files_summary = []
+    has_ns_records = False
+    
     for filename, content in all_file_contents.items():
         try:
             data = json.loads(content)
@@ -291,13 +372,26 @@ def ai_review_pr(pr_body, changed_files, all_file_contents):
             files_summary.append(f"  Domain: {data.get('domain', 'N/A')}")
             files_summary.append(f"  Subdomain: {data.get('subdomain', 'N/A')}")
             files_summary.append(f"  Owner: {data.get('owner', {}).get('username', 'N/A')}")
-            files_summary.append(f"  Records: {list(data.get('records', {}).keys())}")
+            
+            records = data.get('records', {})
+            files_summary.append(f"  Records: {list(records.keys())}")
+            
+            if 'NS' in records:
+                has_ns_records = True
+                files_summary.append(f"  ⚠️  NS Records: {records['NS']}")
+            
             files_summary.append("")
         except:
             files_summary.append(f"File: {filename} (JSON parse error)")
     
     review_prompt = f"""
 You are an expert code reviewer for a FREE SUBDOMAIN REGISTRATION service.
+
+🚨 **CRITICAL: AUTO-MERGE WARNING** 🚨
+- If you APPROVE this PR, it will AUTOMATICALLY MERGE
+- Be EXTREMELY careful with approvals
+- When in doubt, REQUEST CHANGES
+- Only approve if you are 100% confident
 
 **SERVICE CONTEXT:**
 This is is-cool.me - a free subdomain service providing subdomains under:
@@ -317,22 +411,28 @@ Description: {pr_body or "No description provided"}
 **FILES BEING REGISTERED:**
 {chr(10).join(files_summary)}
 
-**REVIEW INSTRUCTIONS:**
-1. Check if this is a legitimate subdomain registration
-2. Verify all technical requirements are met
-3. Look for potential abuse or policy violations
-4. Ensure proper documentation and contact info
-5. Check for suspicious patterns or bulk registrations
+**SPECIAL ATTENTION REQUIRED:**
+{"⚠️ NS RECORDS DETECTED - Requires detailed justification!" if has_ns_records else "✅ Standard DNS records"}
+
+**REVIEW CHECKLIST:**
+1. ✅ Are domains allowed (is-epic.me, is-awsm.tech)?
+2. ✅ Is JSON structure complete and valid?
+3. ✅ Are DNS records properly formatted?
+4. ✅ Is owner information complete and valid?
+5. ✅ No forbidden providers (Cloudflare NS, Netlify, Vercel)?
+6. ✅ If NS records: Is justification detailed and technical?
+7. ✅ No suspicious or abusive content?
+8. ✅ Follows naming conventions?
 
 **DECISION CRITERIA:**
-- ✅ APPROVE: If all rules are followed and registration seems legitimate
-- ❌ REQUEST CHANGES: If any violations or issues are found
+- ✅ APPROVE: ONLY if ALL criteria are met and registration is clearly legitimate
+- ❌ REQUEST CHANGES: If ANY issues, concerns, or missing information
 
 **OUTPUT FORMAT:**
 Start with either "✅ APPROVED" or "❌ REQUEST CHANGES"
-Then provide detailed reasoning and specific issues found.
+Then provide detailed reasoning.
 
-Be thorough but constructive in your feedback.
+Remember: Approved PRs merge automatically. Be conservative!
 """
 
     try:
@@ -346,8 +446,11 @@ Be thorough but constructive in your feedback.
         if not decision:
             return "request changes", ["AI review failed. Manual review required."]
 
-        # Parse AI decision
-        if "✅ APPROVED" in decision or "approved" in decision.lower():
+        # Be more conservative with approvals
+        if "✅ APPROVED" in decision and "no issues" in decision.lower():
+            # Double-check for NS records without proper justification
+            if has_ns_records and (not pr_body or len(pr_body.strip()) < 50):
+                return "request changes", ["NS records require detailed justification in PR description"]
             return "approve", []
         else:
             # Extract feedback lines
@@ -355,7 +458,8 @@ Be thorough but constructive in your feedback.
             return "request changes", feedback_lines
 
     except Exception as e:
-        return "request changes", [f"AI review failed: {str(e)}. Manual review required."]
+        # Always request changes if AI fails
+        return "request changes", [f"AI review failed: {str(e)}. Manual review required for safety."]
 
 def post_line_comment(pr, filename, line, issue, fix):
     """Posts a comment on a specific line in a PR."""
@@ -402,10 +506,16 @@ def request_changes(pr, all_issues, ai_feedback):
             if feedback.strip():
                 review_body += f"- {feedback}\n"
     
+    review_body += "\n### ⚠️ Important Notes:\n"
+    review_body += "- NS records require detailed technical justification\n"
+    review_body += "- Cloudflare NS records are forbidden\n"
+    review_body += "- Only use allowed domains: is-epic.me, is-awsm.tech\n"
+    
     review_body += "\n### 📚 Resources:\n"
     review_body += "- [Registration Guide](https://github.com/is-cool-me/register#register)\n"
     review_body += "- [Domain Rules](https://github.com/is-cool-me/register#domains)\n"
     review_body += "- [Example Files](https://github.com/is-cool-me/register/tree/main/domains)\n"
+    review_body += "- [Discord Support](https://discord.gg/N8YzrkJxYy)\n"
     
     pr.create_review(event="REQUEST_CHANGES", body=review_body)
 
@@ -418,18 +528,28 @@ def approve_pr(pr):
 
         approval_body = """## ✅ Domain Registration Approved!
 
-🎉 **Welcome to is-cool.me!** Your subdomain registration looks great.
+🎉 **Welcome to is-cool.me!** Your subdomain registration has been approved.
 
-### What happens next:
-1. Your PR will be merged automatically
-2. DNS changes will propagate within 5-15 minutes
-3. Your subdomain will be live within 24 hours
+### ⚡ Auto-Merge Process:
+1. ✅ This PR will merge automatically
+2. 🔄 DNS changes will propagate within 5-15 minutes
+3. 🌐 Your subdomain will be live within 24 hours
 
-### Need help?
+### 📊 What was approved:
+- ✅ Valid domain and subdomain format
+- ✅ Complete owner information
+- ✅ Proper DNS record configuration
+- ✅ Compliance with service policies
+
+### 🆘 Need help?
 - Join our [Discord server](https://discord.gg/N8YzrkJxYy)
 - Check our [documentation](https://github.com/is-cool-me/register)
+- Report issues via GitHub Issues
 
-Thanks for using our free subdomain service! 🚀"""
+Thanks for using our free subdomain service! 🚀
+
+---
+*This approval was generated by AI Code Reviewer v2.0*"""
 
         bot_pr.create_review(event="APPROVE", body=approval_body)
     except Exception as e:
@@ -453,8 +573,8 @@ def main():
             file_contents = fetch_file_content(repo, file, pr)
             all_file_contents[file] = file_contents
             
-            # Analyze file for issues
-            issues = analyze_file_contents(file_contents, file)
+            # Analyze file for issues (pass PR body for NS validation)
+            issues = analyze_file_contents(file_contents, file, pr.body or "")
             for issue in issues:
                 issue["filename"] = file  # Add filename to issue
             all_issues.extend(issues)
@@ -467,11 +587,21 @@ def main():
         # Get AI review
         ai_decision, ai_feedback = ai_review_pr(pr.body or "", changed_files, all_file_contents)
 
-        # Make decision
+        # Make decision - be conservative due to auto-merge
         if all_issues or ai_decision == "request changes":
             request_changes(pr, all_issues, ai_feedback)
         else:
-            approve_pr(pr)
+            # Final safety check before approval
+            has_critical_issues = any(
+                "forbidden" in issue.get("issue", "").lower() or
+                "invalid" in issue.get("issue", "").lower()
+                for issue in all_issues
+            )
+            
+            if has_critical_issues:
+                request_changes(pr, all_issues, ["Critical issues detected, manual review required"])
+            else:
+                approve_pr(pr)
 
     except Exception as e:
         print(f"Script failed with error: {e}")
@@ -480,7 +610,7 @@ def main():
             github = Github(GITHUB_TOKEN)
             repo = github.get_repo(GITHUB_REPOSITORY)
             pr = fetch_pr(repo)
-            pr.create_issue_comment(f"🚨 **AI Review Error:** {str(e)}\n\nManual review required.")
+            pr.create_issue_comment(f"🚨 **AI Review Error:** {str(e)}\n\nManual review required for safety.")
         except:
             pass
         sys.exit(1)
