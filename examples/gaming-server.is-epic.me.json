@@ -1,0 +1,37 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "gaming-server",
+    "owner": {
+        "username": "gamingcommunity",
+        "email": "admin@gamingserver.com",
+        "repo": "https://github.com/gamingcommunity/minecraft-server"
+    },
+    "records": {
+        "A": ["203.0.113.10"],
+        "SRV": [
+            {
+                "priority": 10,
+                "weight": 60,
+                "port": 25565,
+                "target": "mc1.gaming-server.is-epic.me"
+            },
+            {
+                "priority": 20,
+                "weight": 40,
+                "port": 25565,
+                "target": "mc2.gaming-server.is-epic.me"
+            }
+        ],
+        "TXT": [
+            {
+                "name": "_minecraft._tcp",
+                "value": "server=minecraft;version=1.20.1;players=50"
+            },
+            {
+                "name": "@",
+                "value": "v=spf1 include:_spf.google.com ~all"
+            }
+        ]
+    },
+    "proxied": false
+}

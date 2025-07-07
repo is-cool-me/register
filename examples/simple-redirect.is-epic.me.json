@@ -1,0 +1,18 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "simple-redirect",
+    "owner": {
+        "username": "redirectuser",
+        "email": "redirect@example.com"
+    },
+    "records": {
+        "CNAME": "target-website.com",
+        "TXT": [
+            {
+                "name": "@",
+                "value": "redirect-type=permanent;target=https://target-website.com"
+            }
+        ]
+    },
+    "proxied": false
+}
