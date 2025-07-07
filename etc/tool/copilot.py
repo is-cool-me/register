@@ -529,5 +529,4 @@ def approve_pr(pr):
         approval_body = """## ✅ Domain Registration Approved!
 
 🎉 **Welcome to is-cool.me!** Your subdomain registration has been approved.
-
-### Wh
+"""
