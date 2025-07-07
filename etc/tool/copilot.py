@@ -1,6 +1,6 @@
 import sys
 import os
-import import
+import json
 import requests
 from pathlib import Path
 from github import Github
@@ -530,4 +530,4 @@ def approve_pr(pr):
 
 🎉 **Welcome to is-cool.me!** Your subdomain registration has been approved.
 
-### 
+### Wh
