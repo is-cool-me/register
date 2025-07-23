@@ -530,3 +530,5 @@ def approve_pr(pr):
 
 🎉 **Welcome to is-cool.me!** Your subdomain registration has been approved.
 """
+    except Exception as e:
+        print("Something went wrong! Please try again.")
