@@ -1,0 +1,15 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "deyoxshop",
+
+    "owner": {
+        "username": "christiannn_122",
+        "email": "asteral.ss2@hotmail.com"
+    },
+
+    "records": {
+        "A": ["141.147.106.165"]
+    },
+
+    "proxied": false
+}
