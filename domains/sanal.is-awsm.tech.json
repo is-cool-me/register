@@ -1,0 +1,12 @@
+{
+  "domain": "is-awsm.tech",
+  "subdomain": "sanal",
+  "owner": {
+    "username": "sanalchandran",
+    "email": "sanalchandran23@gmail.com"
+  },
+  "records": {
+    "A": ["140.245.30.133"]
+  },
+  "proxied": false
+}
