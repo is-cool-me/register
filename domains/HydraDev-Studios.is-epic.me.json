@@ -1,0 +1,45 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "HydraDev-Studios",
+
+    "owner": {
+        "username": "GamerLabeeb",
+        "email": "labeebharnani11@gmail.com"
+    },
+
+    "records": {
+        "A": ["1.1.1.1", "1.0.0.1"],
+        "AAAA": ["2606:4700:4700::1111", "2606:4700:4700::1001"],
+        "CNAME": "example.com",
+        "MX": [
+                {
+            "priority": 10,
+            "value": "mx1.example.com"
+        },
+
+        {
+            "priority": 20,
+            "value": "mx2.example.com"
+        }
+            ],
+        "TXT": [
+            {
+                "name": "@",
+                "value": "example_verification=1234567890"
+            }
+        ],
+        "CAA": [
+            { "flags": 0, "tag": "issue", "value": "letsencrypt.org" },
+            { "flags": 0, "tag": "issuewild", "value": "sectigo.com" }
+        ],
+        "SRV": [
+            { "priority": 10, "weight": 60, "port": 5060, "target": "sipserver.example.com" },
+            { "priority": 20, "weight": 10, "port": 5061, "target": "sipbackup.example.com" }
+        ],
+        "PTR": [
+            "ptr.example.com"
+        ]
+    },
+
+    "proxied": false
+}
