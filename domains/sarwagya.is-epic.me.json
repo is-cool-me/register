@@ -6,7 +6,13 @@
         "email": "sarwagyasingh07@gmail.com"
     },
     "records": {
-      "NS": ["ns1.vercel-dns.com", "ns2.vercel-dns.com"]
+        "TXT": [
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=sarwagya.is-epic.me,747cac5aa6b551c91f05"
+            }
+        ],
+        "CNAME": ["09abaedafb653453.vercel-dns-017.com"]
     },
     "proxied": false
 }
