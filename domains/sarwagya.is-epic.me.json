@@ -1,0 +1,18 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "sarwagya",
+    "owner": {
+        "username": "0xsarwagya",
+        "email": "sarwagyasingh07@gmail.com"
+    },
+    "records": {
+        "TXT": [
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=sarwagya.is-epic.me,747cac5aa6b551c91f05"
+            }
+        ],
+        "CNAME": ["09abaedafb653453.vercel-dns-017.com"]
+    },
+    "proxied": false
+}
