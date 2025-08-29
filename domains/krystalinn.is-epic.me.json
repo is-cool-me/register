@@ -1,0 +1,12 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "krystalinn",
+    "owner": {
+        "username": "flingo777",
+        "email": "flingogod777@gmail.com"
+    },
+    "records": {
+        "CNAME": "krystalinn.netlify.app"
+    },
+    "proxied": false
+}
