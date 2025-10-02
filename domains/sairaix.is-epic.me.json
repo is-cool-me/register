@@ -1,0 +1,12 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "sairaix",
+    "owner": {
+        "username": "asiful928",
+        "email": "asiful.freelancer@gmail.com"
+    },
+    "records": {
+        "CNAME": "portfolio-syed-asiful-islams-projects.vercel.app"
+    },
+    "proxied": false
+}
