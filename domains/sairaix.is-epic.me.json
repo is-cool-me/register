@@ -6,7 +6,13 @@
         "email": "asiful.freelancer@gmail.com"
     },
     "records": {
-        "CNAME": "portfolio-syed-asiful-islams-projects.vercel.app"
+        "CNAME": "e45e825649144fcb.vercel-dns-017.com.",
+        "TXT": [
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=sairaix.is-epic.me,34639894ae161841df16"
+            }
+        ]
     },
     "proxied": false
 }
