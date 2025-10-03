@@ -6,13 +6,7 @@
         "email": "asiful.freelancer@gmail.com"
     },
     "records": {
-        "CNAME": "e45e825649144fcb.vercel-dns-017.com.",
-        "TXT": [
-            {
-                "name": "_vercel",
-                "value": "vc-domain-verify=sairaix.is-epic.me,34639894ae161841df16"
-            }
-        ]
+    "NS": ["ns1.desec.io", "ns2.desec.org"]
     },
     "proxied": false
 }
