@@ -1,0 +1,18 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "quyinvis",
+
+    "owner": {
+        "username": "publiohodgson23-ui",
+        "email": "publiohodgson23@gmail.com"
+    },
+
+    "records": {
+        "NS": [
+            "kiki.bunny.net",
+            "coco.bunny.net"
+        ]
+    },
+
+    "proxied": false
+}
