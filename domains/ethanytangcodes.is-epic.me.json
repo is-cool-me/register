@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "ethanytangcodes",
+
+    "owner": {
+        "username": "ethanytangcodes",
+        "email": "ethantytang11@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "ethanytangcodes.github.io",
+    },
+
+    "proxied": false
+}
