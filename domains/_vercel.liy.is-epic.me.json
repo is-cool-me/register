@@ -1,0 +1,12 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "_vercel.liy",
+    "owner": {
+        "username": "SeeSatya",
+        "email": "mail@satyajit.is-a.dev"
+    },
+    "records": {
+        "TXT": "vc-domain-verify=liy.is-epic.me,6285ad794eb680f20447"
+    },
+    "proxied": false
+}
