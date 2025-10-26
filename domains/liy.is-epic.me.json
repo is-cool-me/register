@@ -6,7 +6,13 @@
         "email": "mail@satyajit.is-a.dev"
     },
     "records": {
-        "CNAME": "bfa094996ab7810e.vercel-dns-017.com."
+        "CNAME": "bfa094996ab7810e.vercel-dns-017.com.",
+        "TXT": [
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=liy.is-epic.me,6285ad794eb680f20447"
+            }
+        ]
     },
     "proxied": false
 }
