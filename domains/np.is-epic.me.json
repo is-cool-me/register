@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "np",
+
+    "owner": {
+        "username": "namphamdev",
+        "email": "nampham0494@gmail.com"
+    },
+
+    "records": {
+        "A": ["116.118.47.111"]
+    },
+
+    "proxied": false
+}
