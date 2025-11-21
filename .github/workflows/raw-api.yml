@@ -27,8 +27,8 @@ jobs:
                 app_id: ${{ secrets.APP_ID }}
                 private_key: ${{ secrets.PRIVATE_KEY }}
 
-            - uses: actions/checkout@v5
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v6
+            - uses: actions/checkout@v6
               with:
                   repository: is-cool-me/raw
                   path: raw
