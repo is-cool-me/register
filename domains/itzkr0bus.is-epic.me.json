@@ -1,0 +1,15 @@
+{
+  "domain": "is-epic.me",
+  "subdomain": "itzkr0bus",
+
+  "owner": {
+    "username": "toibuonia",
+    "email": "canbinh.5079@gmail.com"
+  },
+
+  "records": {
+    "CNAME": "itzkr0bus.vercel.app"
+  },
+
+  "proxied": false
+}
