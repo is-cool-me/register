@@ -1,0 +1,15 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "aky",
+
+    "owner": {
+        "username": "jalywn",
+        "email": "asteral.dev@outlook.com"
+    },
+
+    "records": {
+        "A": "46.202.82.159"
+    },
+
+    "proxied": false
+}
