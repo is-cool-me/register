@@ -1,5 +1,5 @@
 # Terms and Conditions
-
+#
 # Introduction
 The Light Hosting program is a free subdomain program that allows users to register and use subdomains under the is-cool.me and is-app.tech domains. By registering for and using a subdomain through the Light Hosting program, you agree to be bound by the following terms and conditions.
 
