@@ -5,7 +5,7 @@
 domains/reserved/* @is-cool-me/owners
 
 # User Domains
-domains/* @is-cool-me/maintainers
+domains/* @drsatanic
 
 # MD Files
 *.md @is-cool-me/owners
