@@ -1,0 +1,18 @@
+{
+  "domain": "is-epic.me",
+  "subdomain": "drthesmos",
+  "owner": {
+    "username": "drsatanic",
+    "email": "drsamael@zohomail.cn"
+  },
+  "records": {
+    "CNAME": "hashnode.network",
+    "TXT": [
+      {
+        "name": "_vercel",
+        "value": "vc-domain-verify=drthesmos.is-epic.me,d7aa981299017f40b752"
+      }
+    ]
+  },
+  "proxied": false
+}
