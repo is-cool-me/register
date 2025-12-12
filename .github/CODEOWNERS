@@ -1,19 +1,19 @@
 # All Files
-* @LightHostingFree
+# * @LightHostingFree
 
 # Reserved Domains
-domains/reserved/* @is-cool-me/owners
+# domains/reserved/* @is-cool-me/owners
 
 # User Domains
 domains/* @drsatanic
 
 # MD Files
-*.md @is-cool-me/owners
+# *.md @is-cool-me/owners
 
 # System Files
-*.yml @is-cool-me/owners
-*.js @is-cool-me/owners
-*.png @is-cool-me/owners
-*.py @is-cool-me/owners
+# *.yml @is-cool-me/owners
+# *.js @is-cool-me/owners
+# *.png @is-cool-me/owners
+# *.py @is-cool-me/owners
 
-etc/* @is-cool-me/owners
+# etc/* @is-cool-me/owners
