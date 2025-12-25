@@ -1,0 +1,32 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "sautify",
+
+    "owner": {
+        "username": "wambugu71",
+        "email": "wambugukinyua125@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "wambugu71.github.io",
+        "MX": [
+                {
+            "priority": 10,
+            "value": "mx1.improvmx.com"
+        },
+
+        {
+            "priority": 20,
+            "value": "mx2.improvmx.com"
+        }
+            ],
+        "TXT": [
+            {
+                "name": "@",
+                "value": "v=spf1 include:spf.improvmx.com ~all"
+            }
+        ]
+    },
+
+    "proxied": false
+}
