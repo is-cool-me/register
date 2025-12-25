@@ -8,7 +8,6 @@
     },
 
     "records": {
-        "CNAME": "wambugu71.github.io",
         "MX": [
                 {
             "priority": 10,
