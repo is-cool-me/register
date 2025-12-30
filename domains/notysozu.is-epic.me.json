@@ -1,0 +1,12 @@
+{
+    "domain": "is-awsm.tech",
+    "subdomain": "example",
+    "owner": {
+        "username": "notysozu",
+        "email": "sonukumarsuman365@gmail.com"
+    },
+    "records": {
+        "CNAME": "notysozu.github.io"
+    },
+    "proxied": true
+}
