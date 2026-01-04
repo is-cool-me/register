@@ -8,6 +8,7 @@
     },
 
     "records": {
+        "CNAME": "ReVerseYTReal.github.io",
         "TXT": [
             {
                 "name": "@",
