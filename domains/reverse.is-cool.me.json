@@ -1,0 +1,21 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "reverse",
+
+    "owner": {
+        "username": "ReVerseYTReal",
+        "email": "littleman201686@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "ReVerseYTReal.github.io",
+        "TXT": [
+            {
+                "name": "easteregg",
+                "value": "reverse was here lmao"
+            }
+        ]
+    },
+
+    "proxied": false
+}
