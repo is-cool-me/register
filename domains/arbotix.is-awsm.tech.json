@@ -1,5 +1,5 @@
 {
-    "domain": "is-awsm.tech",
+    "domain": "is-into.tech",
     "subdomain": "arbotix",
     "owner": {
         "username": "Hjgaming",
@@ -8,7 +8,7 @@
     "records": {
         "TXT": [
             {
-                "name": "_discord.arbotix.is-awsm.tech",
+                "name": "_discord.arbotix.is-into.tech",
                 "value": "dh=dbb472e1ca1a28dd8a6fb9bb39b2f712ce9e9b05"
             }
         ]

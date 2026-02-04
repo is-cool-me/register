@@ -1,9 +1,9 @@
 {
-    "domain": "is-awsm.tech",
+    "domain": "is-into.tech",
     "subdomain": "www",
 
     "records": {
-        "CNAME": "is-awsm.tech"
+        "CNAME": "is-into.tech"
     },
 
     "proxied": false
