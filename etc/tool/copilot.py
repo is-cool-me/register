@@ -359,8 +359,21 @@ def analyze_file_contents(file_contents, filename, pr_body):
     
     return issues
 
+def read_readme():
+    """Read the README.md file for review guidelines."""
+    try:
+        readme_path = Path(__file__).parent.parent.parent / "README.md"
+        with open(readme_path, 'r') as f:
+            return f.read()
+    except Exception as e:
+        print(f"Warning: Could not read README.md: {e}")
+        return ""
+
 def ai_review_pr(pr_body, changed_files, all_file_contents):
     """Enhanced AI review with domain-specific knowledge and auto-merge awareness."""
+    
+    # Read README for guidelines
+    readme_content = read_readme()
     
     # Prepare comprehensive context for AI
     files_summary = []
@@ -387,6 +400,7 @@ def ai_review_pr(pr_body, changed_files, all_file_contents):
     
     review_prompt = f"""
 You are an expert code reviewer for a FREE SUBDOMAIN REGISTRATION service.
+You MUST review PRs strictly according to the README.md guidelines provided below.
 
 🚨 **CRITICAL: AUTO-MERGE WARNING** 🚨
 - If you APPROVE this PR, it will AUTOMATICALLY MERGE
@@ -394,16 +408,10 @@ You are an expert code reviewer for a FREE SUBDOMAIN REGISTRATION service.
 - When in doubt, REQUEST CHANGES
 - Only approve if you are 100% confident
 
-**SERVICE CONTEXT:**
-This is is-cool.me - a free subdomain service providing subdomains under:
-- is-epic.me (personal sites, projects)
-- is-into.tech (technical projects)
+**README GUIDELINES (MUST FOLLOW):**
+{readme_content}
 
-**MIGRATION NOTICE:** 
-- is-cool.me → is-epic.me (FORBIDDEN)
-- is-app.tech → is-into.tech (FORBIDDEN)
-
-**REVIEW RULES:**
+**EXTRACTED KEY RULES FROM README:**
 {DOMAIN_RULES}
 
 **PR DETAILS:**
@@ -415,25 +423,32 @@ Description: {pr_body or "No description provided"}
 **SPECIAL ATTENTION REQUIRED:**
 {"⚠️ NS RECORDS DETECTED - Requires detailed justification!" if has_ns_records else "✅ Standard DNS records"}
 
-**REVIEW CHECKLIST:**
-1. ✅ Are domains allowed (is-epic.me, is-into.tech)?
-2. ✅ Is JSON structure complete and valid?
-3. ✅ Are DNS records properly formatted?
-4. ✅ Is owner information complete and valid?
+**REVIEW CHECKLIST (Based on README):**
+1. ✅ Are domains allowed (is-epic.me, is-into.tech only)?
+2. ✅ Is JSON structure complete and valid as per README example?
+3. ✅ Are DNS records properly formatted (A, AAAA, CNAME, MX, TXT, CAA, SRV, PTR)?
+4. ✅ Is owner information complete (username and valid email)?
 5. ✅ No forbidden providers (Cloudflare NS, Netlify, Vercel)?
-6. ✅ If NS records: Is justification detailed and technical?
-7. ✅ No suspicious or abusive content?
-8. ✅ Follows naming conventions?
+6. ✅ If NS records: Is justification VERY CLEAR and DETAILED as required by README?
+7. ✅ No illegal activities, hate speech, malware, or suspicious content?
+8. ✅ Follows naming conventions (3-63 chars, lowercase, no reserved names)?
+9. ✅ File naming: subdomain.domain.json format in /domains folder?
+10. ✅ Clear description provided (required per README line 138)?
+
+**IMPORTANT README REQUIREMENTS:**
+- "Wildcard domains and NS records are supported too, but the reason for their registration should be VERY CLEAR and described in DETAIL" (Line 32)
+- "Domains used for illegal purposes will be removed and permanently banned. Please provide a CLEAR DESCRIPTION" (Line 138)
+- "Don't ignore the pull request checklist" (Line 134)
 
 **DECISION CRITERIA:**
-- ✅ APPROVE: ONLY if ALL criteria are met and registration is clearly legitimate
-- ❌ REQUEST CHANGES: If ANY issues, concerns, or missing information
+- ✅ APPROVE: ONLY if ALL README requirements are met and registration is clearly legitimate
+- ❌ REQUEST CHANGES: If ANY issues, concerns, or missing information per README
 
 **OUTPUT FORMAT:**
 Start with either "✅ APPROVED" or "❌ REQUEST CHANGES"
-Then provide detailed reasoning.
+Then provide detailed reasoning based on README guidelines.
 
-Remember: Approved PRs merge automatically. Be conservative!
+Remember: Approved PRs merge automatically. Follow README strictly. Be conservative!
 """
 
     try:
