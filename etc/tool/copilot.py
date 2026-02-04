@@ -463,7 +463,7 @@ Remember: Approved PRs merge automatically. Follow README strictly. Be conservat
                     "content": review_prompt,
                 }
             ],
-            model="llama-3.3-70b-versatile",  # Using Groq's fastest model
+            model="llama-3.3-70b-versatile",  # Using Groq's llama-3.3 70B model for comprehensive reviews
             temperature=0.3,  # Lower temperature for more consistent reviews
             max_tokens=2048,
         )
@@ -556,7 +556,7 @@ def approve_pr(pr):
 
         approval_body = """## ✅ Domain Registration Approved!
 
-🎉 **Welcome to is-cool.me!** Your subdomain registration has been approved.
+🎉 **Welcome to the free subdomain service!** Your subdomain registration has been approved.
 
 **What's Next?**
 - Your subdomain will be active within a few minutes
@@ -567,7 +567,7 @@ def approve_pr(pr):
 - Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
 - Check [documentation](https://github.com/is-cool-me/register#register)
 
-Thank you for using is-cool.me! 🚀
+Thank you for using our service! 🚀
 """
         
         # Create approval review using bot account
@@ -577,9 +577,9 @@ Thank you for using is-cool.me! 🚀
         # Auto-merge the PR after approval
         try:
             bot_pr.merge(merge_method="squash")
-            print(f"✅ PR #{PR_NUMBER} merged successfully!")
+            print(f"✅ PR #{PR_NUMBER} merged successfully using squash merge!")
         except Exception as merge_error:
-            print(f"⚠️ Auto-merge failed: {merge_error}")
+            print(f"⚠️ Auto-merge (squash) failed: {merge_error}")
             print("PR is approved but requires manual merge or has merge conflicts.")
             
     except Exception as e:
