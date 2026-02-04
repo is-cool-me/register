@@ -11,7 +11,7 @@
 <p align="center">Want to find services similar to this? Take a look on <a href="https://github.com/open-domains/register">Open Domains</a>.</p>
 
 ## Notice
-We Have Moved Domains: is-cool.me → is-epic.me, is-app.tech → is-awsm.tech. Please update your services’ DNS, API references, and links accordingly.
+We Have Moved Domains: is-cool.me → is-epic.me, is-app.tech → is-into.tech. Please update your services’ DNS, API references, and links accordingly.
 
 ## Donate
 If you like this service and want us to continue running it, please consider donating!
@@ -27,7 +27,7 @@ https://discord.gg/N8YzrkJxYy
 | Available Domains |
 |:-:|
 | [`*.is-epic.me`](https://is-epic.me) |
-| [`*.is-awsm.tech`](https://is-awsm.tech) |
+| [`*.is-into.tech`](https://is-into.tech) |
 
 > Wildcard domains (like `*.example.is-epic.me`) and NS records are supported too, but the reason for their registration should be very clear and described in detail. But we currently do not support Cloudflare (for NS), Netlify (for website) or Vercel (for websites).
 
@@ -38,7 +38,7 @@ https://discord.gg/N8YzrkJxYy
 
 ### Settings
 
-| Setting | is-awsm.tech | is-epic.me |
+| Setting | is-into.tech | is-epic.me |
 |---------|-------------|------------|
 | DNSSEC  | ✅           | ✅         |
 | Email   | ✅           | ✅         |
@@ -85,7 +85,7 @@ ic register
 
 ```json
 {
-    "domain": "is-awsm.tech",
+    "domain": "is-into.tech",
     "subdomain": "example",
 
     "owner": {

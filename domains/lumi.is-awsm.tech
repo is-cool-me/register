@@ -1,5 +1,5 @@
 {
-    "domain": "is-awsm.tech",
+    "domain": "is-into.tech",
     "subdomain": "lumi",
 
     "owner": {
@@ -17,7 +17,7 @@
         "TXT": [
             {
                 "name": "_vercel.lumi",
-                "value": "vc-domain-verify=lumi.is-awsm.tech,672db6f2edd6c88b1da2"
+                "value": "vc-domain-verify=lumi.is-into.tech,672db6f2edd6c88b1da2"
             }
         ]
     },

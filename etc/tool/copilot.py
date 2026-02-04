@@ -16,7 +16,7 @@ GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")
 PR_NUMBER = os.getenv("PR_NUMBER")
 
 # Domain configuration
-ALLOWED_DOMAINS = {"is-epic.me", "is-awsm.tech"}
+ALLOWED_DOMAINS = {"is-epic.me", "is-into.tech"}
 FORBIDDEN_DOMAINS = {"is-cool.me", "is-app.tech"}
 RESERVED_SUBDOMAINS = {"www", "api", "mail", "ftp", "admin", "root", "test", "staging", "dev", "ns", "ns1", "ns2"}
 FORBIDDEN_DNS_PROVIDERS = {
@@ -37,7 +37,7 @@ DOMAIN_RULES = """
 ### Domain Registration Review Guidelines:
 
 **🎯 ALLOWED DOMAINS:**
-- ✅ `is-epic.me` and `is-awsm.tech` ONLY
+- ✅ `is-epic.me` and `is-into.tech` ONLY
 - ❌ `is-cool.me` and `is-app.tech` are FORBIDDEN (migrated domains)
 
 **📋 REQUIRED JSON STRUCTURE:**
@@ -396,11 +396,11 @@ You are an expert code reviewer for a FREE SUBDOMAIN REGISTRATION service.
 **SERVICE CONTEXT:**
 This is is-cool.me - a free subdomain service providing subdomains under:
 - is-epic.me (personal sites, projects)
-- is-awsm.tech (technical projects)
+- is-into.tech (technical projects)
 
 **MIGRATION NOTICE:** 
 - is-cool.me → is-epic.me (FORBIDDEN)
-- is-app.tech → is-awsm.tech (FORBIDDEN)
+- is-app.tech → is-into.tech (FORBIDDEN)
 
 **REVIEW RULES:**
 {DOMAIN_RULES}
@@ -415,7 +415,7 @@ Description: {pr_body or "No description provided"}
 {"⚠️ NS RECORDS DETECTED - Requires detailed justification!" if has_ns_records else "✅ Standard DNS records"}
 
 **REVIEW CHECKLIST:**
-1. ✅ Are domains allowed (is-epic.me, is-awsm.tech)?
+1. ✅ Are domains allowed (is-epic.me, is-into.tech)?
 2. ✅ Is JSON structure complete and valid?
 3. ✅ Are DNS records properly formatted?
 4. ✅ Is owner information complete and valid?
@@ -509,7 +509,7 @@ def request_changes(pr, all_issues, ai_feedback):
     review_body += "\n### ⚠️ Important Notes:\n"
     review_body += "- NS records require detailed technical justification\n"
     review_body += "- Cloudflare NS records are forbidden\n"
-    review_body += "- Only use allowed domains: is-epic.me, is-awsm.tech\n"
+    review_body += "- Only use allowed domains: is-epic.me, is-into.tech\n"
     
     review_body += "\n### 📚 Resources:\n"
     review_body += "- [Registration Guide](https://github.com/is-cool-me/register#register)\n"

@@ -1,5 +1,5 @@
 {
-    "domain": "is-awsm.tech",
+    "domain": "is-into.tech",
     "subdomain": "thisshit",
     "owner": {
         "username": "vintheweirdass",
@@ -9,8 +9,8 @@
         "CNAME":"r.forwarddomain.net",
         "TXT": [
             {
-                "name":"fwd.thisshit.is-awsm.tech",
-                "value":"forward-domain=https://this-shit.is-awsm.tech/*"
+                "name":"fwd.thisshit.is-into.tech",
+                "value":"forward-domain=https://this-shit.is-into.tech/*"
             }
         ]
     }
