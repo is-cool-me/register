@@ -4,7 +4,7 @@ import json
 import requests
 from pathlib import Path
 from github import Github
-import g4f
+from groq import Groq
 import re
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -14,6 +14,7 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 BOT_GITHUB_TOKEN = os.getenv("BOT")  # Used for approvals
 GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")
 PR_NUMBER = os.getenv("PR_NUMBER")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Domain configuration
 ALLOWED_DOMAINS = {"is-epic.me", "is-into.tech"}
@@ -436,12 +437,23 @@ Remember: Approved PRs merge automatically. Be conservative!
 """
 
     try:
-        response = g4f.ChatCompletion.create(
-            model=g4f.models.gpt_4,
-            messages=[{"role": "user", "content": review_prompt}]
+        # Initialize Groq client
+        client = Groq(api_key=GROQ_API_KEY)
+        
+        # Create chat completion using Groq
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": review_prompt,
+                }
+            ],
+            model="llama-3.3-70b-versatile",  # Using Groq's fastest model
+            temperature=0.3,  # Lower temperature for more consistent reviews
+            max_tokens=2048,
         )
 
-        decision = response.get("content", "").strip() if isinstance(response, dict) else response.strip()
+        decision = chat_completion.choices[0].message.content.strip()
 
         if not decision:
             return "request changes", ["AI review failed. Manual review required."]
@@ -520,8 +532,9 @@ def request_changes(pr, all_issues, ai_feedback):
     pr.create_review(event="REQUEST_CHANGES", body=review_body)
 
 def approve_pr(pr):
-    """Approves the PR with a welcoming message."""
+    """Approves the PR with a welcoming message using bot token for approval."""
     try:
+        # Use bot token for approval (has necessary permissions)
         bot_github = Github(BOT_GITHUB_TOKEN)
         bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
         bot_pr = bot_repo.get_pull(int(PR_NUMBER))
@@ -529,6 +542,123 @@ def approve_pr(pr):
         approval_body = """## ✅ Domain Registration Approved!
 
 🎉 **Welcome to is-cool.me!** Your subdomain registration has been approved.
+
+**What's Next?**
+- Your subdomain will be active within a few minutes
+- DNS propagation may take up to 24-48 hours globally
+- Check your domain status: `nslookup <your-subdomain>`
+
+**Need Help?**
+- Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
+- Check [documentation](https://github.com/is-cool-me/register#register)
+
+Thank you for using is-cool.me! 🚀
 """
+        
+        # Create approval review using bot account
+        bot_pr.create_review(event="APPROVE", body=approval_body)
+        print(f"✅ PR #{PR_NUMBER} approved successfully!")
+        
+        # Auto-merge the PR after approval
+        try:
+            bot_pr.merge(merge_method="squash")
+            print(f"✅ PR #{PR_NUMBER} merged successfully!")
+        except Exception as merge_error:
+            print(f"⚠️ Auto-merge failed: {merge_error}")
+            print("PR is approved but requires manual merge or has merge conflicts.")
+            
     except Exception as e:
-        print("Something went wrong! Please try again.")
+        print(f"❌ Error approving PR: {str(e)}")
+        raise
+
+def main():
+    """Main execution function for the AI code reviewer."""
+    try:
+        print("🤖 Starting AI Code Reviewer...")
+        print(f"Repository: {GITHUB_REPOSITORY}")
+        print(f"PR Number: {PR_NUMBER}")
+        
+        # Validate environment variables
+        if not GITHUB_TOKEN:
+            print("❌ Error: GITHUB_TOKEN not set")
+            sys.exit(1)
+        if not BOT_GITHUB_TOKEN:
+            print("❌ Error: BOT token not set")
+            sys.exit(1)
+        if not GROQ_API_KEY:
+            print("❌ Error: GROQ_API_KEY not set")
+            sys.exit(1)
+        
+        # Initialize GitHub client
+        g = Github(GITHUB_TOKEN)
+        repo = g.get_repo(GITHUB_REPOSITORY)
+        pr = fetch_pr(repo)
+        
+        print(f"Reviewing PR: {pr.title}")
+        print(f"Author: {pr.user.login}")
+        
+        # Fetch changed files
+        changed_files = fetch_changed_files(pr)
+        print(f"Changed files: {len(changed_files)}")
+        
+        if not changed_files:
+            print("⚠️ No files changed in this PR")
+            return
+        
+        # Analyze all changed files
+        all_issues = []
+        all_file_contents = {}
+        
+        for filename in changed_files:
+            print(f"Analyzing: {filename}")
+            
+            # Only analyze domain JSON files
+            if not filename.startswith("domains/") or not filename.endswith(".json"):
+                print(f"  Skipping non-domain file: {filename}")
+                continue
+            
+            file_contents = fetch_file_content(repo, filename, pr)
+            if not file_contents:
+                print(f"  ⚠️ Could not fetch content for {filename}")
+                continue
+            
+            all_file_contents[filename] = file_contents
+            
+            # Analyze file
+            issues = analyze_file_contents(file_contents, filename, pr.body)
+            for issue in issues:
+                issue["filename"] = filename
+                all_issues.append(issue)
+            
+            if issues:
+                print(f"  ❌ Found {len(issues)} issue(s)")
+            else:
+                print(f"  ✅ No issues found")
+        
+        # Get AI review
+        print("\n🤖 Running AI review...")
+        ai_decision, ai_feedback = ai_review_pr(pr.body, changed_files, all_file_contents)
+        
+        print(f"AI Decision: {ai_decision}")
+        
+        # Make final decision
+        if all_issues:
+            print(f"\n❌ Found {len(all_issues)} technical issue(s)")
+            request_changes(pr, all_issues, ai_feedback)
+            print("✅ Review posted - requested changes")
+        elif ai_decision == "approve":
+            print("\n✅ All checks passed - approving PR")
+            approve_pr(pr)
+        else:
+            print("\n⚠️ AI recommends changes")
+            request_changes(pr, all_issues, ai_feedback)
+            print("✅ Review posted - requested changes based on AI feedback")
+        
+    except Exception as e:
+        print(f"\n❌ Fatal error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
