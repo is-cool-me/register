@@ -38,4 +38,5 @@ jobs:
           BOT: ${{ secrets.BOT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: python etc/tool/copilot.py

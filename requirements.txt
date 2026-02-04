@@ -1,6 +1,2 @@
-g4f
+groq
 requests
-aiohttp
-brotli
-pycryptodome
-curl_cffi
