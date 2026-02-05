@@ -3,7 +3,7 @@ import os
 import json
 import requests
 from pathlib import Path
-from github import Github
+from github import Github, Auth
 from groq import Groq
 import re
 
@@ -550,7 +550,7 @@ def approve_pr(pr):
     """Approves the PR with a welcoming message using bot token for approval."""
     try:
         # Use bot token for approval (has necessary permissions)
-        bot_github = Github(BOT_GITHUB_TOKEN)
+        bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
         bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
         bot_pr = bot_repo.get_pull(int(PR_NUMBER))
 
@@ -605,7 +605,7 @@ def main():
             sys.exit(1)
         
         # Initialize GitHub client
-        g = Github(GITHUB_TOKEN)
+        g = Github(auth=Auth.Token(GITHUB_TOKEN))
         repo = g.get_repo(GITHUB_REPOSITORY)
         pr = fetch_pr(repo)
         
