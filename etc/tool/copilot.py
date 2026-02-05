@@ -474,7 +474,7 @@ Remember: Approved PRs merge automatically. Follow README strictly. Be conservat
             return "request changes", ["AI review failed. Manual review required."]
 
         # Be more conservative with approvals
-        if "✅ APPROVED" in decision and "no issues" in decision.lower():
+        if "✅ APPROVED" in decision:
             # Double-check for NS records without proper justification
             if has_ns_records and (not pr_body or len(pr_body.strip()) < 50):
                 return "request changes", ["NS records require detailed justification in PR description"]
