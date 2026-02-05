@@ -101,7 +101,7 @@ def fetch_changed_files(pr):
 def fetch_file_content(repo, filename, pr):
     """Fetches file content from a PR."""
     try:
-        file_content = repo.get_contents(filename, ref=pr.head.ref)
+        file_content = repo.get_contents(filename, ref=pr.head.sha)
         return file_content.decoded_content.decode()
     except Exception:
         return ""
