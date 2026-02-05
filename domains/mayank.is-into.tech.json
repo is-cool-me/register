@@ -1,0 +1,15 @@
+{
+    "domain": "is-into.tech",
+    "subdomain": "mayank",
+
+    "owner": {
+        "username": "MayankServers",
+        "email": "mayank@mayank.email"
+    },
+
+    "records": {
+        "CNAME": "MayankServers.github.io"
+    },
+
+    "proxied": false
+}
