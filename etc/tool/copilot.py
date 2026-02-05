@@ -559,7 +559,7 @@ def approve_pr(pr):
 🎉 **Welcome to the free subdomain service!** Your subdomain registration has been approved.
 
 **What's Next?**
-- Your subdomain will be active within a few minutes
+- Your subdomain will be active within a few minutes after auto-merge
 - DNS propagation may take up to 24-48 hours globally
 - Check your domain status: `nslookup <your-subdomain>`
 
@@ -573,14 +573,7 @@ Thank you for using our service! 🚀
         # Create approval review using bot account
         bot_pr.create_review(event="APPROVE", body=approval_body)
         print(f"✅ PR #{PR_NUMBER} approved successfully!")
-        
-        # Auto-merge the PR after approval
-        try:
-            bot_pr.merge(merge_method="squash")
-            print(f"✅ PR #{PR_NUMBER} merged successfully using squash merge!")
-        except Exception as merge_error:
-            print(f"⚠️ Auto-merge (squash) failed: {merge_error}")
-            print("PR is approved but requires manual merge or has merge conflicts.")
+        print("ℹ️  Auto-merge workflow will handle merging the PR.")
             
     except Exception as e:
         print(f"❌ Error approving PR: {str(e)}")
