@@ -117,8 +117,14 @@ def fetch_file_content_from_base(repo, filename, pr):
     try:
         file_content = repo.get_contents(filename, ref=pr.base.sha)
         return file_content.decoded_content.decode()
-    except Exception:
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Note: Could not fetch base content for {filename}: {str(e)}")
         return None  # File doesn't exist in base (new file)
+
+def usernames_match(username1, username2):
+    """Compare two usernames case-insensitively."""
+    return username1.strip().lower() == username2.strip().lower()
 
 def check_cloudflare_ns(ns_record):
     """Check if NS record is from Cloudflare (forbidden)."""
@@ -185,7 +191,7 @@ def validate_owner_username(data, filename, pr_author, repo, pr):
         return issues
     
     # Check if PR author matches the owner username in the file
-    if owner_username.lower() != pr_author.lower():
+    if not usernames_match(owner_username, pr_author):
         # Check if this is an update to an existing file
         base_content = fetch_file_content_from_base(repo, filename, pr)
         
@@ -197,22 +203,27 @@ def validate_owner_username(data, filename, pr_author, repo, pr):
                 
                 # For updates, the PR author must match the EXISTING owner username
                 # to prevent domain stealing
-                if base_owner_username.lower() != pr_author.lower():
+                if not usernames_match(base_owner_username, pr_author):
                     issues.append({
                         "line": 1,
                         "issue": f"❌ Domain update not allowed: PR author '{pr_author}' does not match existing owner '{base_owner_username}'",
                         "fix": f"Only the domain owner '{base_owner_username}' can update this domain. You cannot steal someone else's domain."
                     })
                 # Also check if they're trying to change the owner
-                elif owner_username.lower() != base_owner_username.lower():
+                elif not usernames_match(owner_username, base_owner_username):
                     issues.append({
                         "line": 1,
                         "issue": f"❌ Cannot change domain owner: Attempting to change owner from '{base_owner_username}' to '{owner_username}'",
                         "fix": f"You cannot change the owner of an existing domain. Keep owner.username as '{base_owner_username}'."
                     })
-            except json.JSONDecodeError:
-                # If we can't parse the base file, allow the update with a warning
-                pass
+            except json.JSONDecodeError as e:
+                # Security: Block updates when base file cannot be parsed
+                # This prevents exploiting corrupted base files
+                issues.append({
+                    "line": 1,
+                    "issue": f"❌ Cannot verify domain ownership: Base file is corrupted or invalid JSON",
+                    "fix": f"Please contact administrators. The existing domain file has invalid JSON and cannot be validated for ownership verification."
+                })
         else:
             # This is a NEW domain registration
             issues.append({
