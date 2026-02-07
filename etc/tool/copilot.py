@@ -118,7 +118,8 @@ def fetch_file_content_from_base(repo, filename, pr):
         file_content = repo.get_contents(filename, ref=pr.base.sha)
         return file_content.decoded_content.decode()
     except Exception as e:
-        # Log the error for debugging
+        # Note: Could not fetch base content - file likely doesn't exist (new file)
+        # Using print for consistency with rest of codebase logging pattern
         print(f"Note: Could not fetch base content for {filename}: {str(e)}")
         return None  # File doesn't exist in base (new file)
 
@@ -221,8 +222,8 @@ def validate_owner_username(data, filename, pr_author, repo, pr):
                 # This prevents exploiting corrupted base files
                 issues.append({
                     "line": 1,
-                    "issue": f"❌ Cannot verify domain ownership: Base file is corrupted or invalid JSON",
-                    "fix": f"Please contact administrators. The existing domain file has invalid JSON and cannot be validated for ownership verification."
+                    "issue": f"❌ Cannot verify domain ownership: Base file is corrupted or invalid JSON (Error: {str(e)})",
+                    "fix": f"Please contact administrators. The existing domain file has invalid JSON at line {getattr(e, 'lineno', 'unknown')} and cannot be validated for ownership verification."
                 })
         else:
             # This is a NEW domain registration
