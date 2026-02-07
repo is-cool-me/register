@@ -59,10 +59,11 @@ DOMAIN_RULES = """
 ```
 
 **🔒 OWNER VALIDATION (ANTI-DOMAIN-STEALING):**
-- ✅ PR author MUST match owner.username for new domains
-- ✅ PR author MUST match existing owner.username for updates
-- ❌ Cannot change owner.username of existing domains
+- ✅ **CREATION (new domains)**: PR author MUST match owner.username (strict validation)
+- ✅ **UPDATE (existing domains)**: PR author MUST match existing owner (owner can update their domain)
+- ✅ **DELETION**: PR author MUST match existing owner (only owner can delete their domain)
 - ❌ Cannot register domains for other users
+- ⚠️ Note: Domain owners CAN transfer ownership by updating owner.username themselves
 
 **🔧 DNS RESTRICTIONS:**
 - ❌ Cloudflare NS records (*.ns.cloudflare.com, ns*.cloudflare.com)
@@ -101,8 +102,8 @@ def fetch_pr(repo):
     return repo.get_pull(int(PR_NUMBER))
 
 def fetch_changed_files(pr):
-    """Gets the list of changed files in the PR."""
-    return [file.filename for file in pr.get_files()]
+    """Gets the list of changed files with their status in the PR."""
+    return [(file.filename, file.status) for file in pr.get_files()]
 
 def fetch_file_content(repo, filename, pr):
     """Fetches file content from a PR."""
@@ -177,10 +178,47 @@ def validate_ns_records_justification(data, pr_body):
     
     return issues
 
-def validate_owner_username(data, filename, pr_author, repo, pr):
-    """Validates that the PR author matches the owner username to prevent domain stealing."""
+def validate_owner_username(data, filename, pr_author, repo, pr, file_status):
+    """Validates that the PR author matches the owner username to prevent domain stealing.
+    
+    Args:
+        data: The domain JSON data
+        filename: The domain file path
+        pr_author: The GitHub username of the PR author
+        repo: The repository object
+        pr: The pull request object
+        file_status: The file status ('added', 'modified', 'removed')
+    
+    Validation rules:
+    - Creation (added): PR author must match owner.username (strict - prevent registering for others)
+    - Update (modified): PR author must match existing owner (allow owner to update their domain)
+    - Deletion (removed): PR author must match existing owner (allow owner to delete their domain)
+    """
     issues = []
     
+    # For deletions, check that PR author matches the existing owner
+    if file_status == 'removed':
+        base_content = fetch_file_content_from_base(repo, filename, pr)
+        if base_content:
+            try:
+                base_data = json.loads(base_content)
+                base_owner_username = base_data.get("owner", {}).get("username", "").strip()
+                
+                if not usernames_match(base_owner_username, pr_author):
+                    issues.append({
+                        "line": 1,
+                        "issue": f"❌ Domain deletion not allowed: PR author '{pr_author}' does not match existing owner '{base_owner_username}'",
+                        "fix": f"Only the domain owner '{base_owner_username}' can delete this domain."
+                    })
+            except json.JSONDecodeError as e:
+                issues.append({
+                    "line": 1,
+                    "issue": f"❌ Cannot verify domain ownership for deletion: Base file is corrupted or invalid JSON (Error: {str(e)})",
+                    "fix": f"Please contact administrators. The existing domain file has invalid JSON and cannot be validated."
+                })
+        return issues
+    
+    # For creation and updates, we need owner data in the file
     if "owner" not in data or not isinstance(data["owner"], dict):
         # This will be caught by validate_json_structure
         return issues
@@ -191,47 +229,40 @@ def validate_owner_username(data, filename, pr_author, repo, pr):
         # This will be caught by validate_json_structure
         return issues
     
-    # Check if PR author matches the owner username in the file
-    if not usernames_match(owner_username, pr_author):
-        # Check if this is an update to an existing file
-        base_content = fetch_file_content_from_base(repo, filename, pr)
-        
-        if base_content:
-            # This is an UPDATE - check the existing owner
-            try:
-                base_data = json.loads(base_content)
-                base_owner_username = base_data.get("owner", {}).get("username", "").strip()
-                
-                # For updates, the PR author must match the EXISTING owner username
-                # to prevent domain stealing
-                if not usernames_match(base_owner_username, pr_author):
-                    issues.append({
-                        "line": 1,
-                        "issue": f"❌ Domain update not allowed: PR author '{pr_author}' does not match existing owner '{base_owner_username}'",
-                        "fix": f"Only the domain owner '{base_owner_username}' can update this domain. You cannot steal someone else's domain."
-                    })
-                # Also check if they're trying to change the owner
-                elif not usernames_match(owner_username, base_owner_username):
-                    issues.append({
-                        "line": 1,
-                        "issue": f"❌ Cannot change domain owner: Attempting to change owner from '{base_owner_username}' to '{owner_username}'",
-                        "fix": f"You cannot change the owner of an existing domain. Keep owner.username as '{base_owner_username}'."
-                    })
-            except json.JSONDecodeError as e:
-                # Security: Block updates when base file cannot be parsed
-                # This prevents exploiting corrupted base files
-                issues.append({
-                    "line": 1,
-                    "issue": f"❌ Cannot verify domain ownership: Base file is corrupted or invalid JSON (Error: {str(e)})",
-                    "fix": f"Please contact administrators. The existing domain file has invalid JSON at line {getattr(e, 'lineno', 'unknown')} and cannot be validated for ownership verification."
-                })
-        else:
-            # This is a NEW domain registration
+    # For NEW domain registration (added files)
+    if file_status == 'added':
+        # Strict validation: PR author must match owner.username
+        if not usernames_match(owner_username, pr_author):
             issues.append({
                 "line": 1,
                 "issue": f"❌ Domain registration not allowed: PR author '{pr_author}' does not match owner.username '{owner_username}'",
                 "fix": f"Set owner.username to your GitHub username '{pr_author}' or have the user '{owner_username}' create this PR."
             })
+    
+    # For UPDATES (modified files)
+    elif file_status == 'modified':
+        base_content = fetch_file_content_from_base(repo, filename, pr)
+        
+        if base_content:
+            try:
+                base_data = json.loads(base_content)
+                base_owner_username = base_data.get("owner", {}).get("username", "").strip()
+                
+                # For updates, the PR author must match the EXISTING owner
+                # This allows the owner to update their domain (including changing DNS records or even owner.username)
+                if not usernames_match(base_owner_username, pr_author):
+                    issues.append({
+                        "line": 1,
+                        "issue": f"❌ Domain update not allowed: PR author '{pr_author}' does not match existing owner '{base_owner_username}'",
+                        "fix": f"Only the domain owner '{base_owner_username}' can update this domain."
+                    })
+            except json.JSONDecodeError as e:
+                # Security: Block updates when base file cannot be parsed
+                issues.append({
+                    "line": 1,
+                    "issue": f"❌ Cannot verify domain ownership: Base file is corrupted or invalid JSON (Error: {str(e)})",
+                    "fix": f"Please contact administrators. The existing domain file has invalid JSON at line {getattr(e, 'lineno', 'unknown')} and cannot be validated for ownership verification."
+                })
     
     return issues
 
@@ -405,11 +436,34 @@ def check_file_naming(filename):
     
     return issues
 
-def analyze_file_contents(file_contents, filename, pr_body, pr_author, repo, pr):
-    """Comprehensive analysis of domain registration file."""
+def analyze_file_contents(file_contents, filename, pr_body, pr_author, repo, pr, file_status):
+    """Comprehensive analysis of domain registration file.
+    
+    Args:
+        file_contents: The content of the domain file
+        filename: The path to the domain file
+        pr_body: The PR description
+        pr_author: The GitHub username of the PR author
+        repo: The repository object
+        pr: The pull request object
+        file_status: The file status ('added', 'modified', 'removed')
+    """
     issues = []
     
-    # Check JSON syntax
+    # For deleted files, we don't need to parse content
+    if file_status == 'removed':
+        # Still validate owner for deletion
+        base_content = fetch_file_content_from_base(repo, filename, pr)
+        if base_content:
+            try:
+                data = json.loads(base_content)
+                issues.extend(validate_owner_username(data, filename, pr_author, repo, pr, file_status))
+            except json.JSONDecodeError:
+                # If we can't parse the file, skip validation
+                pass
+        return issues
+    
+    # Check JSON syntax for added/modified files
     try:
         data = json.loads(file_contents)
     except json.JSONDecodeError as e:
@@ -426,7 +480,7 @@ def analyze_file_contents(file_contents, filename, pr_body, pr_author, repo, pr)
     issues.extend(validate_json_structure(data, filename, pr_body))
     
     # Validate owner username matches PR author (prevent domain stealing)
-    issues.extend(validate_owner_username(data, filename, pr_author, repo, pr))
+    issues.extend(validate_owner_username(data, filename, pr_author, repo, pr, file_status))
     
     # Check for forbidden domains in content
     lines = file_contents.split("\n")
@@ -510,14 +564,15 @@ Description: {pr_body or "No description provided"}
 2. ✅ Is JSON structure complete and valid as per README example?
 3. ✅ Are DNS records properly formatted (A, AAAA, CNAME, MX, TXT, CAA, SRV, PTR)?
 4. ✅ Is owner information complete (username and valid email)?
-5. ✅ **CRITICAL: Does PR author match owner.username to prevent domain stealing?**
-6. ✅ **CRITICAL: For updates, is PR author the existing domain owner?**
-7. ✅ No forbidden providers (Cloudflare NS, Netlify, Vercel)?
-8. ✅ If NS records: Is justification VERY CLEAR and DETAILED as required by README?
-9. ✅ No illegal activities, hate speech, malware, or suspicious content?
-10. ✅ Follows naming conventions (3-63 chars, lowercase, no reserved names)?
-11. ✅ File naming: subdomain.domain.json format in /domains folder?
-12. ✅ Clear description provided (required per README line 138)?
+5. ✅ **CRITICAL: For NEW domains, does PR author match owner.username?**
+6. ✅ **CRITICAL: For UPDATES, is PR author the existing domain owner?**
+7. ✅ **CRITICAL: For DELETIONS, is PR author the existing domain owner?**
+8. ✅ No forbidden providers (Cloudflare NS, Netlify, Vercel)?
+9. ✅ If NS records: Is justification VERY CLEAR and DETAILED as required by README?
+10. ✅ No illegal activities, hate speech, malware, or suspicious content?
+11. ✅ Follows naming conventions (3-63 chars, lowercase, no reserved names)?
+12. ✅ File naming: subdomain.domain.json format in /domains folder?
+13. ✅ Clear description provided (required per README line 138)?
 
 **IMPORTANT README REQUIREMENTS:**
 - "Wildcard domains and NS records are supported too, but the reason for their registration should be VERY CLEAR and described in DETAIL" (Line 32)
@@ -701,14 +756,29 @@ def main():
         all_issues = []
         all_file_contents = {}
         
-        for filename in changed_files:
-            print(f"Analyzing: {filename}")
+        for filename, file_status in changed_files:
+            print(f"Analyzing: {filename} (status: {file_status})")
             
             # Only analyze domain JSON files
             if not filename.startswith("domains/") or not filename.endswith(".json"):
                 print(f"  Skipping non-domain file: {filename}")
                 continue
             
+            # For deleted files, we don't fetch content from PR head
+            if file_status == 'removed':
+                # Analyze deletion (validates owner)
+                issues = analyze_file_contents(None, filename, pr.body, pr.user.login, repo, pr, file_status)
+                for issue in issues:
+                    issue["filename"] = filename
+                    all_issues.append(issue)
+                
+                if issues:
+                    print(f"  ❌ Found {len(issues)} issue(s)")
+                else:
+                    print(f"  ✅ Deletion allowed")
+                continue
+            
+            # For added/modified files, fetch content
             file_contents = fetch_file_content(repo, filename, pr)
             if not file_contents:
                 print(f"  ⚠️ Could not fetch content for {filename}")
@@ -717,7 +787,7 @@ def main():
             all_file_contents[filename] = file_contents
             
             # Analyze file
-            issues = analyze_file_contents(file_contents, filename, pr.body, pr.user.login, repo, pr)
+            issues = analyze_file_contents(file_contents, filename, pr.body, pr.user.login, repo, pr, file_status)
             for issue in issues:
                 issue["filename"] = filename
                 all_issues.append(issue)
