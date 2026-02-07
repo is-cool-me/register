@@ -58,6 +58,12 @@ DOMAIN_RULES = """
 }
 ```
 
+**🔒 OWNER VALIDATION (ANTI-DOMAIN-STEALING):**
+- ✅ PR author MUST match owner.username for new domains
+- ✅ PR author MUST match existing owner.username for updates
+- ❌ Cannot change owner.username of existing domains
+- ❌ Cannot register domains for other users
+
 **🔧 DNS RESTRICTIONS:**
 - ❌ Cloudflare NS records (*.ns.cloudflare.com, ns*.cloudflare.com)
 - ❌ Netlify hosting (*.netlify.app)
@@ -106,6 +112,14 @@ def fetch_file_content(repo, filename, pr):
     except Exception:
         return ""
 
+def fetch_file_content_from_base(repo, filename, pr):
+    """Fetches file content from base branch (for checking updates)."""
+    try:
+        file_content = repo.get_contents(filename, ref=pr.base.sha)
+        return file_content.decoded_content.decode()
+    except Exception:
+        return None  # File doesn't exist in base (new file)
+
 def check_cloudflare_ns(ns_record):
     """Check if NS record is from Cloudflare (forbidden)."""
     for pattern in CLOUDFLARE_NS_PATTERNS:
@@ -153,6 +167,59 @@ def validate_ns_records_justification(data, pr_body):
                     "issue": "❌ NS records justification lacks technical details",
                     "fix": "Provide more detailed technical explanation of why NS records are needed. Explain the specific services and infrastructure requirements."
                 })
+    
+    return issues
+
+def validate_owner_username(data, filename, pr_author, repo, pr):
+    """Validates that the PR author matches the owner username to prevent domain stealing."""
+    issues = []
+    
+    if "owner" not in data or not isinstance(data["owner"], dict):
+        # This will be caught by validate_json_structure
+        return issues
+    
+    owner_username = data["owner"].get("username", "").strip()
+    
+    if not owner_username:
+        # This will be caught by validate_json_structure
+        return issues
+    
+    # Check if PR author matches the owner username in the file
+    if owner_username.lower() != pr_author.lower():
+        # Check if this is an update to an existing file
+        base_content = fetch_file_content_from_base(repo, filename, pr)
+        
+        if base_content:
+            # This is an UPDATE - check the existing owner
+            try:
+                base_data = json.loads(base_content)
+                base_owner_username = base_data.get("owner", {}).get("username", "").strip()
+                
+                # For updates, the PR author must match the EXISTING owner username
+                # to prevent domain stealing
+                if base_owner_username.lower() != pr_author.lower():
+                    issues.append({
+                        "line": 1,
+                        "issue": f"❌ Domain update not allowed: PR author '{pr_author}' does not match existing owner '{base_owner_username}'",
+                        "fix": f"Only the domain owner '{base_owner_username}' can update this domain. You cannot steal someone else's domain."
+                    })
+                # Also check if they're trying to change the owner
+                elif owner_username.lower() != base_owner_username.lower():
+                    issues.append({
+                        "line": 1,
+                        "issue": f"❌ Cannot change domain owner: Attempting to change owner from '{base_owner_username}' to '{owner_username}'",
+                        "fix": f"You cannot change the owner of an existing domain. Keep owner.username as '{base_owner_username}'."
+                    })
+            except json.JSONDecodeError:
+                # If we can't parse the base file, allow the update with a warning
+                pass
+        else:
+            # This is a NEW domain registration
+            issues.append({
+                "line": 1,
+                "issue": f"❌ Domain registration not allowed: PR author '{pr_author}' does not match owner.username '{owner_username}'",
+                "fix": f"Set owner.username to your GitHub username '{pr_author}' or have the user '{owner_username}' create this PR."
+            })
     
     return issues
 
@@ -326,7 +393,7 @@ def check_file_naming(filename):
     
     return issues
 
-def analyze_file_contents(file_contents, filename, pr_body):
+def analyze_file_contents(file_contents, filename, pr_body, pr_author, repo, pr):
     """Comprehensive analysis of domain registration file."""
     issues = []
     
@@ -345,6 +412,9 @@ def analyze_file_contents(file_contents, filename, pr_body):
     
     # Validate JSON structure (pass PR body for NS validation)
     issues.extend(validate_json_structure(data, filename, pr_body))
+    
+    # Validate owner username matches PR author (prevent domain stealing)
+    issues.extend(validate_owner_username(data, filename, pr_author, repo, pr))
     
     # Check for forbidden domains in content
     lines = file_contents.split("\n")
@@ -428,12 +498,14 @@ Description: {pr_body or "No description provided"}
 2. ✅ Is JSON structure complete and valid as per README example?
 3. ✅ Are DNS records properly formatted (A, AAAA, CNAME, MX, TXT, CAA, SRV, PTR)?
 4. ✅ Is owner information complete (username and valid email)?
-5. ✅ No forbidden providers (Cloudflare NS, Netlify, Vercel)?
-6. ✅ If NS records: Is justification VERY CLEAR and DETAILED as required by README?
-7. ✅ No illegal activities, hate speech, malware, or suspicious content?
-8. ✅ Follows naming conventions (3-63 chars, lowercase, no reserved names)?
-9. ✅ File naming: subdomain.domain.json format in /domains folder?
-10. ✅ Clear description provided (required per README line 138)?
+5. ✅ **CRITICAL: Does PR author match owner.username to prevent domain stealing?**
+6. ✅ **CRITICAL: For updates, is PR author the existing domain owner?**
+7. ✅ No forbidden providers (Cloudflare NS, Netlify, Vercel)?
+8. ✅ If NS records: Is justification VERY CLEAR and DETAILED as required by README?
+9. ✅ No illegal activities, hate speech, malware, or suspicious content?
+10. ✅ Follows naming conventions (3-63 chars, lowercase, no reserved names)?
+11. ✅ File naming: subdomain.domain.json format in /domains folder?
+12. ✅ Clear description provided (required per README line 138)?
 
 **IMPORTANT README REQUIREMENTS:**
 - "Wildcard domains and NS records are supported too, but the reason for their registration should be VERY CLEAR and described in DETAIL" (Line 32)
@@ -633,7 +705,7 @@ def main():
             all_file_contents[filename] = file_contents
             
             # Analyze file
-            issues = analyze_file_contents(file_contents, filename, pr.body)
+            issues = analyze_file_contents(file_contents, filename, pr.body, pr.user.login, repo, pr)
             for issue in issues:
                 issue["filename"] = filename
                 all_issues.append(issue)
