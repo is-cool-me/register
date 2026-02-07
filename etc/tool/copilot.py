@@ -182,7 +182,7 @@ def validate_owner_username(data, filename, pr_author, repo, pr, file_status):
     """Validates that the PR author matches the owner username to prevent domain stealing.
     
     Args:
-        data: The domain JSON data
+        data: The domain JSON data (can be None for deletions)
         filename: The domain file path
         pr_author: The GitHub username of the PR author
         repo: The repository object
@@ -193,6 +193,9 @@ def validate_owner_username(data, filename, pr_author, repo, pr, file_status):
     - Creation (added): PR author must match owner.username (strict - prevent registering for others)
     - Update (modified): PR author must match existing owner (allow owner to update their domain)
     - Deletion (removed): PR author must match existing owner (allow owner to delete their domain)
+    
+    Note: For deletions, the 'data' parameter is typically None or incomplete, and validation
+    uses only the base file content to check existing ownership.
     """
     issues = []
     
@@ -440,13 +443,16 @@ def analyze_file_contents(file_contents, filename, pr_body, pr_author, repo, pr,
     """Comprehensive analysis of domain registration file.
     
     Args:
-        file_contents: The content of the domain file
+        file_contents: The content of the domain file (can be None for deleted files)
         filename: The path to the domain file
         pr_body: The PR description
         pr_author: The GitHub username of the PR author
         repo: The repository object
         pr: The pull request object
         file_status: The file status ('added', 'modified', 'removed')
+    
+    Note: For deleted files (status 'removed'), file_contents is expected to be None,
+    and validation only checks ownership from the base file.
     """
     issues = []
     
