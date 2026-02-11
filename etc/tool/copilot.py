@@ -97,6 +97,25 @@ DOMAIN_RULES = """
 - Manual review preferred for complex cases
 """
 
+# Review message templates
+DISMISS_MESSAGE = "✅ All requested changes have been addressed. Dismissing this review."
+
+RESOLVED_APPROVAL_MESSAGE = """## ✅ Requested Changes Resolved - Domain Registration Approved!
+
+🎉 **All requested changes have been successfully addressed!** Your subdomain registration is now approved.
+
+**What's Next?**
+- Your subdomain will be active within a few minutes after auto-merge
+- DNS propagation may take up to 24-48 hours globally
+- Check your domain status: `nslookup your-subdomain.is-epic.me` (or .is-into.tech)
+
+**Need Help?**
+- Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
+- Check [documentation](https://github.com/is-cool-me/register#register)
+
+Thank you for addressing the feedback and using our service! 🚀
+"""
+
 def fetch_pr(repo):
     """Fetches the PR object."""
     return repo.get_pull(int(PR_NUMBER))
@@ -724,6 +743,81 @@ Thank you for using our service! 🚀
         print(f"❌ Error approving PR: {str(e)}")
         raise
 
+def get_bot_username():
+    """Get the bot's username from the BOT_GITHUB_TOKEN."""
+    try:
+        bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
+        bot_user = bot_github.get_user()
+        return bot_user.login
+    except Exception as e:
+        print(f"Warning: Could not get bot username: {str(e)}")
+        return None
+
+def find_latest_request_changes_review(pr, bot_username):
+    """Find the latest REQUEST_CHANGES review from the bot in the given PR."""
+    try:
+        reviews = list(pr.get_reviews())
+        # Iterate in reverse to find the most recent review
+        for review in reversed(reviews):
+            if review.user.login == bot_username and review.state == "CHANGES_REQUESTED":
+                return review
+        return None
+    except Exception as e:
+        print(f"Warning: Error finding REQUEST_CHANGES review: {str(e)}")
+        return None
+
+def has_previous_request_changes_review(pr):
+    """Check if there's an existing REQUEST_CHANGES review from the bot."""
+    try:
+        bot_username = get_bot_username()
+        if not bot_username:
+            return False
+        
+        print(f"Bot username: {bot_username}")
+        
+        bot_request_changes_review = find_latest_request_changes_review(pr, bot_username)
+        
+        if bot_request_changes_review:
+            print(f"Found existing REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
+            print(f"Review submitted at: {bot_request_changes_review.submitted_at}")
+            return True
+        else:
+            print("No existing REQUEST_CHANGES review found from bot")
+            return False
+            
+    except Exception as e:
+        print(f"Warning: Error checking previous reviews: {str(e)}")
+        return False
+
+def resolve_and_approve(pr):
+    """Dismiss the previous REQUEST_CHANGES review and approve the PR."""
+    try:
+        # Use bot token for dismissing and approving
+        bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
+        bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
+        bot_pr = bot_repo.get_pull(int(PR_NUMBER))
+        
+        bot_username = get_bot_username()
+        if not bot_username:
+            print("Warning: Could not get bot username, proceeding with approval only")
+        else:
+            # Find and dismiss the latest REQUEST_CHANGES review
+            bot_request_changes_review = find_latest_request_changes_review(bot_pr, bot_username)
+            
+            if bot_request_changes_review:
+                # Dismiss the previous REQUEST_CHANGES review
+                bot_request_changes_review.dismiss(DISMISS_MESSAGE)
+                print(f"✅ Dismissed previous REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
+        
+        # Create approval review using bot account
+        bot_pr.create_review(event="APPROVE", body=RESOLVED_APPROVAL_MESSAGE)
+        print(f"✅ PR #{PR_NUMBER} approved successfully after resolving requested changes!")
+        print("ℹ️  Auto-merge workflow will handle merging the PR.")
+            
+    except Exception as e:
+        print(f"❌ Error resolving and approving PR: {str(e)}")
+        raise
+
 def main():
     """Main execution function for the AI code reviewer."""
     try:
@@ -803,6 +897,9 @@ def main():
             else:
                 print(f"  ✅ No issues found")
         
+        # Check if there's an existing REQUEST_CHANGES review from bot
+        has_previous_request_changes = has_previous_request_changes_review(pr)
+        
         # Get AI review
         print("\n🤖 Running AI review...")
         ai_decision, ai_feedback = ai_review_pr(pr.body, changed_files, all_file_contents)
@@ -816,7 +913,12 @@ def main():
             print("✅ Review posted - requested changes")
         elif ai_decision == "approve":
             print("\n✅ All checks passed - approving PR")
-            approve_pr(pr)
+            # If there was a previous REQUEST_CHANGES review, resolve it before approving
+            if has_previous_request_changes:
+                print("🔄 Resolving previous REQUEST_CHANGES review and approving...")
+                resolve_and_approve(pr)
+            else:
+                approve_pr(pr)
         else:
             print("\n⚠️ AI recommends changes")
             request_changes(pr, all_issues, ai_feedback)
