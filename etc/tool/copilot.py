@@ -97,6 +97,25 @@ DOMAIN_RULES = """
 - Manual review preferred for complex cases
 """
 
+# Review message templates
+DISMISS_MESSAGE = "✅ All requested changes have been addressed. Dismissing this review."
+
+RESOLVED_APPROVAL_MESSAGE = """## ✅ Requested Changes Resolved - Domain Registration Approved!
+
+🎉 **All requested changes have been successfully addressed!** Your subdomain registration is now approved.
+
+**What's Next?**
+- Your subdomain will be active within a few minutes after auto-merge
+- DNS propagation may take up to 24-48 hours globally
+- Check your domain status: `nslookup your-subdomain.is-epic.me` (or .is-into.tech)
+
+**Need Help?**
+- Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
+- Check [documentation](https://github.com/is-cool-me/register#register)
+
+Thank you for addressing the feedback and using our service! 🚀
+"""
+
 def fetch_pr(repo):
     """Fetches the PR object."""
     return repo.get_pull(int(PR_NUMBER))
@@ -787,29 +806,11 @@ def resolve_and_approve(pr):
             
             if bot_request_changes_review:
                 # Dismiss the previous REQUEST_CHANGES review
-                dismiss_message = "✅ All requested changes have been addressed. Dismissing this review."
-                bot_request_changes_review.dismiss(dismiss_message)
+                bot_request_changes_review.dismiss(DISMISS_MESSAGE)
                 print(f"✅ Dismissed previous REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
         
-        # Now approve the PR
-        approval_body = """## ✅ Requested Changes Resolved - Domain Registration Approved!
-
-🎉 **All requested changes have been successfully addressed!** Your subdomain registration is now approved.
-
-**What's Next?**
-- Your subdomain will be active within a few minutes after auto-merge
-- DNS propagation may take up to 24-48 hours globally
-- Check your domain status: `nslookup <your-subdomain>`
-
-**Need Help?**
-- Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
-- Check [documentation](https://github.com/is-cool-me/register#register)
-
-Thank you for addressing the feedback and using our service! 🚀
-"""
-        
         # Create approval review using bot account
-        bot_pr.create_review(event="APPROVE", body=approval_body)
+        bot_pr.create_review(event="APPROVE", body=RESOLVED_APPROVAL_MESSAGE)
         print(f"✅ PR #{PR_NUMBER} approved successfully after resolving requested changes!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
             
