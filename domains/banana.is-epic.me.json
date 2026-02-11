@@ -1,0 +1,12 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "banana",
+    "owner": {
+        "email": "senin-mailin@gmail.com",
+        "github": "smammadov409-gif"
+    },
+    "record": {
+        "CNAME": "smammadov409-gif.github.io"
+    },
+    "proxied": false
+}
