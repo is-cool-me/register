@@ -3,9 +3,9 @@
     "subdomain": "banana",
     "owner": {
         "email": "senin-mailin@gmail.com",
-        "github": "smammadov409-gif"
+        "username": "smammadov409-gif"
     },
-    "record": {
+    "records": {
         "CNAME": "smammadov409-gif.github.io"
     },
     "proxied": false
