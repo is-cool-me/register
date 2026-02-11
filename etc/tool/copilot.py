@@ -724,31 +724,39 @@ Thank you for using our service! 🚀
         print(f"❌ Error approving PR: {str(e)}")
         raise
 
-def check_and_resolve_previous_reviews(pr):
-    """Check for existing REQUEST_CHANGES reviews from the bot and resolve them if issues are fixed."""
+def get_bot_username():
+    """Get the bot's username from the BOT_GITHUB_TOKEN."""
     try:
-        # Get all reviews for this PR
-        reviews = pr.get_reviews()
-        
-        # Find the latest REQUEST_CHANGES review from the bot
-        bot_request_changes_review = None
-        bot_username = None
-        
-        # Get bot username first
-        try:
-            bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
-            bot_user = bot_github.get_user()
-            bot_username = bot_user.login
-            print(f"Bot username: {bot_username}")
-        except Exception as e:
-            print(f"Warning: Could not get bot username: {str(e)}")
+        bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
+        bot_user = bot_github.get_user()
+        return bot_user.login
+    except Exception as e:
+        print(f"Warning: Could not get bot username: {str(e)}")
+        return None
+
+def find_latest_request_changes_review(pr, bot_username):
+    """Find the latest REQUEST_CHANGES review from the bot in the given PR."""
+    try:
+        reviews = list(pr.get_reviews())
+        # Iterate in reverse to find the most recent review
+        for review in reversed(reviews):
+            if review.user.login == bot_username and review.state == "CHANGES_REQUESTED":
+                return review
+        return None
+    except Exception as e:
+        print(f"Warning: Error finding REQUEST_CHANGES review: {str(e)}")
+        return None
+
+def has_previous_request_changes_review(pr):
+    """Check if there's an existing REQUEST_CHANGES review from the bot."""
+    try:
+        bot_username = get_bot_username()
+        if not bot_username:
             return False
         
-        # Look for the most recent REQUEST_CHANGES review from the bot
-        for review in reversed(list(reviews)):
-            if review.user.login == bot_username and review.state == "CHANGES_REQUESTED":
-                bot_request_changes_review = review
-                break
+        print(f"Bot username: {bot_username}")
+        
+        bot_request_changes_review = find_latest_request_changes_review(pr, bot_username)
         
         if bot_request_changes_review:
             print(f"Found existing REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
@@ -763,29 +771,25 @@ def check_and_resolve_previous_reviews(pr):
         return False
 
 def resolve_and_approve(pr):
-    """Resolve the previous REQUEST_CHANGES review by dismissing it and then approving the PR."""
+    """Dismiss the previous REQUEST_CHANGES review and approve the PR."""
     try:
         # Use bot token for dismissing and approving
         bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
         bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
         bot_pr = bot_repo.get_pull(int(PR_NUMBER))
-        bot_user = bot_github.get_user()
-        bot_username = bot_user.login
         
-        # Get all reviews and find the latest REQUEST_CHANGES from bot
-        reviews = bot_pr.get_reviews()
-        bot_request_changes_review = None
-        
-        for review in reversed(list(reviews)):
-            if review.user.login == bot_username and review.state == "CHANGES_REQUESTED":
-                bot_request_changes_review = review
-                break
-        
-        if bot_request_changes_review:
-            # Dismiss the previous REQUEST_CHANGES review
-            dismiss_message = "✅ All requested changes have been addressed. Dismissing this review."
-            bot_request_changes_review.dismiss(dismiss_message)
-            print(f"✅ Dismissed previous REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
+        bot_username = get_bot_username()
+        if not bot_username:
+            print("Warning: Could not get bot username, proceeding with approval only")
+        else:
+            # Find and dismiss the latest REQUEST_CHANGES review
+            bot_request_changes_review = find_latest_request_changes_review(bot_pr, bot_username)
+            
+            if bot_request_changes_review:
+                # Dismiss the previous REQUEST_CHANGES review
+                dismiss_message = "✅ All requested changes have been addressed. Dismissing this review."
+                bot_request_changes_review.dismiss(dismiss_message)
+                print(f"✅ Dismissed previous REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
         
         # Now approve the PR
         approval_body = """## ✅ Requested Changes Resolved - Domain Registration Approved!
@@ -893,7 +897,7 @@ def main():
                 print(f"  ✅ No issues found")
         
         # Check if there's an existing REQUEST_CHANGES review from bot
-        has_previous_request_changes = check_and_resolve_previous_reviews(pr)
+        has_previous_request_changes = has_previous_request_changes_review(pr)
         
         # Get AI review
         print("\n🤖 Running AI review...")
