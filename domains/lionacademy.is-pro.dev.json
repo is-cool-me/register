@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "lionacademy",
+
+    "owner": {
+        "username": "alexrooznorr",
+        "email": "alexrooznorr@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "alexrooznorr.github.io"
+    },
+
+    "proxied": true
+}

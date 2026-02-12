@@ -1,0 +1,14 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "pushkar",
+
+    "owner": {
+        "username": "OshekharO",
+        "email": "omeepd009@gmail.com"
+    },
+
+    "records": {
+    "NS": ["ns1.desec.io", "ns2.desec.org"]
+    },
+    "proxied": false
+}

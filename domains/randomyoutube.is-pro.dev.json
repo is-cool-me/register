@@ -1,0 +1,18 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "randomyoutube",
+    "owner": {
+        "username": "zthanhluan",
+        "email": "dientu078@gmail.com"
+    },
+    "records": {
+        "CNAME": "randomyoutubeapp.netlify.app",
+        "TXT": [
+            {
+                "name": "_randomyoutube",
+                "value": "randomyoutube.is-pro.dev=5381659725"
+            }
+        ]
+    },
+    "proxied": false
+}

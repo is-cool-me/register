@@ -1,0 +1,18 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "sairaix",
+    "owner": {
+        "username": "asiful928",
+        "email": "asiful.freelancer@gmail.com"
+    },
+    "records": {
+        "CNAME": "e45e825649144fcb.vercel-dns-017.com",
+        "TXT": [
+            {
+                "name": "_vercel",
+                "value": "vc-domain-verify=sairaix.is-pro.dev,34639894ae161841df16"
+            }
+        ]
+    },
+    "proxied": false
+}

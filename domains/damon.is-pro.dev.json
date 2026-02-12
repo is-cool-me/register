@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "damon",
+
+    "owner": {
+        "username": "_0pt1ons_",
+        "email": "asteral.ss2@hotmail.com"
+    },
+
+    "records": {
+        "A": ["51.79.13.206"]
+    },
+
+    "proxied": false
+}

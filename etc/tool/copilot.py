@@ -17,7 +17,7 @@ PR_NUMBER = os.getenv("PR_NUMBER")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Domain configuration
-ALLOWED_DOMAINS = {"is-epic.me", "is-into.tech"}
+ALLOWED_DOMAINS = {"is-pro.dev", "is-into.tech"}
 FORBIDDEN_DOMAINS = {"is-cool.me", "is-app.tech"}
 RESERVED_SUBDOMAINS = {"www", "api", "mail", "ftp", "admin", "root", "test", "staging", "dev", "ns", "ns1", "ns2"}
 FORBIDDEN_DNS_PROVIDERS = {
@@ -38,13 +38,13 @@ DOMAIN_RULES = """
 ### Domain Registration Review Guidelines:
 
 **🎯 ALLOWED DOMAINS:**
-- ✅ `is-epic.me` and `is-into.tech` ONLY
+- ✅ `is-pro.dev` and `is-into.tech` ONLY
 - ❌ `is-cool.me` and `is-app.tech` are FORBIDDEN (migrated domains)
 
 **📋 REQUIRED JSON STRUCTURE:**
 ```json
 {
-    "domain": "is-epic.me",
+    "domain": "is-pro.dev",
     "subdomain": "example",
     "owner": {
         "username": "github-username",
@@ -107,7 +107,7 @@ RESOLVED_APPROVAL_MESSAGE = """## ✅ Requested Changes Resolved - Domain Regist
 **What's Next?**
 - Your subdomain will be active within a few minutes after auto-merge
 - DNS propagation may take up to 24-48 hours globally
-- Check your domain status: `nslookup your-subdomain.is-epic.me` (or .is-into.tech)
+- Check your domain status: `nslookup your-subdomain.is-pro.dev` (or .is-into.tech)
 
 **Need Help?**
 - Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
@@ -453,7 +453,7 @@ def check_file_naming(filename):
         issues.append({
             "line": 1,
             "issue": f"❌ Invalid filename format: '{basename}'",
-            "fix": "Use format: subdomain.domain.json (e.g., example.is-epic.me.json)"
+            "fix": "Use format: subdomain.domain.json (e.g., example.is-pro.dev.json)"
         })
     
     return issues
@@ -585,7 +585,7 @@ Description: {pr_body or "No description provided"}
 {"⚠️ NS RECORDS DETECTED - Requires detailed justification!" if has_ns_records else "✅ Standard DNS records"}
 
 **REVIEW CHECKLIST (Based on README):**
-1. ✅ Are domains allowed (is-epic.me, is-into.tech only)?
+1. ✅ Are domains allowed (is-pro.dev, is-into.tech only)?
 2. ✅ Is JSON structure complete and valid as per README example?
 3. ✅ Are DNS records properly formatted (A, AAAA, CNAME, MX, TXT, CAA, SRV, PTR)?
 4. ✅ Is owner information complete (username and valid email)?
@@ -700,7 +700,7 @@ def request_changes(pr, all_issues, ai_feedback):
     review_body += "\n### ⚠️ Important Notes:\n"
     review_body += "- NS records require detailed technical justification\n"
     review_body += "- Cloudflare NS records are forbidden\n"
-    review_body += "- Only use allowed domains: is-epic.me, is-into.tech\n"
+    review_body += "- Only use allowed domains: is-pro.dev, is-into.tech\n"
     
     review_body += "\n### 📚 Resources:\n"
     review_body += "- [Registration Guide](https://github.com/is-cool-me/register#register)\n"

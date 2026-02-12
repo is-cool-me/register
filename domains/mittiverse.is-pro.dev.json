@@ -1,0 +1,15 @@
+{
+  "domain": "is-pro.dev",
+  "subdomain": "mittiverse",
+
+  "owner": {
+    "username": "madhavansingh",
+    "email": "madhavansingh32@gmail.com"
+  },
+
+  "records": {
+    "CNAME": "0670ae31225f119c.vercel-dns-017.com"
+  },
+
+  "proxied": false
+}

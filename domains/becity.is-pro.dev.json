@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "becity",
+
+    "owner": {
+        "username": "janni142",
+        "email": "dns@janni142.is-cool.dev"
+    },
+
+    "records": {
+        "A": ["185.199.108.153"]
+    },
+
+    "proxied": false
+}
