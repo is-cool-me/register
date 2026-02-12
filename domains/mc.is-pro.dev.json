@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "mc",
+
+    "owner": {
+        "username": "onxs",
+        "email": "ceek @vip.qq.com"
+    },
+
+    "records": {
+        "CNAME": "oexs.github.io"
+    },
+
+    "proxied": false
+}

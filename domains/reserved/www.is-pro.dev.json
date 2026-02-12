@@ -1,0 +1,10 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "www",
+
+    "records": {
+        "CNAME": "is-pro.dev"
+    },
+
+    "proxied": false
+}

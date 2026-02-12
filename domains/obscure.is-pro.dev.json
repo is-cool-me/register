@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "obscure",
+
+    "owner": {
+        "username": "r0ckmix",
+        "email": "mix155@yandex.ru"
+    },
+
+    "records": {
+        "A": ["185.123.53.232"]
+    },
+
+    "proxied": false
+}

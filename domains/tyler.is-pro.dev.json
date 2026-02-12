@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "tyler",
+
+    "owner": {
+	"username": "tylercalumacker",
+        "email": "tylercalumacker@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "tylercalumacker.github.io"
+    },
+
+    "proxied": false
+}

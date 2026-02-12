@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "ryuxyro",
+
+    "owner": {
+        "username": "RyuXyro",
+        "email": "guest@kazuo.rf.gd"
+    },
+
+    "records": {
+        "CNAME": "ryuxyro.github.io"
+    },
+
+    "proxied": false
+}

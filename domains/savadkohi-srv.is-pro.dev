@@ -1,0 +1,14 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "savadkohi-srv",
+
+    "owner": {
+        "username": "nimrafer",
+        "email": "sheri-nelson@outlook.com"
+    },
+
+    "records": {
+        "A": ["162.19.175.49"]
+    },
+    "proxied": false
+}
