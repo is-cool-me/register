@@ -1,0 +1,10 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "dash",
+
+    "records": {
+        "CNAME": "dash1-paru.onrender.com"
+    },
+
+    "proxied": false
+}

@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "librarypmshrikvalwar",
+
+    "owner": {
+        "username": "LibraryAlwar",
+        "email": "librarypmshrikvalwar@gmail.com"
+    },
+
+    "records": {
+        "CNAME": "is-pro.dev"
+    },
+
+    "proxied": false
+}

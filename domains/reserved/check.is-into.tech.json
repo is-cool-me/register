@@ -1,0 +1,10 @@
+{
+    "domain": "is-into.tech",
+    "subdomain": "check",
+
+    "records": {
+        "CNAME": "is-cool-me.github.io"
+    },
+
+    "proxied": false
+}

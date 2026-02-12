@@ -1,0 +1,12 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "banana",
+    "owner": {
+        "email": "senin-mailin@gmail.com",
+        "username": "smammadov409-gif"
+    },
+    "records": {
+        "CNAME": "smammadov409-gif.github.io"
+    },
+    "proxied": false
+}

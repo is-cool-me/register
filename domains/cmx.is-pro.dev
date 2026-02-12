@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "cmx",
+
+    "owner": {
+        "username": "cmx-im",
+        "email": "admin@cmx.im"
+    },
+
+    "records": {
+        "CNAME": "m3.cmx.edu.kg"
+    },
+
+    "proxied": false
+}

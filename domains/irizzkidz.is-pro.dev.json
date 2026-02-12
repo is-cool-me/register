@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "irizzkidz",
+
+    "owner": {
+        "username": "unstoppablerizz",
+        "email": "support@ohiosigmamale.line.pm"
+    },
+
+    "records": {
+        "CNAME": "heyayyu.github.io"
+    },
+
+    "proxied": false
+}
