@@ -10,6 +10,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      issues: write
 
     steps:
       - name: Generate App Token

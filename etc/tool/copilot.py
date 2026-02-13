@@ -3,7 +3,7 @@ import os
 import json
 import requests
 from pathlib import Path
-from github import Github, Auth
+from github import Github, Auth, GithubException
 from groq import Groq
 import re
 
@@ -839,6 +839,32 @@ def request_changes(pr, all_issues, ai_feedback):
             print(f"❌ Failed to create review: {str(e2)}")
             raise
 
+    # Add labels to the PR based on issues found
+    try:
+        # Use a set to avoid duplicates
+        labels_to_add = {"Awaiting Response", "domain"}
+        
+        # Check for specific types of issues and add appropriate labels
+        for issue in all_issues:
+            issue_text = issue.get("issue", "").lower()
+            
+            # Add specific invalid labels based on issue type
+            # Check most specific patterns first to avoid false positives
+            if "ns record" in issue_text or "nameserver" in issue_text:
+                labels_to_add.add("Invalid: NS Records")
+            elif "cloudflare" in issue_text or ("forbidden" in issue_text and "provider" in issue_text):
+                labels_to_add.add("Invalid: Unsupported Services")
+            elif "json" in issue_text or "file" in issue_text or "format" in issue_text:
+                labels_to_add.add("Invalid: File")
+            # Check for general record issues only if it's not NS record related
+            elif "record" in issue_text and ("invalid" in issue_text or "incorrect" in issue_text):
+                labels_to_add.add("Invalid: Records")
+        
+        pr.add_to_labels(*list(labels_to_add))
+        print(f"✅ Added labels: {', '.join(sorted(labels_to_add))}")
+    except GithubException as e:
+        print(f"⚠️ Could not add labels: {str(e)}")
+
 def approve_pr(pr):
     """Approves the PR with a welcoming message using bot token for approval."""
     try:
@@ -867,6 +893,13 @@ Thank you for using our service! 🚀
         bot_pr.create_review(event="APPROVE", body=approval_body)
         print(f"✅ PR #{PR_NUMBER} approved successfully!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
+
+        # Add labels to the PR
+        try:
+            bot_pr.add_to_labels("domain")
+            print("✅ Added label: domain")
+        except GithubException as e:
+            print(f"⚠️ Could not add labels: {str(e)}")
             
     except Exception as e:
         print(f"❌ Error approving PR: {str(e)}")
@@ -942,6 +975,36 @@ def resolve_and_approve(pr):
         bot_pr.create_review(event="APPROVE", body=RESOLVED_APPROVAL_MESSAGE)
         print(f"✅ PR #{PR_NUMBER} approved successfully after resolving requested changes!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
+
+        # Remove the "Awaiting Response" label and add "domain" label
+        try:
+            # Remove Awaiting Response label if it exists
+            try:
+                bot_pr.remove_from_labels("Awaiting Response")
+                print("✅ Removed label: Awaiting Response")
+            except GithubException as e:
+                # Label might not exist, that's okay
+                print(f"ℹ️  Could not remove label (may not exist): {str(e)}")
+            
+            # Remove any Invalid: labels that may have been added
+            invalid_labels = [
+                "Invalid: NS Records",
+                "Invalid: Records", 
+                "Invalid: File",
+                "Invalid: Unsupported Services"
+            ]
+            for label in invalid_labels:
+                try:
+                    bot_pr.remove_from_labels(label)
+                    print(f"✅ Removed label: {label}")
+                except GithubException:
+                    pass  # Label might not exist
+
+            # Add domain label
+            bot_pr.add_to_labels("domain")
+            print("✅ Added label: domain")
+        except GithubException as e:
+            print(f"⚠️ Could not update labels: {str(e)}")
             
     except Exception as e:
         print(f"❌ Error resolving and approving PR: {str(e)}")
