@@ -838,7 +838,7 @@ def request_changes(pr, all_issues, ai_feedback):
         except Exception as e2:
             print(f"❌ Failed to create review: {str(e2)}")
             raise
-    
+
     # Add labels to the PR
     try:
         pr.add_to_labels("changes-requested", "ai-reviewed")
@@ -874,7 +874,7 @@ Thank you for using our service! 🚀
         bot_pr.create_review(event="APPROVE", body=approval_body)
         print(f"✅ PR #{PR_NUMBER} approved successfully!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
-        
+
         # Add labels to the PR
         try:
             bot_pr.add_to_labels("approved", "ai-reviewed")
@@ -956,7 +956,7 @@ def resolve_and_approve(pr):
         bot_pr.create_review(event="APPROVE", body=RESOLVED_APPROVAL_MESSAGE)
         print(f"✅ PR #{PR_NUMBER} approved successfully after resolving requested changes!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
-        
+
         # Remove the "changes-requested" label and add "approved" label
         try:
             # Remove changes-requested label if it exists
@@ -965,7 +965,7 @@ def resolve_and_approve(pr):
                 print("✅ Removed label: changes-requested")
             except Exception:
                 pass  # Label might not exist, that's okay
-            
+
             # Add approved label
             bot_pr.add_to_labels("approved", "ai-reviewed")
             print("✅ Added labels: approved, ai-reviewed")
