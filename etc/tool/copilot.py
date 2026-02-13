@@ -839,10 +839,30 @@ def request_changes(pr, all_issues, ai_feedback):
             print(f"❌ Failed to create review: {str(e2)}")
             raise
 
-    # Add labels to the PR
+    # Add labels to the PR based on issues found
     try:
-        pr.add_to_labels("changes-requested", "ai-reviewed")
-        print("✅ Added labels: changes-requested, ai-reviewed")
+        labels_to_add = ["Awaiting Response", "domain"]
+        
+        # Check for specific types of issues and add appropriate labels
+        for issue in all_issues:
+            issue_text = issue.get("issue", "").lower()
+            
+            # Add specific invalid labels based on issue type
+            if "ns record" in issue_text or "nameserver" in issue_text:
+                if "Invalid: NS Records" not in labels_to_add:
+                    labels_to_add.append("Invalid: NS Records")
+            elif "cloudflare" in issue_text or "forbidden" in issue_text and "provider" in issue_text:
+                if "Invalid: Unsupported Services" not in labels_to_add:
+                    labels_to_add.append("Invalid: Unsupported Services")
+            elif "record" in issue_text and ("invalid" in issue_text or "incorrect" in issue_text):
+                if "Invalid: Records" not in labels_to_add:
+                    labels_to_add.append("Invalid: Records")
+            elif "json" in issue_text or "file" in issue_text or "format" in issue_text:
+                if "Invalid: File" not in labels_to_add:
+                    labels_to_add.append("Invalid: File")
+        
+        pr.add_to_labels(*labels_to_add)
+        print(f"✅ Added labels: {', '.join(labels_to_add)}")
     except GithubException as e:
         print(f"⚠️ Could not add labels: {str(e)}")
 
@@ -877,8 +897,8 @@ Thank you for using our service! 🚀
 
         # Add labels to the PR
         try:
-            bot_pr.add_to_labels("approved", "ai-reviewed")
-            print("✅ Added labels: approved, ai-reviewed")
+            bot_pr.add_to_labels("domain")
+            print("✅ Added label: domain")
         except GithubException as e:
             print(f"⚠️ Could not add labels: {str(e)}")
             
@@ -957,19 +977,33 @@ def resolve_and_approve(pr):
         print(f"✅ PR #{PR_NUMBER} approved successfully after resolving requested changes!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
 
-        # Remove the "changes-requested" label and add "approved" label
+        # Remove the "Awaiting Response" label and add "domain" label
         try:
-            # Remove changes-requested label if it exists
+            # Remove Awaiting Response label if it exists
             try:
-                bot_pr.remove_from_labels("changes-requested")
-                print("✅ Removed label: changes-requested")
+                bot_pr.remove_from_labels("Awaiting Response")
+                print("✅ Removed label: Awaiting Response")
             except GithubException as e:
                 # Label might not exist, that's okay
                 print(f"ℹ️  Could not remove label (may not exist): {str(e)}")
+            
+            # Remove any Invalid: labels that may have been added
+            invalid_labels = [
+                "Invalid: NS Records",
+                "Invalid: Records", 
+                "Invalid: File",
+                "Invalid: Unsupported Services"
+            ]
+            for label in invalid_labels:
+                try:
+                    bot_pr.remove_from_labels(label)
+                    print(f"✅ Removed label: {label}")
+                except GithubException:
+                    pass  # Label might not exist
 
-            # Add approved label
-            bot_pr.add_to_labels("approved", "ai-reviewed")
-            print("✅ Added labels: approved, ai-reviewed")
+            # Add domain label
+            bot_pr.add_to_labels("domain")
+            print("✅ Added label: domain")
         except GithubException as e:
             print(f"⚠️ Could not update labels: {str(e)}")
             
