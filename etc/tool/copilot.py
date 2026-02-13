@@ -843,7 +843,7 @@ def request_changes(pr, all_issues, ai_feedback):
     try:
         pr.add_to_labels("changes-requested", "ai-reviewed")
         print("✅ Added labels: changes-requested, ai-reviewed")
-    except Exception as e:
+    except GithubException as e:
         print(f"⚠️ Could not add labels: {str(e)}")
 
 def approve_pr(pr):
@@ -879,7 +879,7 @@ Thank you for using our service! 🚀
         try:
             bot_pr.add_to_labels("approved", "ai-reviewed")
             print("✅ Added labels: approved, ai-reviewed")
-        except Exception as e:
+        except GithubException as e:
             print(f"⚠️ Could not add labels: {str(e)}")
             
     except Exception as e:
