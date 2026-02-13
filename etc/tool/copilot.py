@@ -3,7 +3,7 @@ import os
 import json
 import requests
 from pathlib import Path
-from github import Github, Auth
+from github import Github, Auth, GithubException
 from groq import Groq
 import re
 
@@ -963,8 +963,9 @@ def resolve_and_approve(pr):
             try:
                 bot_pr.remove_from_labels("changes-requested")
                 print("✅ Removed label: changes-requested")
-            except Exception:
-                pass  # Label might not exist, that's okay
+            except GithubException as e:
+                # Label might not exist, that's okay
+                print(f"ℹ️  Could not remove label (may not exist): {str(e)}")
 
             # Add approved label
             bot_pr.add_to_labels("approved", "ai-reviewed")
