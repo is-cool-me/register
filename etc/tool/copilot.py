@@ -59,19 +59,6 @@ def find_field_line_in_json(content, field_path):
     # Default to line 1 if we can't find it
     return 1
 
-def create_suggestion_block(current_line, suggested_line):
-    """
-    Create a GitHub suggestion block for a fix.
-    
-    Args:
-        current_line: The current line content
-        suggested_line: The suggested replacement
-    
-    Returns:
-        Formatted suggestion string
-    """
-    return f"```suggestion\n{suggested_line}\n```"
-
 # GitHub API credentials
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 BOT_GITHUB_TOKEN = os.getenv("BOT")  # Used for approvals
@@ -359,7 +346,7 @@ def validate_owner_username(data, filename, pr_author, repo, pr, file_status):
     
     return issues
 
-def validate_json_structure(data, filename, pr_body, file_content=None):
+def validate_json_structure(data, filename, pr_body, file_contents=None):
     """Validates the JSON structure for domain registration."""
     issues = []
     
@@ -377,28 +364,29 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
     # Domain validation
     if "domain" in data:
         if data["domain"] not in ALLOWED_DOMAINS:
-            line_num = find_field_line_in_json(file_content, ["domain"]) if file_content else 1
+            line_num = find_field_line_in_json(file_contents, ["domain"]) if file_contents else 1
             # Get the current line content
             current_line = ""
             suggested_line = ""
-            if file_content:
-                lines = file_content.split('\n')
+            if file_contents:
+                lines = file_contents.split('\n')
                 if 0 < line_num <= len(lines):
                     current_line = lines[line_num - 1]
-                    # Create suggested replacement with first allowed domain
-                    suggested_line = current_line.replace(data["domain"], list(ALLOWED_DOMAINS)[0])
+                    # Use a deterministic default domain (sorted alphabetically)
+                    default_domain = sorted(ALLOWED_DOMAINS)[0]
+                    suggested_line = current_line.replace(data["domain"], default_domain)
             
             issues.append({
                 "line": line_num,
                 "issue": f"❌ Invalid domain: '{data['domain']}'",
-                "fix": f"Use only allowed domains: {', '.join(ALLOWED_DOMAINS)}",
+                "fix": f"Use only allowed domains: {', '.join(sorted(ALLOWED_DOMAINS))}",
                 "suggested_code": suggested_line if suggested_line and suggested_line != current_line else None
             })
     
     # Subdomain validation
     if "subdomain" in data:
         subdomain = data["subdomain"]
-        line_num = find_field_line_in_json(file_content, ["subdomain"]) if file_content else 1
+        line_num = find_field_line_in_json(file_contents, ["subdomain"]) if file_contents else 1
         
         if not re.match(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", subdomain):
             issues.append({
@@ -428,7 +416,7 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
     if "owner" in data:
         owner = data["owner"]
         if not isinstance(owner, dict):
-            line_num = find_field_line_in_json(file_content, ["owner"]) if file_content else 1
+            line_num = find_field_line_in_json(file_contents, ["owner"]) if file_contents else 1
             issues.append({
                 "line": line_num,
                 "issue": "❌ Owner field must be an object",
@@ -437,7 +425,7 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
             })
         else:
             if "email" not in owner:
-                line_num = find_field_line_in_json(file_content, ["owner"]) if file_content else 1
+                line_num = find_field_line_in_json(file_contents, ["owner"]) if file_contents else 1
                 issues.append({
                     "line": line_num,
                     "issue": "❌ Missing owner email",
@@ -445,7 +433,7 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
                     "suggested_code": None
                 })
             elif not re.match(r"^[^@]+@[^@]+\.[^@]+$", owner.get("email", "")):
-                line_num = find_field_line_in_json(file_content, ["owner", "email"]) if file_content else 1
+                line_num = find_field_line_in_json(file_contents, ["owner", "email"]) if file_contents else 1
                 issues.append({
                     "line": line_num,
                     "issue": f"❌ Invalid email format: '{owner.get('email', '')}'",
@@ -454,7 +442,7 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
                 })
             
             if "username" not in owner:
-                line_num = find_field_line_in_json(file_content, ["owner"]) if file_content else 1
+                line_num = find_field_line_in_json(file_contents, ["owner"]) if file_contents else 1
                 issues.append({
                     "line": line_num,
                     "issue": "❌ Missing GitHub username",
@@ -465,7 +453,7 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
     # Records validation
     if "records" in data:
         records = data["records"]
-        line_num = find_field_line_in_json(file_content, ["records"]) if file_content else 1
+        line_num = find_field_line_in_json(file_contents, ["records"]) if file_contents else 1
         
         if not isinstance(records, dict) or not records:
             issues.append({
@@ -493,14 +481,8 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
             if "CNAME" in records:
                 cname = records["CNAME"]
                 if "netlify.app" in cname or "vercel.app" in cname:
-                    # Try to find the CNAME line
-                    cname_line = line_num
-                    if file_content:
-                        lines = file_content.split('\n')
-                        for i, line in enumerate(lines, 1):
-                            if '"CNAME"' in line and cname in line:
-                                cname_line = i
-                                break
+                    # Use helper function to find CNAME line
+                    cname_line = find_field_line_in_json(file_contents, ["records"]) if file_contents else line_num
                     
                     issues.append({
                         "line": cname_line,
@@ -535,7 +517,7 @@ def validate_json_structure(data, filename, pr_body, file_content=None):
     
     # Proxied validation
     if "proxied" in data and not isinstance(data["proxied"], bool):
-        line_num = find_field_line_in_json(file_content, ["proxied"]) if file_content else 1
+        line_num = find_field_line_in_json(file_contents, ["proxied"]) if file_contents else 1
         issues.append({
             "line": line_num,
             "issue": "❌ Proxied field must be true or false",
@@ -626,22 +608,17 @@ def analyze_file_contents(file_contents, filename, pr_body, pr_author, repo, pr,
     issues.extend(validate_owner_username(data, filename, pr_author, repo, pr, file_status))
     
     # Check for forbidden domains in content
-    lines = file_contents.split("\n")
-    for i, line in enumerate(lines, start=1):
-        for domain in FORBIDDEN_DOMAINS:
-            if domain in line:
-                # Try to find the exact line with domain field
-                if '"domain"' in line or "'domain'" in line:
-                    line_num = i
-                else:
-                    line_num = find_field_line_in_json(file_contents, ["domain"])
-                
-                issues.append({
-                    "line": line_num,
-                    "issue": f"❌ Forbidden domain '{domain}' found",
-                    "fix": f"Replace '{domain}' with an allowed domain: {', '.join(ALLOWED_DOMAINS)}",
-                    "suggested_code": None
-                })
+    for domain in FORBIDDEN_DOMAINS:
+        if domain in file_contents:
+            # Use helper to find the domain line
+            line_num = find_field_line_in_json(file_contents, ["domain"])
+            
+            issues.append({
+                "line": line_num,
+                "issue": f"❌ Forbidden domain '{domain}' found",
+                "fix": f"Replace '{domain}' with an allowed domain: {', '.join(sorted(ALLOWED_DOMAINS))}",
+                "suggested_code": None
+            })
     
     return issues
 
