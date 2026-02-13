@@ -841,28 +841,27 @@ def request_changes(pr, all_issues, ai_feedback):
 
     # Add labels to the PR based on issues found
     try:
-        labels_to_add = ["Awaiting Response", "domain"]
+        # Use a set to avoid duplicates
+        labels_to_add = {"Awaiting Response", "domain"}
         
         # Check for specific types of issues and add appropriate labels
         for issue in all_issues:
             issue_text = issue.get("issue", "").lower()
             
             # Add specific invalid labels based on issue type
+            # Check most specific patterns first to avoid false positives
             if "ns record" in issue_text or "nameserver" in issue_text:
-                if "Invalid: NS Records" not in labels_to_add:
-                    labels_to_add.append("Invalid: NS Records")
+                labels_to_add.add("Invalid: NS Records")
             elif "cloudflare" in issue_text or ("forbidden" in issue_text and "provider" in issue_text):
-                if "Invalid: Unsupported Services" not in labels_to_add:
-                    labels_to_add.append("Invalid: Unsupported Services")
-            elif "record" in issue_text and ("invalid" in issue_text or "incorrect" in issue_text):
-                if "Invalid: Records" not in labels_to_add:
-                    labels_to_add.append("Invalid: Records")
+                labels_to_add.add("Invalid: Unsupported Services")
             elif "json" in issue_text or "file" in issue_text or "format" in issue_text:
-                if "Invalid: File" not in labels_to_add:
-                    labels_to_add.append("Invalid: File")
+                labels_to_add.add("Invalid: File")
+            # Check for general record issues only if it's not NS record related
+            elif "record" in issue_text and ("invalid" in issue_text or "incorrect" in issue_text):
+                labels_to_add.add("Invalid: Records")
         
-        pr.add_to_labels(*labels_to_add)
-        print(f"✅ Added labels: {', '.join(labels_to_add)}")
+        pr.add_to_labels(*list(labels_to_add))
+        print(f"✅ Added labels: {', '.join(sorted(labels_to_add))}")
     except GithubException as e:
         print(f"⚠️ Could not add labels: {str(e)}")
 
