@@ -838,6 +838,13 @@ def request_changes(pr, all_issues, ai_feedback):
         except Exception as e2:
             print(f"❌ Failed to create review: {str(e2)}")
             raise
+    
+    # Add labels to the PR
+    try:
+        pr.add_to_labels("changes-requested", "ai-reviewed")
+        print("✅ Added labels: changes-requested, ai-reviewed")
+    except Exception as e:
+        print(f"⚠️ Could not add labels: {str(e)}")
 
 def approve_pr(pr):
     """Approves the PR with a welcoming message using bot token for approval."""
@@ -867,6 +874,13 @@ Thank you for using our service! 🚀
         bot_pr.create_review(event="APPROVE", body=approval_body)
         print(f"✅ PR #{PR_NUMBER} approved successfully!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
+        
+        # Add labels to the PR
+        try:
+            bot_pr.add_to_labels("approved", "ai-reviewed")
+            print("✅ Added labels: approved, ai-reviewed")
+        except Exception as e:
+            print(f"⚠️ Could not add labels: {str(e)}")
             
     except Exception as e:
         print(f"❌ Error approving PR: {str(e)}")
@@ -942,6 +956,21 @@ def resolve_and_approve(pr):
         bot_pr.create_review(event="APPROVE", body=RESOLVED_APPROVAL_MESSAGE)
         print(f"✅ PR #{PR_NUMBER} approved successfully after resolving requested changes!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
+        
+        # Remove the "changes-requested" label and add "approved" label
+        try:
+            # Remove changes-requested label if it exists
+            try:
+                bot_pr.remove_from_labels("changes-requested")
+                print("✅ Removed label: changes-requested")
+            except Exception:
+                pass  # Label might not exist, that's okay
+            
+            # Add approved label
+            bot_pr.add_to_labels("approved", "ai-reviewed")
+            print("✅ Added labels: approved, ai-reviewed")
+        except Exception as e:
+            print(f"⚠️ Could not update labels: {str(e)}")
             
     except Exception as e:
         print(f"❌ Error resolving and approving PR: {str(e)}")
