@@ -851,7 +851,7 @@ def request_changes(pr, all_issues, ai_feedback):
             if "ns record" in issue_text or "nameserver" in issue_text:
                 if "Invalid: NS Records" not in labels_to_add:
                     labels_to_add.append("Invalid: NS Records")
-            elif "cloudflare" in issue_text or "forbidden" in issue_text and "provider" in issue_text:
+            elif "cloudflare" in issue_text or ("forbidden" in issue_text and "provider" in issue_text):
                 if "Invalid: Unsupported Services" not in labels_to_add:
                     labels_to_add.append("Invalid: Unsupported Services")
             elif "record" in issue_text and ("invalid" in issue_text or "incorrect" in issue_text):
