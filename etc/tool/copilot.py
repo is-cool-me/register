@@ -970,7 +970,7 @@ def resolve_and_approve(pr):
             # Add approved label
             bot_pr.add_to_labels("approved", "ai-reviewed")
             print("✅ Added labels: approved, ai-reviewed")
-        except Exception as e:
+        except GithubException as e:
             print(f"⚠️ Could not update labels: {str(e)}")
             
     except Exception as e:
