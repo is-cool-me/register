@@ -9,6 +9,56 @@ import re
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
+def find_field_line_in_json(content, field_path):
+    """
+    Find the line number where a field appears in JSON content.
+    
+    Args:
+        content: The JSON file content as a string
+        field_path: List of keys representing the path to the field (e.g., ["owner", "username"])
+    
+    Returns:
+        Line number (1-indexed) where the field appears, or 1 if not found
+    """
+    lines = content.split('\n')
+    
+    # For simple top-level fields
+    if len(field_path) == 1:
+        field = field_path[0]
+        for i, line in enumerate(lines, 1):
+            # Look for the field with quotes
+            if f'"{field}"' in line or f"'{field}'" in line:
+                return i
+    
+    # For nested fields like owner.username
+    elif len(field_path) == 2:
+        parent, child = field_path
+        in_parent = False
+        parent_indent = 0
+        
+        for i, line in enumerate(lines, 1):
+            # Find parent field
+            if f'"{parent}"' in line or f"'{parent}'" in line:
+                in_parent = True
+                # Calculate indentation
+                parent_indent = len(line) - len(line.lstrip())
+                continue
+            
+            # If we're in the parent object, look for child
+            if in_parent:
+                current_indent = len(line) - len(line.lstrip())
+                
+                # If we found the child field
+                if (f'"{child}"' in line or f"'{child}'" in line):
+                    return i
+                
+                # If indent decreases back to parent level or less, we've left the parent object
+                if current_indent <= parent_indent and line.strip() and not line.strip().startswith('}'):
+                    in_parent = False
+    
+    # Default to line 1 if we can't find it
+    return 1
+
 # GitHub API credentials
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 BOT_GITHUB_TOKEN = os.getenv("BOT")  # Used for approvals
@@ -167,7 +217,8 @@ def validate_ns_records_justification(data, pr_body):
                 issues.append({
                     "line": 1,
                     "issue": f"❌ Cloudflare NS record forbidden: '{ns}'",
-                    "fix": "Use non-Cloudflare nameservers. Cloudflare NS records are not allowed."
+                    "fix": "Use non-Cloudflare nameservers. Cloudflare NS records are not allowed.",
+                    "suggested_code": None
                 })
         
         # Check for justification in PR description
@@ -175,7 +226,8 @@ def validate_ns_records_justification(data, pr_body):
             issues.append({
                 "line": 1,
                 "issue": "❌ NS records require detailed justification in PR description",
-                "fix": "Add detailed explanation of why NS records are needed, what services will be hosted, and technical justification (minimum 50 characters)"
+                "fix": "Add detailed explanation of why NS records are needed, what services will be hosted, and technical justification (minimum 50 characters)",
+                "suggested_code": None
             })
         else:
             # Look for key justification terms
@@ -192,7 +244,8 @@ def validate_ns_records_justification(data, pr_body):
                 issues.append({
                     "line": 1,
                     "issue": "❌ NS records justification lacks technical details",
-                    "fix": "Provide more detailed technical explanation of why NS records are needed. Explain the specific services and infrastructure requirements."
+                    "fix": "Provide more detailed technical explanation of why NS records are needed. Explain the specific services and infrastructure requirements.",
+                    "suggested_code": None
                 })
     
     return issues
@@ -230,13 +283,15 @@ def validate_owner_username(data, filename, pr_author, repo, pr, file_status):
                     issues.append({
                         "line": 1,
                         "issue": f"❌ Domain deletion not allowed: PR author '{pr_author}' does not match existing owner '{base_owner_username}'",
-                        "fix": f"Only the domain owner '{base_owner_username}' can delete this domain."
+                        "fix": f"Only the domain owner '{base_owner_username}' can delete this domain.",
+                        "suggested_code": None
                     })
             except json.JSONDecodeError as e:
                 issues.append({
                     "line": 1,
                     "issue": f"❌ Cannot verify domain ownership for deletion: Base file is corrupted or invalid JSON (Error: {str(e)})",
-                    "fix": f"Please contact administrators. The existing domain file has invalid JSON and cannot be validated."
+                    "fix": f"Please contact administrators. The existing domain file has invalid JSON and cannot be validated.",
+                    "suggested_code": None
                 })
         return issues
     
@@ -258,7 +313,8 @@ def validate_owner_username(data, filename, pr_author, repo, pr, file_status):
             issues.append({
                 "line": 1,
                 "issue": f"❌ Domain registration not allowed: PR author '{pr_author}' does not match owner.username '{owner_username}'",
-                "fix": f"Set owner.username to your GitHub username '{pr_author}' or have the user '{owner_username}' create this PR."
+                "fix": f"Set owner.username to your GitHub username '{pr_author}' or have the user '{owner_username}' create this PR.",
+                "suggested_code": None
             })
     
     # For UPDATES (modified files)
@@ -276,19 +332,21 @@ def validate_owner_username(data, filename, pr_author, repo, pr, file_status):
                     issues.append({
                         "line": 1,
                         "issue": f"❌ Domain update not allowed: PR author '{pr_author}' does not match existing owner '{base_owner_username}'",
-                        "fix": f"Only the domain owner '{base_owner_username}' can update this domain."
+                        "fix": f"Only the domain owner '{base_owner_username}' can update this domain.",
+                        "suggested_code": None
                     })
             except json.JSONDecodeError as e:
                 # Security: Block updates when base file cannot be parsed
                 issues.append({
                     "line": 1,
                     "issue": f"❌ Cannot verify domain ownership: Base file is corrupted or invalid JSON (Error: {str(e)})",
-                    "fix": f"Please contact administrators. The existing domain file has invalid JSON at line {getattr(e, 'lineno', 'unknown')} and cannot be validated for ownership verification."
+                    "fix": f"Please contact administrators. The existing domain file has invalid JSON at line {getattr(e, 'lineno', 'unknown')} and cannot be validated for ownership verification.",
+                    "suggested_code": None
                 })
     
     return issues
 
-def validate_json_structure(data, filename, pr_body):
+def validate_json_structure(data, filename, pr_body, file_contents=None):
     """Validates the JSON structure for domain registration."""
     issues = []
     
@@ -299,80 +357,110 @@ def validate_json_structure(data, filename, pr_body):
             issues.append({
                 "line": 1,
                 "issue": f"❌ Missing required field: '{field}'",
-                "fix": f"Add the '{field}' field to your JSON structure"
+                "fix": f"Add the '{field}' field to your JSON structure",
+                "suggested_code": None
             })
     
     # Domain validation
     if "domain" in data:
         if data["domain"] not in ALLOWED_DOMAINS:
+            line_num = find_field_line_in_json(file_contents, ["domain"]) if file_contents else 1
+            # Get the current line content
+            current_line = ""
+            suggested_line = ""
+            if file_contents:
+                lines = file_contents.split('\n')
+                if 0 < line_num <= len(lines):
+                    current_line = lines[line_num - 1]
+                    # Use a deterministic default domain (sorted alphabetically)
+                    default_domain = sorted(ALLOWED_DOMAINS)[0]
+                    suggested_line = current_line.replace(data["domain"], default_domain)
+            
             issues.append({
-                "line": 1,
+                "line": line_num,
                 "issue": f"❌ Invalid domain: '{data['domain']}'",
-                "fix": f"Use only allowed domains: {', '.join(ALLOWED_DOMAINS)}"
+                "fix": f"Use only allowed domains: {', '.join(sorted(ALLOWED_DOMAINS))}",
+                "suggested_code": suggested_line if suggested_line and suggested_line != current_line else None
             })
     
     # Subdomain validation
     if "subdomain" in data:
         subdomain = data["subdomain"]
+        line_num = find_field_line_in_json(file_contents, ["subdomain"]) if file_contents else 1
+        
         if not re.match(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", subdomain):
             issues.append({
-                "line": 1,
+                "line": line_num,
                 "issue": f"❌ Invalid subdomain format: '{subdomain}'",
-                "fix": "Use only lowercase letters, numbers, and hyphens (3-63 chars)"
+                "fix": "Use only lowercase letters, numbers, and hyphens (3-63 chars)",
+                "suggested_code": None  # Can't auto-fix this easily
             })
         
         if subdomain in RESERVED_SUBDOMAINS:
             issues.append({
-                "line": 1,
+                "line": line_num,
                 "issue": f"❌ Reserved subdomain: '{subdomain}'",
-                "fix": f"Choose a different subdomain. Reserved: {', '.join(RESERVED_SUBDOMAINS)}"
+                "fix": f"Choose a different subdomain. Reserved: {', '.join(RESERVED_SUBDOMAINS)}",
+                "suggested_code": None  # Can't auto-fix this easily
             })
         
         if len(subdomain) < 3 or len(subdomain) > 63:
             issues.append({
-                "line": 1,
+                "line": line_num,
                 "issue": f"❌ Subdomain length invalid: {len(subdomain)} characters",
-                "fix": "Subdomain must be 3-63 characters long"
+                "fix": "Subdomain must be 3-63 characters long",
+                "suggested_code": None
             })
     
     # Owner validation
     if "owner" in data:
         owner = data["owner"]
         if not isinstance(owner, dict):
+            line_num = find_field_line_in_json(file_contents, ["owner"]) if file_contents else 1
             issues.append({
-                "line": 1,
+                "line": line_num,
                 "issue": "❌ Owner field must be an object",
-                "fix": "Use format: {\"username\": \"...\", \"email\": \"...\"}"
+                "fix": "Use format: {\"username\": \"...\", \"email\": \"...\"}",
+                "suggested_code": None
             })
         else:
             if "email" not in owner:
+                line_num = find_field_line_in_json(file_contents, ["owner"]) if file_contents else 1
                 issues.append({
-                    "line": 1,
+                    "line": line_num,
                     "issue": "❌ Missing owner email",
-                    "fix": "Add a valid email address in owner.email"
+                    "fix": "Add a valid email address in owner.email",
+                    "suggested_code": None
                 })
             elif not re.match(r"^[^@]+@[^@]+\.[^@]+$", owner.get("email", "")):
+                line_num = find_field_line_in_json(file_contents, ["owner", "email"]) if file_contents else 1
                 issues.append({
-                    "line": 1,
+                    "line": line_num,
                     "issue": f"❌ Invalid email format: '{owner.get('email', '')}'",
-                    "fix": "Provide a valid email address"
+                    "fix": "Provide a valid email address",
+                    "suggested_code": None
                 })
             
             if "username" not in owner:
+                line_num = find_field_line_in_json(file_contents, ["owner"]) if file_contents else 1
                 issues.append({
-                    "line": 1,
+                    "line": line_num,
                     "issue": "❌ Missing GitHub username",
-                    "fix": "Add your GitHub username in owner.username"
+                    "fix": "Add your GitHub username in owner.username",
+                    "suggested_code": None
                 })
     
     # Records validation
     if "records" in data:
         records = data["records"]
+        line_num = find_field_line_in_json(file_contents, ["records"]) if file_contents else 1
+        
         if not isinstance(records, dict) or not records:
             issues.append({
-                "line": 1,
+                "line": line_num,
                 "issue": "❌ Records field must be a non-empty object",
-                "fix": "Add at least one DNS record (A, AAAA, CNAME, etc.)"
+                "fix": "Add at least one DNS record (A, AAAA, CNAME, etc.)",
+                "suggested_code": None
             })
         else:
             # Check for forbidden DNS providers
@@ -380,9 +468,10 @@ def validate_json_structure(data, filename, pr_body):
                 for ns in records["NS"]:
                     if any(forbidden in ns for forbidden in FORBIDDEN_DNS_PROVIDERS):
                         issues.append({
-                            "line": 1,
+                            "line": line_num,
                             "issue": f"❌ Forbidden DNS provider: '{ns}'",
-                            "fix": "Use allowed DNS providers (not Vercel DNS, etc.)"
+                            "fix": "Use allowed DNS providers (not Vercel DNS, etc.)",
+                            "suggested_code": None
                         })
                 
                 # Validate NS records justification
@@ -392,10 +481,14 @@ def validate_json_structure(data, filename, pr_body):
             if "CNAME" in records:
                 cname = records["CNAME"]
                 if "netlify.app" in cname or "vercel.app" in cname:
+                    # Use helper function to find CNAME line
+                    cname_line = find_field_line_in_json(file_contents, ["records"]) if file_contents else line_num
+                    
                     issues.append({
-                        "line": 1,
+                        "line": cname_line,
                         "issue": f"❌ Forbidden hosting provider: '{cname}'",
-                        "fix": "Use GitHub Pages, custom servers, or other allowed providers"
+                        "fix": "Use GitHub Pages, custom servers, or other allowed providers",
+                        "suggested_code": None
                     })
             
             # Validate IP addresses
@@ -403,9 +496,10 @@ def validate_json_structure(data, filename, pr_body):
                 for ip in records["A"]:
                     if not re.match(r"^(\d{1,3}\.){3}\d{1,3}$", ip):
                         issues.append({
-                            "line": 1,
+                            "line": line_num,
                             "issue": f"❌ Invalid IPv4 address: '{ip}'",
-                            "fix": "Provide valid IPv4 addresses in A records"
+                            "fix": "Provide valid IPv4 addresses in A records",
+                            "suggested_code": None
                         })
                     else:
                         # Check for private/reserved IPs
@@ -415,17 +509,20 @@ def validate_json_structure(data, filename, pr_body):
                             (octets[0] == 192 and octets[1] == 168) or
                             octets[0] == 127):
                             issues.append({
-                                "line": 1,
+                                "line": line_num,
                                 "issue": f"❌ Private/reserved IP address: '{ip}'",
-                                "fix": "Use public IP addresses only"
+                                "fix": "Use public IP addresses only",
+                                "suggested_code": None
                             })
     
     # Proxied validation
     if "proxied" in data and not isinstance(data["proxied"], bool):
+        line_num = find_field_line_in_json(file_contents, ["proxied"]) if file_contents else 1
         issues.append({
-            "line": 1,
+            "line": line_num,
             "issue": "❌ Proxied field must be true or false",
-            "fix": "Set proxied to either true or false"
+            "fix": "Set proxied to either true or false",
+            "suggested_code": None
         })
     
     return issues
@@ -443,7 +540,8 @@ def check_file_naming(filename):
         issues.append({
             "line": 1,
             "issue": f"❌ File must have .json extension",
-            "fix": "Rename file to end with .json"
+            "fix": "Rename file to end with .json",
+            "suggested_code": None
         })
         return issues
     
@@ -453,7 +551,8 @@ def check_file_naming(filename):
         issues.append({
             "line": 1,
             "issue": f"❌ Invalid filename format: '{basename}'",
-            "fix": "Use format: subdomain.domain.json (e.g., example.is-pro.dev.json)"
+            "fix": "Use format: subdomain.domain.json (e.g., example.is-pro.dev.json)",
+            "suggested_code": None
         })
     
     return issues
@@ -495,28 +594,31 @@ def analyze_file_contents(file_contents, filename, pr_body, pr_author, repo, pr,
         return [{
             "line": getattr(e, 'lineno', 1),
             "issue": f"❌ JSON syntax error: {str(e)}",
-            "fix": "Fix the JSON syntax error"
+            "fix": "Fix the JSON syntax error",
+            "suggested_code": None
         }]
     
     # Validate file naming
     issues.extend(check_file_naming(filename))
     
-    # Validate JSON structure (pass PR body for NS validation)
-    issues.extend(validate_json_structure(data, filename, pr_body))
+    # Validate JSON structure (pass file content for line detection)
+    issues.extend(validate_json_structure(data, filename, pr_body, file_contents))
     
     # Validate owner username matches PR author (prevent domain stealing)
     issues.extend(validate_owner_username(data, filename, pr_author, repo, pr, file_status))
     
     # Check for forbidden domains in content
-    lines = file_contents.split("\n")
-    for i, line in enumerate(lines, start=1):
-        for domain in FORBIDDEN_DOMAINS:
-            if domain in line:
-                issues.append({
-                    "line": i,
-                    "issue": f"❌ Forbidden domain '{domain}' found",
-                    "fix": f"Replace '{domain}' with an allowed domain: {', '.join(ALLOWED_DOMAINS)}"
-                })
+    for domain in FORBIDDEN_DOMAINS:
+        if domain in file_contents:
+            # Use helper to find the domain line
+            line_num = find_field_line_in_json(file_contents, ["domain"])
+            
+            issues.append({
+                "line": line_num,
+                "issue": f"❌ Forbidden domain '{domain}' found",
+                "fix": f"Replace '{domain}' with an allowed domain: {', '.join(sorted(ALLOWED_DOMAINS))}",
+                "suggested_code": None
+            })
     
     return issues
 
@@ -652,19 +754,8 @@ Remember: Approved PRs merge automatically. Follow README strictly. Be conservat
         # Always request changes if AI fails
         return "request changes", [f"AI review failed: {str(e)}. Manual review required for safety."]
 
-def post_line_comment(pr, filename, line, issue, fix):
-    """Posts a comment on a specific line in a PR."""
-    body = f"**Issue:** {issue}\n**Suggested Fix:** {fix}"
-    try:
-        commit = pr.head.repo.get_commit(pr.head.sha)
-        pr.create_review_comment(body, commit, filename, line)
-    except Exception as e:
-        print(f"Failed to post line comment: {e}")
-        # Fallback: post as a general PR comment
-        pr.create_issue_comment(f"**File:** {filename} (Line {line})\n{body}")
-
 def request_changes(pr, all_issues, ai_feedback):
-    """Requests changes on the PR with comprehensive feedback."""
+    """Requests changes on the PR with inline comments and suggestions."""
     
     # Group issues by file
     issues_by_file = {}
@@ -674,22 +765,43 @@ def request_changes(pr, all_issues, ai_feedback):
             issues_by_file[filename] = []
         issues_by_file[filename].append(issue)
     
-    # Post line comments for each file
+    # Prepare review comments for GitHub's review API
+    review_comments = []
+    
     for filename, issues in issues_by_file.items():
         for issue in issues:
-            post_line_comment(pr, filename, issue["line"], issue["issue"], issue["fix"])
+            line_num = issue.get("line", 1)
+            issue_text = issue.get("issue", "")
+            fix_text = issue.get("fix", "")
+            suggested_code = issue.get("suggested_code", None)
+            
+            # Build comment body with suggestion if available
+            comment_body = f"**Issue:** {issue_text}\n\n**Suggested Fix:** {fix_text}"
+            
+            # Add GitHub suggestion block if we have suggested code
+            if suggested_code and suggested_code.strip():
+                comment_body += f"\n\n```suggestion\n{suggested_code}\n```"
+            
+            # Add to review comments list
+            review_comments.append({
+                "path": filename,
+                "line": line_num,
+                "body": comment_body
+            })
     
-    # Create comprehensive review
+    # Create comprehensive review body
     review_body = "## 🔍 Domain Registration Review\n\n"
     review_body += "❌ **Changes Required** - Please address the following issues:\n\n"
     
     if all_issues:
         review_body += "### 📋 Technical Issues Found:\n"
         for i, issue in enumerate(all_issues[:10], 1):  # Limit to 10 issues
-            review_body += f"{i}. {issue['issue']}\n"
+            filename = issue.get("filename", "unknown")
+            line = issue.get("line", 1)
+            review_body += f"{i}. **{filename}** (line {line}): {issue['issue']}\n"
         
         if len(all_issues) > 10:
-            review_body += f"\n... and {len(all_issues) - 10} more issues. See individual file comments.\n"
+            review_body += f"\n... and {len(all_issues) - 10} more issues. See inline comments on the files.\n"
     
     if ai_feedback and isinstance(ai_feedback, list):
         review_body += "\n### 🤖 AI Review Feedback:\n"
@@ -708,7 +820,24 @@ def request_changes(pr, all_issues, ai_feedback):
     review_body += "- [Example Files](https://github.com/is-cool-me/register/tree/main/domains)\n"
     review_body += "- [Discord Support](https://discord.gg/N8YzrkJxYy)\n"
     
-    pr.create_review(event="REQUEST_CHANGES", body=review_body)
+    # Create the review with inline comments using GitHub's Review API
+    try:
+        # Use GitHub's create_review with comments parameter
+        pr.create_review(
+            body=review_body,
+            event="REQUEST_CHANGES",
+            comments=review_comments
+        )
+        print(f"✅ Created review with {len(review_comments)} inline comments")
+    except Exception as e:
+        print(f"⚠️ Failed to create review with inline comments: {str(e)}")
+        # Fallback: Create review without inline comments
+        try:
+            pr.create_review(event="REQUEST_CHANGES", body=review_body)
+            print("✅ Created review without inline comments (fallback)")
+        except Exception as e2:
+            print(f"❌ Failed to create review: {str(e2)}")
+            raise
 
 def approve_pr(pr):
     """Approves the PR with a welcoming message using bot token for approval."""
