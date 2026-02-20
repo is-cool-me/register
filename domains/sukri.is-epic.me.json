@@ -1,0 +1,14 @@
+{
+    "domain": "is-epic.me",
+    "subdomain": "sukri",
+    "owner": {
+        "username": "akuunku701-web",
+        "email": "akuunku701@gmail.com"
+    },
+    "records": {
+        "A": [
+            "48.193.47.89"
+        ]
+    },
+    "proxied": false
+}
