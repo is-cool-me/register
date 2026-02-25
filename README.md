@@ -10,78 +10,87 @@
 <p align="center">Free subdomains for personal sites, open-source projects, and more.</p>
 <p align="center">Want to find services similar to this? Take a look on <a href="https://github.com/open-domains/register">Open Domains</a>.</p>
 
-## Notice
-We Have Moved Domains: is-cool.me → is-pro.dev, is-app.tech → is-into.tech. Please update your services’ DNS, API references, and links accordingly.
+---
 
-## Donate
+> 🔒 **Need a free SSL certificate?** Check out [**SSLgen**](https://sslgen.mayank.is-a.dev) — a free, web-based SSL certificate generator! No sign-up required.
+
+---
+
+## 📢 Notice
+
+> We have moved domains: **is-cool.me → is-pro.dev** and **is-app.tech → is-into.tech**. Please update your services’ DNS, API references, and links accordingly.
+
+## 💖 Donate
+
 If you like this service and want us to continue running it, please consider donating!
 
+## 💬 Discord Server
 
-### Discord Server
-Make sure to join our Discord server:
-https://discord.gg/N8YzrkJxYy
+Join our community Discord server for support and updates:
 
+[![Discord](https://img.shields.io/badge/Join%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/N8YzrkJxYy)
 
-## Domains
+## 🌐 Domains
 
 | Available Domains |
 |:-:|
 | [`*.is-pro.dev`](https://is-pro.dev) |
 | [`*.is-into.tech`](https://is-into.tech) |
 
-> Wildcard domains (like `*.example.is-pro.dev`) and NS records are supported too, but the reason for their registration should be very clear and described in detail. But we currently do not support Cloudflare (for NS), Netlify (for website) or Vercel (for websites).
+> **Note:** Wildcard domains (like `*.example.is-pro.dev`) and NS records are supported too, but the reason for their registration should be very clear and described in detail. We currently do **not** support Cloudflare (for NS), Netlify (for websites), or Vercel (for websites).
 
 [badge-cf]:https://shields.io/badge/%20-cloudflare-blue?logo=cloudflare&style=plastic?cacheSeconds=3600
 [badge-dnssec]:https://shields.io/badge/%20-DNSSEC-blue?logo=moleculer&logoColor=white&style=plastic?cacheSeconds=3600
 [badge-ssl]:https://shields.io/badge/SSL-Required-blue?style=plastic?cacheSeconds=3600
 
-
-### Settings
+### ⚙️ Settings
 
 | Setting | is-into.tech | is-pro.dev |
-|---------|-------------|------------|
-| DNSSEC  | ✅           | ✅         |
-| Email   | ✅           | ✅         |
-| SSL/TLS*| Full        | Full       |
-| Always Use HTTPS* | ✅ | ✅       |
-| HTTP Strict Transport Security (HSTS) | ✅ | ✅ | 
-| Minimum TLS Version* | 1.2     | 1.2      |
-| Opportunistic Encryption, TLS 1.3* | ✅ | ✅ |
-| WAF (Web Application Firewall)* | Medium Security Level | Medium Security Level | Medium Security Level |
-| Browser Integrity Check* | ✅ | ✅ |
-| Caching Level, Browser Cache TTL* | Standard, 4 hours | Standard, 4 hours | Standard, 4 hours |
+|:--------|:------------:|:----------:|
+| DNSSEC  | ✅ | ✅ |
+| Email   | ✅ | ✅ |
+| SSL/TLS\* | Full | Full |
+| Always Use HTTPS\* | ✅ | ✅ |
+| HTTP Strict Transport Security (HSTS) | ✅ | ✅ |
+| Minimum TLS Version\* | 1.2 | 1.2 |
+| Opportunistic Encryption, TLS 1.3\* | ✅ | ✅ |
+| WAF (Web Application Firewall)\* | Medium Security | Medium Security |
+| Browser Integrity Check\* | ✅ | ✅ |
+| Caching Level, Browser Cache TTL\* | Standard, 4 hours | Standard, 4 hours |
 
-\*Only available when your domain has Cloudflare's proxy (`"proxied": true`) enabled
+\*Only available when your domain has Cloudflare's proxy (`"proxied": true`) enabled.
 
 [dnssec]:https://developers.cloudflare.com/dns/additional-options/dnssec
 [ssl-full]:https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/full
 [caching-levels]:https://developers.cloudflare.com/cache/how-to/set-caching-levels
 
-## Register
+## 📝 Register
 
-### CLI (*recommended*)
-1. Install the CLI using this command:
+### 💻 CLI *(recommended)*
 
-```
+1. Install the CLI:
+
+```bash
 npm install @is-cool.me/cli -g
 ```
 
 2. Login to the CLI:
 
-```
+```bash
 ic login
 ```
 
-3. Register a domain and follow the steps:
+3. Register a domain and follow the prompts:
 
-```
+```bash
 ic register
 ```
 
-### Manual
-1. **Star** and **[Fork](https://github.com/is-cool-me/register/fork)** this repository.
-2. Add a new file called `example.domain.json` in the `/domains` folder to register `example` subdomain.
-3. Edit the file (below is just an **example**, provide a **valid** JSON file with your needs, the format is very strict.
+### ✋ Manual
+
+1. **Star** ⭐ and **[Fork](https://github.com/is-cool-me/register/fork)** this repository.
+2. Add a new file called `example.domain.json` in the `/domains` folder to register the `example` subdomain.
+3. Edit the file — below is an **example**. Provide a **valid** JSON file matching your needs. The format is strict:
 
 ```json
 {
@@ -98,16 +107,15 @@ ic register
         "AAAA": ["2606:4700:4700::1111", "2606:4700:4700::1001"],
         "CNAME": "example.com",
         "MX": [
-                {
-            "priority": 10,
-            "value": "mx1.example.com"
-        },
-
-        {
-            "priority": 20,
-            "value": "mx2.example.com"
-        }
-            ],
+            {
+                "priority": 10,
+                "value": "mx1.example.com"
+            },
+            {
+                "priority": 20,
+                "value": "mx2.example.com"
+            }
+        ],
         "TXT": [
             {
                 "name": "@",
@@ -131,13 +139,16 @@ ic register
 }
 ```
 
-4. Your pull request will be reviewed and merged. Please don't ignore the pull request checklist. If you ignore the checklist, your pull request will be ignored too. _Make sure to keep an eye on it in case we need you to make any changes!_
-5. After the pull request is merged, please allow up to 24 hours for the changes to propagate _(usually, it takes 5..15 minutes)_
-6. Enjoy your new domain!
+4. Your pull request will be reviewed and merged. Please don't ignore the pull request checklist — if you do, your PR may be ignored. _Keep an eye on it in case we need you to make changes!_
+5. After the pull request is merged, please allow up to 24 hours for changes to propagate _(usually it takes 5–15 minutes)_.
+6. 🎉 Enjoy your new domain!
 
-*Domains used for illegal purposes will be removed and permanently banned. Please, provide a clear description of your resource in the pull request.*
+> ⚠️ Domains used for illegal purposes will be removed and permanently banned. Please provide a clear description of your resource in the pull request.
 
-### Credits
-Credit of this repo goes to <a href="https://github.com/open-domains/register">Open Domains</a> and <a href="https://github.com/free-domains/register">Free Domains</a>.
-### License
+## 🙏 Credits
+
+Credit for this repo goes to [Open Domains](https://github.com/open-domains/register) and [Free Domains](https://github.com/free-domains/register).
+
+## 📄 License
+
 This project is under a [MIT License](https://github.com/is-cool-me/register/blob/main/LICENSE).
