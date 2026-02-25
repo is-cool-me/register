@@ -12,7 +12,7 @@
 
 ---
 
-> 🔒 **Need a free SSL certificate?** Check out [**SSLgen**](https://sslgen.mayank.is-a.dev) — a free, web-based SSL certificate generator! No sign-up required.
+> 🔒 **Need a free SSL certificate?** Check out [**SSLgen**](https://sslgen.mayank.is-a.dev) — a free, web-based SSL certificate generator!
 
 ---
 
