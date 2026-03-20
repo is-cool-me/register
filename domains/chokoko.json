@@ -1,0 +1,15 @@
+{
+  "domain": "is-cool.me",
+  "subdomain": "chokoko",
+  "owner": {
+    "username": "Seincue",
+    "email": "chokoko.yannyeinsan@gmail.com"
+  },
+  "records": {
+    "NS": [
+      "elsa.ns.cloudflare.com",
+      "pete.ns.cloudflare.com"
+    ]
+  },
+  "description": "Personal portfolio and routing setup."
+}
