@@ -1,0 +1,15 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "news",
+
+    "owner": {
+        "username": "OshekharO",
+        "email": "omeepd009@gmail.com"
+    },
+
+    "records": {
+        "A": ["185.199.108.153"]
+    },
+
+    "proxied": false
+}
