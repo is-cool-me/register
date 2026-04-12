@@ -915,13 +915,32 @@ def get_bot_username():
         print(f"Warning: Could not get bot username: {str(e)}")
         return None
 
-def find_latest_request_changes_review(pr, bot_username):
-    """Find the latest REQUEST_CHANGES review from the bot in the given PR."""
+def get_app_username():
+    """Get the app's username from the GITHUB_TOKEN."""
+    try:
+        app_github = Github(auth=Auth.Token(GITHUB_TOKEN))
+        app_user = app_github.get_user()
+        return app_user.login
+    except Exception as e:
+        print(f"Warning: Could not get app username: {str(e)}")
+        return None
+
+def find_latest_request_changes_review(pr, reviewer_usernames):
+    """Find the latest REQUEST_CHANGES review from any of the given usernames in the given PR.
+
+    Args:
+        pr: The pull request object.
+        reviewer_usernames: A set (or iterable) of usernames to check.
+
+    Returns:
+        The most recent CHANGES_REQUESTED review from one of the given usernames,
+        or None if no such review exists.
+    """
     try:
         reviews = list(pr.get_reviews())
         # Iterate in reverse to find the most recent review
         for review in reversed(reviews):
-            if review.user.login == bot_username and review.state == "CHANGES_REQUESTED":
+            if review.user.login in reviewer_usernames and review.state == "CHANGES_REQUESTED":
                 return review
         return None
     except Exception as e:
@@ -929,24 +948,40 @@ def find_latest_request_changes_review(pr, bot_username):
         return None
 
 def has_previous_request_changes_review(pr):
-    """Check if there's an existing REQUEST_CHANGES review from the bot."""
+    """Check if there's an existing REQUEST_CHANGES review from the bot or app.
+
+    Args:
+        pr: The pull request object.
+
+    Returns:
+        True if a CHANGES_REQUESTED review from the bot or app is found, False otherwise.
+    """
     try:
+        reviewer_usernames = set()
+
         bot_username = get_bot_username()
-        if not bot_username:
+        if bot_username:
+            reviewer_usernames.add(bot_username)
+            print(f"Bot username: {bot_username}")
+
+        app_username = get_app_username()
+        if app_username:
+            reviewer_usernames.add(app_username)
+            print(f"App username: {app_username}")
+
+        if not reviewer_usernames:
             return False
-        
-        print(f"Bot username: {bot_username}")
-        
-        bot_request_changes_review = find_latest_request_changes_review(pr, bot_username)
-        
+
+        bot_request_changes_review = find_latest_request_changes_review(pr, reviewer_usernames)
+
         if bot_request_changes_review:
             print(f"Found existing REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
             print(f"Review submitted at: {bot_request_changes_review.submitted_at}")
             return True
         else:
-            print("No existing REQUEST_CHANGES review found from bot")
+            print("No existing REQUEST_CHANGES review found from bot or app")
             return False
-            
+
     except Exception as e:
         print(f"Warning: Error checking previous reviews: {str(e)}")
         return False
@@ -959,13 +994,22 @@ def resolve_and_approve(pr):
         bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
         bot_pr = bot_repo.get_pull(int(PR_NUMBER))
         
+        reviewer_usernames = set()
+
         bot_username = get_bot_username()
-        if not bot_username:
-            print("Warning: Could not get bot username, proceeding with approval only")
+        if bot_username:
+            reviewer_usernames.add(bot_username)
+
+        app_username = get_app_username()
+        if app_username:
+            reviewer_usernames.add(app_username)
+
+        if not reviewer_usernames:
+            print("Warning: Could not determine bot/app usernames, proceeding with approval only")
         else:
-            # Find and dismiss the latest REQUEST_CHANGES review
-            bot_request_changes_review = find_latest_request_changes_review(bot_pr, bot_username)
-            
+            # Find and dismiss the latest REQUEST_CHANGES review from any of our accounts
+            bot_request_changes_review = find_latest_request_changes_review(bot_pr, reviewer_usernames)
+
             if bot_request_changes_review:
                 # Dismiss the previous REQUEST_CHANGES review
                 bot_request_changes_review.dismiss(DISMISS_MESSAGE)
