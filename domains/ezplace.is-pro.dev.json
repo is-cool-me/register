@@ -1,0 +1,12 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "ezplace",
+    "owner": {
+        "username": "EzPlace",
+        "email": "toothpasteisverygood@gmail.com"
+    },
+    "records": {
+        "CNAME": "ezplace-server.onrender.com"
+    },
+    "proxied": false
+}
