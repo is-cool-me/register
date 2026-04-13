@@ -16,6 +16,9 @@ concurrency:
     group: ${{ github.ref }}-validation
     cancel-in-progress: true
 
+permissions:
+    contents: read
+
 jobs:
     dns:
         name: DNS
