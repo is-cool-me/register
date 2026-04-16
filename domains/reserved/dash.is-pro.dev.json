@@ -3,7 +3,7 @@
     "subdomain": "dash",
 
     "records": {
-        "CNAME": "dash1-paru.onrender.com"
+        "A": "92.4.72.119"
     },
 
     "proxied": false
