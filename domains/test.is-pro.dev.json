@@ -1,0 +1,12 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "test",
+    "owner": {
+        "username": "LightHostingFree",
+        "email": "admin@lighthosting.eu.org"
+    },
+    "records": {
+        "CNAME": "Google.com"
+    },
+    "proxied": false
+}
