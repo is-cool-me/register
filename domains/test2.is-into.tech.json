@@ -1,0 +1,12 @@
+{
+    "domain": "is-into.tech",
+    "subdomain": "test2",
+    "owner": {
+        "username": "LightHostingFree",
+        "email": "admin@lighthosting.eu.org"
+    },
+    "records": {
+        "CNAME": "google.com"
+    },
+    "proxied": false
+}
