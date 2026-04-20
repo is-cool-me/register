@@ -1,0 +1,11 @@
+{
+    "domain": "is-into.tech",
+    "subdomain": "umar",
+    "owner": {
+        "repo": "https://github.com/UMAR-CY/DOMAIN",
+        "email": "muhammadumar12414@gmail.com"
+    },
+    "record": {
+        "CNAME": "UMAR-CY.github.io"
+    }
+}
