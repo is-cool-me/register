@@ -1,1 +1,38 @@
+{
+    "domain": "is-into.tech",
+    "subdomain": "UMAR",
 
+    "owner": {
+        "username": "UMAR-CY",
+        "email": "muhammadumar12414@gmail.com"
+    },
+
+    "records": {
+        "A": ["87.106.63.148"],
+        "MX": [
+            {
+                "priority": 10,
+                "value": "mx1.example.com"
+            },
+            {
+                "priority": 20,
+                "value": "mx2.example.com"
+            }
+        ],
+        "TXT": [
+            {
+                "name": "@",
+                "value": "example_verification=1234567890"
+            }
+        ],
+        "SRV": [
+            { "priority": 10, "weight": 60, "port": 5060, "target": "sipserver.example.com" },
+            { "priority": 20, "weight": 10, "port": 5061, "target": "sipbackup.example.com" }
+        ],
+        "PTR": [
+            "ptr.example.com"
+        ]
+    },
+
+    "proxied": false
+}
