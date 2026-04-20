@@ -3,9 +3,10 @@
     "subdomain": "umar",
     "owner": {
         "repo": "https://github.com/UMAR-CY/DOMAIN",
-        "email": "muhammadumar12414@gmail.com"
+        "email": "muhammadumar12414@gmail.com",
+        "username": "UMAR-CY"
     },
-    "record": {
+    "records": {
         "CNAME": "UMAR-CY.github.io"
     }
 }
