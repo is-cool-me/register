@@ -916,11 +916,26 @@ def get_bot_username():
         return None
 
 def get_app_username():
-    """Get the app's username from the GITHUB_TOKEN."""
+    """Get the app's bot-style username from the GITHUB_TOKEN."""
     try:
-        app_github = Github(auth=Auth.Token(GITHUB_TOKEN))
-        app_user = app_github.get_user()
-        return app_user.login
+        headers = {
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github+json"
+        }
+        response = requests.get("https://api.github.com/app", headers=headers, timeout=10)
+
+        if response.status_code == 200:
+            app_slug = response.json().get("slug")
+            if app_slug:
+                return f"{app_slug}[bot]"
+            return None
+
+        if response.status_code in (401, 403):
+            print("ℹ️ Could not get app username due to token scope; continuing without it")
+            return None
+
+        print(f"Warning: Could not get app username: GET /app returned {response.status_code}")
+        return None
     except Exception as e:
         print(f"Warning: Could not get app username: {str(e)}")
         return None
