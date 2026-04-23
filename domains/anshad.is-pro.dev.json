@@ -1,0 +1,12 @@
+{
+  "domain": "is-pro.dev",
+  "subdomain": "anshad",
+  "owner": {
+    "username": "Anshad2u",
+    "email": "anshadputtur@gmail.com"
+  },
+  "records": {
+    "CN1AME": ["anshad2u.github.io"]
+  },
+  "proxied": false
+}
