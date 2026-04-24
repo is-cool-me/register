@@ -6,7 +6,8 @@
         "email": "admin@lighthosting.eu.org"
     },
     "records": {
-        "CNAME": "google.com"
+        "CNAME": "google.com",
+        "TXT": "testing"
     },
     "proxied": false
 }
