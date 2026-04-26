@@ -1,0 +1,11 @@
+{
+    "domain": "is-cool.dev",
+    "subdomain": "messaoud-technova",
+    "owner": {
+        "username": "Hiko23r",
+        "email": "zaffourmessaoudbarca@gmail.com"
+    },
+    "records": {
+        "CNAME": "hiko23r.github.io"
+    }
+}
