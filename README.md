@@ -66,7 +66,21 @@ Join our community Discord server for support and updates:
 
 ## 📝 Register
 
-### 💻 CLI *(recommended)*
+### 🌐 Dashboard *(recommended)*
+
+The easiest way to register a subdomain is through the **[is-cool-me Dashboard](https://dash.is-pro.dev)**.
+
+1. Go to **[dash.is-pro.dev](https://dash.is-pro.dev)** and sign in with your **GitHub** account.
+2. Click **Register** and choose a zone (`is-pro.dev` or `is-into.tech`).
+3. Enter the subdomain name you want (e.g. `yourname`). The dashboard will check availability automatically.
+4. Pick a DNS record type (**CNAME**, **A**, or **AAAA**) and enter the target value (e.g. `your-app.vercel.app` for CNAME).
+5. Optionally enable **Cloudflare Proxy** to hide your origin IP.
+6. Review your settings and click **Submit Request** — a pull request will be created for you automatically.
+7. A maintainer will review your request. Once merged, your subdomain will be live!
+
+> **Beta Notice:** The dashboard is currently in **beta**. If you encounter any bugs or issues, please [open a bug report](https://github.com/is-cool-me/register/issues/new?template=dashboard-bug.md) so we can fix it quickly.
+
+### 💻 CLI
 
 1. Install the CLI:
 
