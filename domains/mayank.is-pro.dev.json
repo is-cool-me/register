@@ -8,5 +8,5 @@
     "records": {
         "CNAME": "google.com"
     },
-    "proxied": true
+    "proxied": false
 }
