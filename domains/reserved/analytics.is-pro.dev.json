@@ -1,0 +1,10 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "analytics",
+
+    "records": {
+        "A": ["92.4.72.119"]
+    },
+
+    "proxied": false
+}
