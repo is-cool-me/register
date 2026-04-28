@@ -27,7 +27,7 @@ var commit = {};
 for (var idx in domains) {
     var domainData = domains[idx].data;
     // Proxy is only supported for A, AAAA, and CNAME records.
-    // Non-proxyable record types (MX, NS, TXT, CAA, SRV, PTR) always use proxy.off.
+    // Non-proxyable record types (MX, NS, TXT, CAA, SRV, PTR) must not have cloudflare_proxy set.
     var proxyState = domainData.proxied ? proxy.on : proxy.off;
 
     if (!commit[domainData.domain]) commit[domainData.domain] = [];
@@ -55,13 +55,13 @@ for (var idx in domains) {
 
     if (domainData.records.MX) {
         for (var mx in domainData.records.MX) {
-            commit[domainData.domain].push(MX(domainData.subdomain, domainData.records.MX[mx].priority, domainData.records.MX[mx].value + ".", proxy.off));
+            commit[domainData.domain].push(MX(domainData.subdomain, domainData.records.MX[mx].priority, domainData.records.MX[mx].value + "."));
         }
     }
 
     if (domainData.records.NS) {
         for (var ns in domainData.records.NS) {
-            commit[domainData.domain].push(NS(domainData.subdomain, domainData.records.NS[ns] + ".", proxy.off));
+            commit[domainData.domain].push(NS(domainData.subdomain, domainData.records.NS[ns] + "."));
         }
     }
 
