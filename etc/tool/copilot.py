@@ -531,15 +531,27 @@ def validate_json_structure(data, filename, pr_body, file_contents=None):
                             })
     
     # Proxied validation
-    if "proxied" in data and not isinstance(data["proxied"], bool):
+    if "proxied" in data:
         line_num = find_field_line_in_json(file_contents, ["proxied"]) if file_contents else 1
-        issues.append({
-            "line": line_num,
-            "issue": "❌ Proxied field must be true or false",
-            "fix": "Set proxied to either true or false",
-            "suggested_code": None
-        })
-    
+        if not isinstance(data["proxied"], bool):
+            issues.append({
+                "line": line_num,
+                "issue": "❌ Proxied field must be true or false",
+                "fix": "Set proxied to either true or false",
+                "suggested_code": None
+            })
+        elif data["proxied"] and "records" in data and isinstance(data["records"], dict):
+            # Proxy is only supported for A, AAAA, and CNAME records
+            proxyable_types = {"A", "AAAA", "CNAME"}
+            has_proxyable = any(rtype in data["records"] for rtype in proxyable_types)
+            if not has_proxyable:
+                issues.append({
+                    "line": line_num,
+                    "issue": "❌ `proxied: true` has no effect: no proxyable records (A, AAAA, CNAME) found",
+                    "fix": "Set `proxied` to `false`, or add at least one A, AAAA, or CNAME record to enable proxying",
+                    "suggested_code": None
+                })
+
     return issues
 
 def check_file_naming(filename):
@@ -880,7 +892,7 @@ def request_changes(pr, all_issues, ai_feedback):
     except GithubException as e:
         print(f"⚠️ Could not add labels: {str(e)}")
 
-def approve_pr(pr):
+def approve_pr(pr, is_deletion=False):
     """Approves the PR with a welcoming message using bot token for approval."""
     try:
         # Use bot token for approval (has necessary permissions)
@@ -888,7 +900,23 @@ def approve_pr(pr):
         bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
         bot_pr = bot_repo.get_pull(int(PR_NUMBER))
 
-        approval_body = """## ✅ Domain Registration Approved!
+        if is_deletion:
+            approval_body = """## ✅ Domain Deletion Approved!
+
+🎉 **Your domain deletion request has been approved.**
+
+**What's Next?**
+- Your subdomain will be removed within a few minutes after auto-merge
+- DNS propagation may take up to 24-48 hours globally
+
+**Need Help?**
+- Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
+- Check [documentation](https://github.com/is-cool-me/register#register)
+
+Thank you for using our service! 🚀
+"""
+        else:
+            approval_body = """## ✅ Domain Registration Approved!
 
 🎉 **Welcome to the free subdomain service!** Your subdomain registration has been approved.
 
@@ -1016,37 +1044,55 @@ def has_previous_request_changes_review(pr):
         print(f"Warning: Error checking previous reviews: {str(e)}")
         return False
 
-def resolve_and_approve(pr):
+def resolve_and_approve(pr, is_deletion=False):
     """Dismiss the previous REQUEST_CHANGES review and approve the PR."""
     try:
-        # Use bot token for dismissing and approving
+        # Use app token (GITHUB_TOKEN) to dismiss reviews created by is-cool-me[bot],
+        # and bot token (BOT_GITHUB_TOKEN) for reviews created by the bot account.
+        app_github = Github(auth=Auth.Token(GITHUB_TOKEN))
+        app_repo = app_github.get_repo(GITHUB_REPOSITORY)
+        app_pr = app_repo.get_pull(int(PR_NUMBER))
+
         bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
         bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
         bot_pr = bot_repo.get_pull(int(PR_NUMBER))
-        
-        reviewer_usernames = set()
-
-        bot_username = get_bot_username()
-        if bot_username:
-            reviewer_usernames.add(bot_username)
 
         app_username = get_app_username()
-        if app_username:
-            reviewer_usernames.add(app_username)
+        bot_username = get_bot_username()
 
-        if not reviewer_usernames:
+        if not app_username and not bot_username:
             print("Warning: Could not determine bot/app usernames, proceeding with approval only")
         else:
-            # Find and dismiss the latest REQUEST_CHANGES review from any of our accounts
-            bot_request_changes_review = find_latest_request_changes_review(bot_pr, reviewer_usernames)
+            # Dismiss app (is-cool-me[bot]) review using the app token
+            if app_username:
+                app_review = find_latest_request_changes_review(app_pr, {app_username})
+                if app_review:
+                    # Delete inline review comments before dismissing
+                    try:
+                        for comment in app_review.get_comments():
+                            comment.delete()
+                        print(f"✅ Deleted inline comments for app review ID {app_review.id}")
+                    except Exception as e:
+                        print(f"⚠️ Could not delete inline comments for app review: {str(e)}")
+                    app_review.dismiss(DISMISS_MESSAGE)
+                    print(f"✅ Dismissed app REQUEST_CHANGES review (ID: {app_review.id})")
 
-            if bot_request_changes_review:
-                # Dismiss the previous REQUEST_CHANGES review
-                bot_request_changes_review.dismiss(DISMISS_MESSAGE)
-                print(f"✅ Dismissed previous REQUEST_CHANGES review (ID: {bot_request_changes_review.id})")
-        
+            # Dismiss bot account review using the bot token
+            if bot_username:
+                bot_review = find_latest_request_changes_review(bot_pr, {bot_username})
+                if bot_review:
+                    try:
+                        for comment in bot_review.get_comments():
+                            comment.delete()
+                        print(f"✅ Deleted inline comments for bot review ID {bot_review.id}")
+                    except Exception as e:
+                        print(f"⚠️ Could not delete inline comments for bot review: {str(e)}")
+                    bot_review.dismiss(DISMISS_MESSAGE)
+                    print(f"✅ Dismissed bot REQUEST_CHANGES review (ID: {bot_review.id})")
+
         # Create approval review using bot account
-        bot_pr.create_review(event="APPROVE", body=RESOLVED_APPROVAL_MESSAGE)
+        approval_message = RESOLVED_DELETION_MESSAGE if is_deletion else RESOLVED_APPROVAL_MESSAGE
+        bot_pr.create_review(event="APPROVE", body=approval_message)
         print(f"✅ PR #{PR_NUMBER} approved successfully after resolving requested changes!")
         print("ℹ️  Auto-merge workflow will handle merging the PR.")
 
@@ -1121,7 +1167,8 @@ def main():
         # Analyze all changed files
         all_issues = []
         all_file_contents = {}
-        
+        domain_file_statuses = []  # Track statuses of domain files only
+
         for filename, file_status in changed_files:
             print(f"Analyzing: {filename} (status: {file_status})")
             
@@ -1129,6 +1176,8 @@ def main():
             if not filename.startswith("domains/") or not filename.endswith(".json"):
                 print(f"  Skipping non-domain file: {filename}")
                 continue
+
+            domain_file_statuses.append(file_status)
             
             # For deleted files, we don't fetch content from PR head
             if file_status == 'removed':
@@ -1165,6 +1214,11 @@ def main():
         
         # Check if there's an existing REQUEST_CHANGES review from bot
         has_previous_request_changes = has_previous_request_changes_review(pr)
+
+        # Determine if every domain file in this PR is a deletion
+        is_deletion = bool(domain_file_statuses) and all(s == 'removed' for s in domain_file_statuses)
+        if is_deletion:
+            print("ℹ️  PR contains only domain deletions")
         
         # Get AI review
         print("\n🤖 Running AI review...")
@@ -1182,9 +1236,9 @@ def main():
             # If there was a previous REQUEST_CHANGES review, resolve it before approving
             if has_previous_request_changes:
                 print("🔄 Resolving previous REQUEST_CHANGES review and approving...")
-                resolve_and_approve(pr)
+                resolve_and_approve(pr, is_deletion=is_deletion)
             else:
-                approve_pr(pr)
+                approve_pr(pr, is_deletion=is_deletion)
         else:
             print("\n⚠️ AI recommends changes")
             request_changes(pr, all_issues, ai_feedback)
