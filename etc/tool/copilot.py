@@ -1313,6 +1313,8 @@ def main():
                 print("🔄 Resolving previous REQUEST_CHANGES review and approving...")
                 resolve_and_approve(pr, is_deletion=is_deletion)
             else:
+                print("🔄 Cleaning up previous review comments...")
+                cleanup_previous_review_comments()
                 approve_pr(pr, is_deletion=is_deletion)
         else:
             print("\n⚠️ AI recommends changes")
