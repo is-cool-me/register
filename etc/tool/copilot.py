@@ -1069,6 +1069,44 @@ def has_previous_request_changes_review(pr):
         print(f"Warning: Error checking previous reviews: {str(e)}")
         return False
 
+def cleanup_previous_review_comments():
+    """Delete inline comments from previous REQUEST_CHANGES reviews from the bot or app."""
+    try:
+        app_github = Github(auth=Auth.Token(GITHUB_TOKEN))
+        app_repo = app_github.get_repo(GITHUB_REPOSITORY)
+        app_pr = app_repo.get_pull(int(PR_NUMBER))
+
+        bot_github = Github(auth=Auth.Token(BOT_GITHUB_TOKEN))
+        bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
+        bot_pr = bot_repo.get_pull(int(PR_NUMBER))
+
+        app_username = get_app_username()
+        bot_username = get_bot_username()
+
+        if app_username:
+            app_review = find_latest_request_changes_review(app_pr, {app_username})
+            if app_review:
+                try:
+                    for comment in app_review.get_comments():
+                        comment.delete()
+                    print(f"✅ Deleted inline comments for app review ID {app_review.id}")
+                except Exception as e:
+                    print(f"⚠️ Could not delete inline comments for app review: {str(e)}")
+
+        if bot_username:
+            bot_review = find_latest_request_changes_review(bot_pr, {bot_username})
+            if bot_review:
+                try:
+                    for comment in bot_review.get_comments():
+                        comment.delete()
+                    print(f"✅ Deleted inline comments for bot review ID {bot_review.id}")
+                except Exception as e:
+                    print(f"⚠️ Could not delete inline comments for bot review: {str(e)}")
+
+    except Exception as e:
+        print(f"⚠️ Could not cleanup previous review comments: {str(e)}")
+
+
 def resolve_and_approve(pr, is_deletion=False):
     """Dismiss the previous REQUEST_CHANGES review and approve the PR."""
     try:
@@ -1263,6 +1301,9 @@ def main():
         # Make final decision
         if all_issues:
             print(f"\n❌ Found {len(all_issues)} technical issue(s)")
+            if has_previous_request_changes:
+                print("🔄 Cleaning up previous review comments...")
+                cleanup_previous_review_comments()
             request_changes(pr, all_issues, ai_feedback)
             print("✅ Review posted - requested changes")
         elif ai_decision == "approve":
@@ -1275,6 +1316,9 @@ def main():
                 approve_pr(pr, is_deletion=is_deletion)
         else:
             print("\n⚠️ AI recommends changes")
+            if has_previous_request_changes:
+                print("🔄 Cleaning up previous review comments...")
+                cleanup_previous_review_comments()
             request_changes(pr, all_issues, ai_feedback)
             print("✅ Review posted - requested changes based on AI feedback")
         
