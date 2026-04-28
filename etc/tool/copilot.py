@@ -900,6 +900,17 @@ def approve_pr(pr, is_deletion=False):
         bot_repo = bot_github.get_repo(GITHUB_REPOSITORY)
         bot_pr = bot_repo.get_pull(int(PR_NUMBER))
 
+        # Dismiss any existing APPROVE review from the bot to avoid duplicates
+        bot_username = get_bot_username()
+        if bot_username:
+            existing_approve = find_latest_review_with_state(bot_pr, {bot_username}, "APPROVED")
+            if existing_approve:
+                try:
+                    existing_approve.dismiss(DISMISS_MESSAGE)
+                    print(f"✅ Dismissed previous APPROVE review (ID: {existing_approve.id}) to avoid duplicate")
+                except Exception as e:
+                    print(f"⚠️ Could not dismiss previous APPROVE review: {str(e)}")
+
         if is_deletion:
             approval_body = """## ✅ Domain Deletion Approved!
 
@@ -983,6 +994,29 @@ def get_app_username():
         print(f"Warning: Could not get app username: {str(e)}")
         return None
 
+def find_latest_review_with_state(pr, reviewer_usernames, state):
+    """Find the latest review with the given state from any of the given usernames.
+
+    Args:
+        pr: The pull request object.
+        reviewer_usernames: A set (or iterable) of usernames to check.
+        state: The review state to look for (e.g. "CHANGES_REQUESTED", "APPROVED").
+
+    Returns:
+        The most recent review matching the state from one of the given usernames,
+        or None if no such review exists.
+    """
+    try:
+        reviews = list(pr.get_reviews())
+        # Iterate in reverse to find the most recent review
+        for review in reversed(reviews):
+            if review.user.login in reviewer_usernames and review.state == state:
+                return review
+        return None
+    except Exception as e:
+        print(f"Warning: Error finding {state} review: {str(e)}")
+        return None
+
 def find_latest_request_changes_review(pr, reviewer_usernames):
     """Find the latest REQUEST_CHANGES review from any of the given usernames in the given PR.
 
@@ -994,16 +1028,7 @@ def find_latest_request_changes_review(pr, reviewer_usernames):
         The most recent CHANGES_REQUESTED review from one of the given usernames,
         or None if no such review exists.
     """
-    try:
-        reviews = list(pr.get_reviews())
-        # Iterate in reverse to find the most recent review
-        for review in reversed(reviews):
-            if review.user.login in reviewer_usernames and review.state == "CHANGES_REQUESTED":
-                return review
-        return None
-    except Exception as e:
-        print(f"Warning: Error finding REQUEST_CHANGES review: {str(e)}")
-        return None
+    return find_latest_review_with_state(pr, reviewer_usernames, "CHANGES_REQUESTED")
 
 def has_previous_request_changes_review(pr):
     """Check if there's an existing REQUEST_CHANGES review from the bot or app.
@@ -1089,6 +1114,15 @@ def resolve_and_approve(pr, is_deletion=False):
                         print(f"⚠️ Could not delete inline comments for bot review: {str(e)}")
                     bot_review.dismiss(DISMISS_MESSAGE)
                     print(f"✅ Dismissed bot REQUEST_CHANGES review (ID: {bot_review.id})")
+
+                # Also dismiss any existing APPROVE review from the bot to avoid duplicates
+                bot_approve_review = find_latest_review_with_state(bot_pr, {bot_username}, "APPROVED")
+                if bot_approve_review:
+                    try:
+                        bot_approve_review.dismiss(DISMISS_MESSAGE)
+                        print(f"✅ Dismissed previous APPROVE review (ID: {bot_approve_review.id}) to avoid duplicate")
+                    except Exception as e:
+                        print(f"⚠️ Could not dismiss previous APPROVE review: {str(e)}")
 
         # Create approval review using bot account
         approval_message = RESOLVED_DELETION_MESSAGE if is_deletion else RESOLVED_APPROVAL_MESSAGE
