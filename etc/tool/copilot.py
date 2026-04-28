@@ -166,6 +166,21 @@ RESOLVED_APPROVAL_MESSAGE = """## ✅ Requested Changes Resolved - Domain Regist
 Thank you for addressing the feedback and using our service! 🚀
 """
 
+RESOLVED_DELETION_MESSAGE = """## ✅ Requested Changes Resolved - Domain Deletion Approved!
+
+🎉 **All requested changes have been successfully addressed!** Your domain deletion request is now approved.
+
+**What's Next?**
+- Your subdomain will be removed within a few minutes after auto-merge
+- DNS propagation may take up to 24-48 hours globally
+
+**Need Help?**
+- Join our [Discord](https://discord.gg/N8YzrkJxYy) for support
+- Check [documentation](https://github.com/is-cool-me/register#register)
+
+Thank you for using our service! 🚀
+"""
+
 def fetch_pr(repo):
     """Fetches the PR object."""
     return repo.get_pull(int(PR_NUMBER))
