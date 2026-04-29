@@ -1,0 +1,12 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "lza6",
+    "owner": {
+        "username": "lza6",
+        "email": "2864460459@qq.com"
+    },
+    "records": {
+        "CNAME": "cloudflare.com"
+    },
+    "proxied": true
+}
