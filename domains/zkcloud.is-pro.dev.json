@@ -1,0 +1,12 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "zkcloud",
+    "owner": {
+        "username": "zph1039902405-ops",
+        "email": "zph1039902405@gmail.com"
+    },
+    "records": {
+        "CNAME": "zhongkecloud.bb"
+    },
+    "proxied": false
+}
