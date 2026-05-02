@@ -1,0 +1,12 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "sushismp",
+    "owner": {
+        "username": "chermaxim2013-cmyk",
+        "email": "chermaxim2013@gmail.com"
+    },
+    "records": {
+        "CNAME": "due-tactless.gl.joinmc.link"
+    },
+    "proxied": false
+}
