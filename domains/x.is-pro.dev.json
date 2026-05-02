@@ -1,0 +1,12 @@
+{
+    "domain": "is-pro.dev",
+    "subdomain": "x",
+    "owner": {
+        "username": "SyedTahseen",
+        "email": "itxtahseen@gmail.com"
+    },
+    "records": {
+        "CNAME": "af22f6aea4c5e8cb.vercel-dns-017.com"
+    },
+    "proxied": false
+}
